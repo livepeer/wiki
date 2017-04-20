@@ -113,7 +113,7 @@ The Livepeer Token (LPT) is the protocol token of the Livepeer network. Broadcas
 
 An initial allocation of Livepeer Token will be distributed so that stakeholders can fulfill various roles in, and use the network, and then additional token will be issued on a predictable inflation schedule over time. See the [Token Distribution](#token-distribution) section.
 
-Following the conventions of Ethereum and many popular ERC20 tokens [[16](#references)], LPT will be divisible by 10 ^ 18, with larger denomenations such as the LPT itself intended to be used for user level transactions and staking, and smaller denominations intended to be used for protocol fees, microtransactions, and accounting.
+Following the conventions of Ethereum and many popular ERC20 tokens [[16](#references)], LPT will be divisible by 10 ^ 18, with larger denominations such as the LPT itself intended to be used for user level transactions and staking, and smaller denominations intended to be used for protocol fees, microtransactions, and accounting.
 
 ### Protocol Roles
 
@@ -138,7 +138,7 @@ Here is a visual overview of the roles, and the ways in which they communicate w
 
 <img src="https://s3.amazonaws.com/livepeerorg/LPProtocol.png" alt="Protocol Visual Overview" style="width: 750px">  
 
-*Segments flowing from the broadcaster to the transcoder and eventually to the consumer. The transcoder ensures they have signatures and proof of work to participate in the work verificaiton procedure.*
+*Segments flowing from the broadcaster to the transcoder and eventually to the consumer. The transcoder ensures they have signatures and proof of work to participate in the work verification procedure.*
 
 **Note on Transcoders:** Transcoders play the most critical role in the Livepeer ecosystem. They are the ones who are taking an input stream and converting it into many different formats in a timely manner for low latency distribution. As such they benefit from high availability, efficient, powerful hardware (potentially with GPU accelerated transcoding), high bandwidth connections, and solid DevOps practices. Transcoders should churn far less than other network participants, as when they take on the job of transcoding a stream, it’s less than ideal if they drop off the network. While the network can scale to support many participants playing the role of transcoder (and earning the requisite rewards), this is a special role that’s delegated towards from most network participants, in order to ensure that a reliable network that provides value to broadcasters is maintained. More below on this delegation.
 
@@ -330,7 +330,7 @@ This section contains a survey of the various ways that malicious actors may try
 
 As mentioned previously, consensus in the Livepeer ecosystem is provided by the underlying blockchain platform (Ethereum for example). 51% attacks, double spends of Livepeer Token, and forks of the network would require the same resources and cost-of-attack as Ethereum itself.
 
-Livepeer is a staked based protocol, and while Transcoders have the role of participating in the work verificaiton process and the token reward distribution process, they actually do not have the role of validating or accepting other Transcoders' work. There is no concept of a chain, nor is there validation of previous blocks. There simply exists the economic incentives to verify one's own work and distribute one's own portion of token rewards when it is one's turn. As such, attacks that are seen in a proof of stake protocols such as the Long Range Attack, the Nothing at Stake problem, and The Bribe Attack don't apply, as there is no opportunity to attempt to sign multiple blocks or attempt to create a longer chain from an earlier state. However, one should be aware that as the underlying blockchain migrates to proof of stake, these attacks do threaten to undermine Livepeer if the benefit of carrying them out on Livepeer were to exceed the cost of attack on Ethereum itself.
+Livepeer is a staked based protocol, and while Transcoders have the role of participating in the work verification process and the token reward distribution process, they actually do not have the role of validating or accepting other Transcoders' work. There is no concept of a chain, nor is there validation of previous blocks. There simply exists the economic incentives to verify one's own work and distribute one's own portion of token rewards when it is one's turn. As such, attacks that are seen in a proof of stake protocols such as the Long Range Attack, the Nothing at Stake problem, and The Bribe Attack don't apply, as there is no opportunity to attempt to sign multiple blocks or attempt to create a longer chain from an earlier state. However, one should be aware that as the underlying blockchain migrates to proof of stake, these attacks do threaten to undermine Livepeer if the benefit of carrying them out on Livepeer were to exceed the cost of attack on Ethereum itself.
 
 While relying on the security of the underlying blockchain is nice for prevention of consensus attacks, there still exists a class of quality and efficiency attacks that can harm the Livepeer network.
 
@@ -359,7 +359,7 @@ If a Broadcaster were to try to attempt to get a Transcoder slashed, they would 
 
 If a Transcoder has enough stake to maintain their position, they could theoretically list a 100% `BlockRewardCut`, 0% `FeeShare`, and charge a high `PricePerSegment` such that they would never have to do any work, yet could collect their token rewards. This is prevented by the `CompetitivenessTolerance` which requires them to contribute some amount of valid work. Additionally, because of the transaction costs of participating in the protocol incurred by Transcoders, it would be more profitable for them to simply stake their token toward a valid Transcoder who was sharing fees with them, than it would be to act as a useless Transcoder who would receive no fees to speak of.
 
-A misbehaving Transcoder who is outputing invalid output would quickly get slashed down to the point of their stake being reduced too low to actually keep their job and receive any work.
+A misbehaving Transcoder who is outputting invalid output would quickly get slashed down to the point of their stake being reduced too low to actually keep their job and receive any work.
 
 ### Chain Reorg
 
@@ -369,7 +369,7 @@ When a broadcaster submits a job to the Livepeer Smart Contract, the protocol us
 
 This whitepaper has largely focused on the economic incentives and protocol for ensuring proper transcoding of live video, which is necessary to support adaptive bitrate streaming and reach every device. But equally important is the distribution of video throughout the network so that it can be consumed with high quality and low latency. The economics of distribution rely on tit-for-tat bandwidth accounting as popularized by Bittorrent, and extended via protocols like SWAP [[13](#references)]. As a simplification, nodes pay to request a segment of video, and nodes get paid to serve a segment of video. If a node already has a segment and can serve it to multiple requestors, it is profitable. We call this type of node, a Relay node.
 
-Different incentives exist when it comes to bandwith for nodes playing different roles in the network.
+Different incentives exist when it comes to bandwidth for nodes playing different roles in the network.
 
 * Consumers may be willing to exchange upstream bandwidth to serve the content to additional Consumers in exchange for being able to consume the video themselves free of charge. See systems like Webtorrent [[14](#references)].
 * Broadcasters serve as origin nodes and may want to charge for consumption of the video, or may want to subsidize the cost of bandwidth so that everyone can access their video for free.
@@ -416,7 +416,7 @@ The end result is a scalable, pay-as-you-go network for decentralized live video
 | `RoundLength` | Length of time between election of a new round of transcoders | 1 day |
 | `CyclesPerRound` | Number of times each Transcoder is expected to call Reward() during a Round. | 2 |
 | `RateLockDeadline` | Transcoders rates lock in this amount of time prior to the next round start time so that delegators can review and delegate accordingly. | 6 hours |
-| `UnbondingPeriod` | Time between entering unboding state, and ability to withdraw the funds. | 1 month |
+| `UnbondingPeriod` | Time between entering unbonding state, and ability to withdraw the funds. | 1 month |
 | `PersistenceLength` | The minimum period that a receipt of data persistence must be provided in the decentralized storage solution. | 6 hours |
 | `VerificationRate` | The % of segments that will be verified. | 1/500 |
 | `FailedVerificationSlashAmount` | % to slash in the case of a failed verification (beyond the potential allowed failure threshold) | 5% |
