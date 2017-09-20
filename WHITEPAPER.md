@@ -272,18 +272,19 @@ It is important that it be more profitable to simply stake LPT towards a valid, 
 
 ### Token Rewards
 
-Livepeer is inflationary in that new tokens will be minted over time according to the schedule communicated below in [Token Distribution](#token-distribution). If all roles in Livepeer behave according to the protocol, then newly minted tokens will be rewarded to users in proportion to their bonded stake (minus fees). Transcoders have the role of taking turns calling the `Reward()` function in order to trigger the new token allocation or slashing which can be computed from all data available on chain.
+Livepeer is inflationary in that new tokens will be minted over time according to the schedule communicated below in [Token Distribution](#token-distribution). If all roles in Livepeer behave according to the protocol, then newly minted tokens will be rewarded to users in proportion to their bonded stake (minus fees). Transcoders have the role of calling the `Reward()` function in order to trigger the new token allocation or slashing which can be computed from all data available on chain.
 
-Each transcoder will have a defined time window in which they are expected to invoke `Reward()`. This can be calculated by taking `RoundLength / (N * CyclesPerRound)` and shuffling the active transcoder order randomly each round using the starting block hash at the time of the round as the random input. When it is within a specific Transcoder's time window they must call `Reward()` which will execute the following steps.
+Each transcoder will be required to call `Reward()` once per round.
 
-- Ensure the correct Transcoder is calling `Reward()`
-- Check to see if the previous Transcoders between the last `Reward()` call and this one took their turn and called `Reward()`. If not, slash them `MissedRewardSlashAmount`.
-- Validate all eligible `TranscodeClaims` by this Transcoder since the last cycle.
-- Validate the Transcoder’s `CompetitivenessTolerance` to ensure they were priced competitively to receive enough work. If not, there is no reward distributed.
-- If there are any verification errors or missing verifications then slash by `FailedVerificationSlashAmount` or `MissedVerificationSlashedAmount`. Refund the Broadcaster.
-- If there are no errors then mint the new token and distribute to Delegators and Transcoders relative to fee schedule.
+- Ensure that an active Transcoder is calling `Reward()`.
+- Ensure that the Transcoder has not called `Reward()` yet in this round.
+- Compute the number of token to mint based upon the inflation rate. Mint this many token.
+- Calculate the Transcoder's cut based upon their `BlockRewardCut`.
+- Distribute this into the Transcoder's bonded stake.
+- Distribute the remainder into the delegators reward pool.
+- Update the bonded amount of token to this Transcoder.
 
-Failure to invoke `Reward()` not only results in slashing, it also has the direct consequence of losing a portion of token rewards, and showing up as a ding on one’s Transcoder reputation when it comes to being elected by Delegators for the role.
+Failure to invoke `Reward()` not only results in slashing, it also has the direct consequence of losing a portion of token rewards, and showing up as a ding on one’s Transcoder reputation when it comes to being elected by Delegators for the role. Slashing for failure to invoke `Reward()` will be done proactively by users after they observe a missed call at the completion of a round.
 
 ### Slashing
 
@@ -414,7 +415,6 @@ The end result is a scalable, pay-as-you-go network for decentralized live video
 | `T` | Segment length in seconds | 2 seconds |
 | `N` | Number of active transcoders | 144 |
 | `RoundLength` | Length of time between election of a new round of transcoders | 1 day |
-| `CyclesPerRound` | Number of times each Transcoder is expected to call Reward() during a Round. | 2 |
 | `RateLockDeadline` | Transcoders rates lock in this amount of time prior to the next round start time so that delegators can review and delegate accordingly. | 6 hours |
 | `UnbondingPeriod` | Time between entering unbonding state, and ability to withdraw the funds. | 1 month |
 | `PersistenceLength` | The minimum period that a receipt of data persistence must be provided in the decentralized storage solution. | 6 hours |
