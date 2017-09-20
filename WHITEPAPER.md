@@ -212,7 +212,7 @@ At this point the broadcaster can begin streaming video segments towards the tra
 3. The protocol can use the next block hash to deterministically select the correct Transcoder for this job.
 4. **Transcoder** -> **Broadcaster**: send output streamID and receipt that the job is accepted.
 5. **Broadcaster** -> **Transcoder**: send stream segments, which contain signatures verifying the input data.
-6. **Broadcaster** -> **Swarm**: Write input data payloads, using SWEAR params to ensure the data will be there long enough for verification (`PersistenceLength` time).
+6. **Broadcaster** -> **Swarm**: Write input data payloads, using SWEAR params to ensure the data will be there long enough for verification (`VerificationPeriod` time).
 7. **Transcoder** performs transcoding and makes new output stream available on network
 8. **Transcoder** checks **Swarm** periodically to ensure that the original stream data is there. If not, end the job at your discretion and claim your work.
 9. **Transcoder**: Store a transcode claim for each segment of transcoding work. A transcode claim has the following fields.
@@ -417,7 +417,7 @@ The end result is a scalable, pay-as-you-go network for decentralized live video
 | `RoundLength` | Length of time between election of a new round of transcoders | 1 day |
 | `RateLockDeadline` | Transcoders rates lock in this amount of time prior to the next round start time so that delegators can review and delegate accordingly. | 6 hours |
 | `UnbondingPeriod` | Time between entering unbonding state, and ability to withdraw the funds. | 1 month |
-| `PersistenceLength` | The minimum period that a receipt of data persistence must be provided in the decentralized storage solution. | 6 hours |
+| `VerificationPeriod` | The deadline for verifying a job claim after submission of the job claim. This also serves as the minimum period that a receipt of data persistence must be provided in the decentralized storage solution. | 6 hours |
 | `VerificationRate` | The % of segments that will be verified. | 1/500 |
 | `FailedVerificationSlashAmount` | % to slash in the case of a failed verification (beyond the potential allowed failure threshold) | 5% |
 | `MissedRewardSlashAmount` | % to slash in the case of missing a block reward round (Maybe only do this in the case of n consecutive misses) | 3% |
