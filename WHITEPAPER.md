@@ -136,7 +136,7 @@ In addition to the above roles played by users running Livepeer nodes, the proto
 
 Here is a visual overview of the roles, and the ways in which they communicate with one another in the work verification process described below.
 
-<img src="https://s3.amazonaws.com/livepeerorg/LPProtocol.png" alt="Protocol Visual Overview" style="width: 750px">  
+<img src="https://livepeer-dev.s3.amazonaws.com/docs/lpprotocol.png" alt="Protocol Visual Overview" style="width: 750px">  
 
 *Segments flowing from the broadcaster to the transcoder and eventually to the consumer. The transcoder ensures they have signatures and proof of work to participate in the work verification procedure.*
 
@@ -173,7 +173,7 @@ A node indicates their willingness to be a transcoder by submitting a `Transcode
 - `BlockRewardCut`: The % of the block reward that bonded nodes will pay them for the service of transcoding. (Example 2%. If a bonded node were to receive 100 LPT in block reward, they would pay 2 LPT to the transcoder).
 - `FeeShare`: The % of the fees from broadcasting jobs that the transcoder is willing to share with the bonded nodes who delegate towards it. (Example 25%. If a transcoder were to receive 100 LPT in fees, they would pay 25 LPT to the bonded nodes).
 
-The Transcoder can update their availability and information up until `RateLockDeadline` time before the next transcoding round (Example 2 hours. They can change this information until 2 hours before the next transcoding round which lasts for `RoundLength` 1 day). This gives bonded nodes the chance to review the fee splits and token reward splits relative to other transcoders, as well as anticipated fees based upon the rate they're charging and network demand, and move their delegated stake if they wish. At the start of a transcoding round, the active transcoders for that round are determined based upon the total stake delegated towards each transcoder, and stakes and rates are locked in for the duration of that round.
+The Transcoder can update their availability and information up until `RateLockDeadline` time before the next transcoding round (Example 2 hours. They can change this information until 2 hours before the next transcoding round which lasts for `RoundLength` 1 day). This gives bonded nodes the chance to review the fee splits and token reward splits relative to other transcoders, as well as anticipated fees based upon the rate they're charging and network demand, and move their delegated stake if they wish. At the start of a transcoding round (triggered by a call to the `InitializeRound()` transaction, the active transcoders for that round are determined based upon the total stake delegated towards each transcoder, and stakes and rates are locked in for the duration of that round.
 
 Here is an example state of Transcoder options that a delegator can review when deciding whom to delegate towards.
 
@@ -212,7 +212,7 @@ At this point the broadcaster can begin streaming video segments towards the tra
 3. The protocol can use the next block hash to deterministically select the correct Transcoder for this job.
 4. **Transcoder** -> **Broadcaster**: send output streamID and receipt that the job is accepted.
 5. **Broadcaster** -> **Transcoder**: send stream segments, which contain signatures verifying the input data.
-6. **Broadcaster** -> **Swarm**: Write input data payloads, using SWEAR params to ensure the data will be there long enough for verification (`PersistenceLength` time).
+6. **Broadcaster** -> **Swarm**: Write input data payloads, using SWEAR params to ensure the data will be there long enough for verification (`VerificationPeriod` time).
 7. **Transcoder** performs transcoding and makes new output stream available on network
 8. **Transcoder** checks **Swarm** periodically to ensure that the original stream data is there. If not, end the job at your discretion and claim your work.
 9. **Transcoder**: Store a transcode claim for each segment of transcoding work. A transcode claim has the following fields.
@@ -226,13 +226,13 @@ At this point the broadcaster can begin streaming video segments towards the tra
 | **Broadcaster segment signature** | A signature from the broadcaster of Priv(StreamID, Seq#, Dhash) which can be used to attest and verify that the broadcaster claims this to be the true data for this unique segment. |
 | **Transcoder segment signature** | A signature of all of the above fields from the transcoder attesting to the claim that this specific output transcoding was performed on this specific input. |
 
-Whenever the transcoder observes that they are no longer receiving segments, they can call `EndJob()` to claim their work.
+Whenever the transcoder observes that they are no longer receiving segments, they can call `ClaimWork()` to claim their work.
 
 #### End Job
 
-10. **Transcoder** -> **Livepeer Smart Contract**: Call `EndJob(StreamID, StartSegmentSeq#, EndSegmentSeq#, MerkleRoot)`. Transcoder is claiming on chain they have performed work on the claimed segment range, with a merkle root of all of the transcode claim data to commit to the content of these encoded segments.
+10. **Transcoder** -> **Livepeer Smart Contract**: Call `ClaimWork(StreamID, StartSegmentSeq#, EndSegmentSeq#, MerkleRoot)`. Transcoder is claiming on chain they have performed work on the claimed segment range, with a merkle root of all of the transcode claim data to commit to the content of these encoded segments.
 11. Wait for this transaction to be mined, and observe the next blockhash. The protocol can then determine which segments will be verified based upon the `VerificationRate`.
-12. **Transcoder** -> **Livepeer Smart Contract**: Provide transcode claims on chain for each segment that needs to be verified, along with merkle proofs for each segment in the transcode claims. The smart contract can verify the signatures from Broadcaster and **Transcoder** to ensure all data necessary is available to conduct verification, and can verify the merkle proofs against the committed merkle root from `EndJob()`.
+12. **Transcoder** -> **Livepeer Smart Contract**: Provide transcode claims on chain for each segment that needs to be verified, along with merkle proofs for each segment in the transcode claims. The smart contract can verify the signatures from Broadcaster and **Transcoder** to ensure all data necessary is available to conduct verification, and can verify the merkle proofs against the committed merkle root from `ClaimWork()`.
 13.  **Transcoder** -> **Truebit**: `Verify()`. This is an onchain call to the Truebit smart contract, where the Transcoder provides the Swarm input hash for the challenged segment. (More on verification in the following section)
 14. **Truebit** -> **Livepeer Smart Contract**:  The result of the job is written on chain. This is compared to the transcoding claim result that the Transcoder provided.
 15.  **Livepeer Smart Contract**: at this point the Livepeer smart contract has all the information it needs to determine if the Transcoder’s work is verified.
@@ -253,13 +253,13 @@ Truebit works by having one participant (the solver) perform the actual work for
 
 The downside of this protocol is that it costs between 5x-50x the cost of the original work in order to verify all work. Livepeer uses Truebit as a black box to verify segments, but it gets around having to pay this very high verification tax by only verifying a small percentage of segments randomly, and using slashing in the case of failed verifications. The `VerificationRate` set within Livepeer determines how frequently a specific segment is to be selected for challenge within Truebit, and the randomness of a future block hash after the work has been committed to the blockchain, determines which segments specifically are selected.
 
-If work is committed via an `EndJob()` call in block `N`, then
+If work is committed via an `ClaimWork()` call in block `N`, then
 
 If `Sha3(N, BlockHash(N), Seg#) % VerificationRate == 0` then the segment # must be verified.
 
-The Transcoder provides `TranscodeClaims()` on chain for the candidate segments. The Livepeer Smart Contract can verify the authenticity of these claims using the internal signatures and provided merkle proofs, and then invoke a call to Truebit to verify only these segments.
+The Transcoder provides Transcode Claims on chain for the candidate segments by invoking the `Verify()` transaction. The Livepeer Smart Contract can verify the authenticity of these claims using the internal signatures and provided merkle proofs, and then invoke a call to Truebit to verify only these segments.
 
-Truebit solvers and verifiers access the input data for a segment from a persistent content addressed storage system, such as Swarm. The Transcoder is responsible for verifying that the segment data is available in Swarm, and can optionally look for receipts from the SWEAR protocol [[5](#references)] guaranteeing persistence for a certain period of time, which is long enough for Truebit to play out. Additionally, they can take it upon themselves to run a Swarm node ensuring that the data is available to Truebit verification. If they have reason to believe that data is not available in Swarm, they can provide it, or just call `EndJob()` on the previously available data.
+Truebit solvers and verifiers access the input data for a segment from a persistent content addressed storage system, such as Swarm. The Transcoder is responsible for verifying that the segment data is available in Swarm, and can optionally look for receipts from the SWEAR protocol [[5](#references)] guaranteeing persistence for a certain period of time, which is long enough for Truebit to play out. Additionally, they can take it upon themselves to run a Swarm node ensuring that the data is available to Truebit verification. If they have reason to believe that data is not available in Swarm, they can provide it, or just call `ClaimWork()` on the previously available data.
 
 Truebit will write the results of the computation (succeeded or failed) back to the Livepeer Smart Contract, which can then be used in the reward and slashing calculations within the protocol. A transcoding node can not predict in advance which segments will be verified, and the following penalties will be felt in the case of cheating or failing to transcode correctly:
 
@@ -272,18 +272,19 @@ It is important that it be more profitable to simply stake LPT towards a valid, 
 
 ### Token Rewards
 
-Livepeer is inflationary in that new tokens will be minted over time according to the schedule communicated below in [Token Distribution](#token-distribution). If all roles in Livepeer behave according to the protocol, then newly minted tokens will be rewarded to users in proportion to their bonded stake (minus fees). Transcoders have the role of taking turns calling the `Reward()` function in order to trigger the new token allocation or slashing which can be computed from all data available on chain.
+Livepeer is inflationary in that new tokens will be minted over time according to the schedule communicated below in [Token Distribution](#token-distribution). If all roles in Livepeer behave according to the protocol, then newly minted tokens will be rewarded to users in proportion to their bonded stake (minus fees). Transcoders have the role of calling the `Reward()` function in order to trigger the new token allocation or slashing which can be computed from all data available on chain.
 
-Each transcoder will have a defined time window in which they are expected to invoke `Reward()`. This can be calculated by taking `RoundLength / (N * CyclesPerRound)` and shuffling the active transcoder order randomly each round using the starting block hash at the time of the round as the random input. When it is within a specific Transcoder's time window they must call `Reward()` which will execute the following steps.
+Each transcoder will be required to call `Reward()` once per round.
 
-- Ensure the correct Transcoder is calling `Reward()`
-- Check to see if the previous Transcoders between the last `Reward()` call and this one took their turn and called `Reward()`. If not, slash them `MissedRewardSlashAmount`.
-- Validate all eligible `TranscodeClaims` by this Transcoder since the last cycle.
-- Validate the Transcoder’s `CompetitivenessTolerance` to ensure they were priced competitively to receive enough work. If not, there is no reward distributed.
-- If there are any verification errors or missing verifications then slash by `FailedVerificationSlashAmount` or `MissedVerificationSlashedAmount`. Refund the Broadcaster.
-- If there are no errors then mint the new token and distribute to Delegators and Transcoders relative to fee schedule.
+- Ensure that an active Transcoder is calling `Reward()`.
+- Ensure that the Transcoder has not called `Reward()` yet in this round.
+- Compute the number of token to mint based upon the `InflationRate`. Mint this many token.
+- Calculate the Transcoder's cut based upon their `BlockRewardCut`.
+- Distribute this into the Transcoder's bonded stake.
+- Distribute the remainder into the delegators reward pool.
+- Update the bonded amount of token to this Transcoder.
 
-Failure to invoke `Reward()` not only results in slashing, it also has the direct consequence of losing a portion of token rewards, and showing up as a ding on one’s Transcoder reputation when it comes to being elected by Delegators for the role.
+Failure to invoke `Reward()` not only results in slashing, it also has the direct consequence of losing a portion of token rewards, and showing up as a ding on one’s Transcoder reputation when it comes to being elected by Delegators for the role. Slashing for failure to invoke `Reward()` will be done proactively by users after they observe a missed call at the completion of a round.
 
 ### Slashing
 
@@ -299,7 +300,9 @@ For example, if a Truebit verification job sat in their queue for a long period 
 
 These risks can be mitigated by incentivizing these roles to be played in house by participants in the Livepeer protocol, who may find it in their best interest to serve as Truebit verifiers or Swarm nodes. But there’s also another approach which is introducing the concept of probability thresholds on the slashing parameters. Optional protocol variables such as `VerificationFailureThreshold` could be set to indicate that as long as the node passes 99% of verifications they won’t be slashed for example. This will remain a further area of research to be worked our prior to network deployment.
 
-Slashed funds will enter the `CommonPool`, which can be burned or allocated to common uses such as further ecosystem development, according to the governance mechanism of the protocol.
+The Failure to invoke verification slashing condition can be checked an invoked by any Livepeer protocol participant. There is a `FinderFee` which specifies the percent of the slash amount which the finder will receive as a reward for successfully invoking this slashing condition.
+
+The remainder of the slashed funds will enter the `CommonPool`, which can be burned or allocated to common uses such as further ecosystem development, according to the governance mechanism of the protocol.
 
 ### Token Distribution
 
@@ -307,11 +310,11 @@ As a token that represents fuel for broadcasting video within the Livepeer netwo
 
 An initial allocation of the token will be distributed to people purchasing it to broadcast within the network or to stake into the role of Transcoder or Delegator. The proceeds of the distribution will be used in order to fund the future development of the protocol and bring it to market. A portion will be allocated to groups who contributed prior work and money towards the protocol before the sale, and a portion will be endowed to a Foundation in order to support ongoing development over time.
 
-At the launch of the network, token issuance will continue according to an inflationary schedule of a fixed `TokenInflationRate`% per year of the original issuance amount. Over time this inflation trends towards 0% of the total supply. However there will still be additional LPT entering the market as an incentive to Transcoders/Delegators and to replace lost LPT.
+At the launch of the network, token issuance will continue according to an inflationary schedule of a fixed `InflationRate`% per year of the original issuance amount. Over time this inflation trends towards 0% of the total supply. However there will still be additional LPT entering the market as an incentive to Transcoders/Delegators and to replace lost LPT.
 
 <img src="https://s3.amazonaws.com/livepeerorg/LPTInflation.png" alt="Sample Token Inflation" style="width: 640px">
 
-*Sample inflation of token supply vs total float over the first 100 years if the `TokenInflationRate` is set at 26%*
+*Sample inflation of token supply vs total float over the first 100 years if the `InflationRate` is set at 26%*
 
 ### Governance
 
@@ -414,10 +417,10 @@ The end result is a scalable, pay-as-you-go network for decentralized live video
 | `T` | Segment length in seconds | 2 seconds |
 | `N` | Number of active transcoders | 144 |
 | `RoundLength` | Length of time between election of a new round of transcoders | 1 day |
-| `CyclesPerRound` | Number of times each Transcoder is expected to call Reward() during a Round. | 2 |
+| `InflationRate` | The current annual target inflation rate of LPT. | 15% |
 | `RateLockDeadline` | Transcoders rates lock in this amount of time prior to the next round start time so that delegators can review and delegate accordingly. | 6 hours |
 | `UnbondingPeriod` | Time between entering unbonding state, and ability to withdraw the funds. | 1 month |
-| `PersistenceLength` | The minimum period that a receipt of data persistence must be provided in the decentralized storage solution. | 6 hours |
+| `VerificationPeriod` | The deadline for verifying a job claim after submission of the job claim. This also serves as the minimum period that a receipt of data persistence must be provided in the decentralized storage solution. | 6 hours |
 | `VerificationRate` | The % of segments that will be verified. | 1/500 |
 | `FailedVerificationSlashAmount` | % to slash in the case of a failed verification (beyond the potential allowed failure threshold) | 5% |
 | `MissedRewardSlashAmount` | % to slash in the case of missing a block reward round (Maybe only do this in the case of n consecutive misses) | 3% |
@@ -425,6 +428,8 @@ The end result is a scalable, pay-as-you-go network for decentralized live video
 | `CompetitivenessTolerance` | If all transcoders were always available and set the same price and fees, they would receive work in proportion to their stake. This parameter sets a % that they have to be within this target work % to be eligible for rewards. This prevents transcoders from doing very little share of work relative to their stake. | 90% (extreme example. With 100 transcoders and 100,000 segments, this means I am ok if I only did 100 segments (10% of the 1000 I was supposed to do)). |
 | `*SlashingThresholds` (TBD) | Placeholder to indicate that we may not slash on all failures, only if they exceed some threshold % of failure rate. | |
 | `VerificationFailureThreshold` | % of verifications you can fail without being slashed. Useful because of external dependencies like Swarm/Truebit that could cause sporadic failure. | 1% |
+| `FinderFee` | % of slash amount that the finder will receive as compensation. | 5% |
+| `SlashingPeriod` | The deadline for invoking a slashing condition after the `VerificationPeriod` has completed. | 1 hour |
 
 ### Livepeer Protocol Transaction Types
 
@@ -433,14 +438,18 @@ The end result is a scalable, pay-as-you-go network for decentralized live video
 | `Bond()` | Bond stake towards a transcoder. |
 | `Unbond()` | Enter the unbonding state for the fixed `UnbondingPeriod`. |
 | `Transcoder()` | Declare your intentions as a transcoder. |
+| `ResignAsTranscoder()` | Resign your intentions as a transcoder. |
 | `TranscodeAvailability()` | This transcoder is currently open to accepting another job. They’re in the pool to be assigned randomly on new job submissions. |
 | `Job()` | Submit a transcoding job on chain. |
+| `EndJob()` | End the job to relinquish transcoding responsibility. |
 | `Deposit()` | Submit a deposit on chain that will be used and drawn against to pay for jobs. |
 | `Withdraw()` | Withdraw from deposit and unbonded stake. |
-| `EndJob()` | End the transcode job and make the claim of which segments you can prove you’ve transcoded. |
-| `TranscodeClaims()` | Transcoder provides the transcode claims for segments which will be verified along with merkle proofs for comparison with merkle root from `EndJob()`. Invokes Truebit using data in transcode claims. |
-| `Reward()` | Does all the verifications on chain to either slash or distribute token rewards. Can only be invoked by a transcoder when it’s their turn and time window. |
-| `Verify()` | An explicit call to Truebit. May be unnecessary if this is included in `TranscodeClaims()` transaction. |
+| `ClaimWork()` | End the transcode job and make the claim of which segments you can prove you’ve transcoded via segment range and merkle root. |
+| `DistributeFees()` | Transcoder claims the fees for a particular claim after verification. |
+| `Reward()` | Does all the verifications on chain to either slash or distribute token rewards. Can only be invoked by a transcoder who is active in the current round, once per round. |
+| `Verify()` | Transcoder provides the transcode claims for segments which will be verified along with merkle proofs for comparison with merkle root from `ClaimWork()`. Explicitly call Truebit to perform verification. |
+| `InitializeRound()` | This transaction needs to be invoked once after the new round's start block to initialize the new active transcoder pool. |
+| `UpdateDelegatorStake()` | This allows a delegator to claim their fees + rewards from previous rounds. It's invoked automatically through unbonding and bonding, but it serves as a failsafe in case the delegator would like to update without changing state. |
 | `*GovernanceTransactions()` | TBD  |
 
 ## References ###########################################
