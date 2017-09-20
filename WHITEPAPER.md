@@ -278,7 +278,7 @@ Each transcoder will be required to call `Reward()` once per round.
 
 - Ensure that an active Transcoder is calling `Reward()`.
 - Ensure that the Transcoder has not called `Reward()` yet in this round.
-- Compute the number of token to mint based upon the inflation rate. Mint this many token.
+- Compute the number of token to mint based upon the `InflationRate`. Mint this many token.
 - Calculate the Transcoder's cut based upon their `BlockRewardCut`.
 - Distribute this into the Transcoder's bonded stake.
 - Distribute the remainder into the delegators reward pool.
@@ -310,11 +310,11 @@ As a token that represents fuel for broadcasting video within the Livepeer netwo
 
 An initial allocation of the token will be distributed to people purchasing it to broadcast within the network or to stake into the role of Transcoder or Delegator. The proceeds of the distribution will be used in order to fund the future development of the protocol and bring it to market. A portion will be allocated to groups who contributed prior work and money towards the protocol before the sale, and a portion will be endowed to a Foundation in order to support ongoing development over time.
 
-At the launch of the network, token issuance will continue according to an inflationary schedule of a fixed `TokenInflationRate`% per year of the original issuance amount. Over time this inflation trends towards 0% of the total supply. However there will still be additional LPT entering the market as an incentive to Transcoders/Delegators and to replace lost LPT.
+At the launch of the network, token issuance will continue according to an inflationary schedule of a fixed `InflationRate`% per year of the original issuance amount. Over time this inflation trends towards 0% of the total supply. However there will still be additional LPT entering the market as an incentive to Transcoders/Delegators and to replace lost LPT.
 
 <img src="https://s3.amazonaws.com/livepeerorg/LPTInflation.png" alt="Sample Token Inflation" style="width: 640px">
 
-*Sample inflation of token supply vs total float over the first 100 years if the `TokenInflationRate` is set at 26%*
+*Sample inflation of token supply vs total float over the first 100 years if the `InflationRate` is set at 26%*
 
 ### Governance
 
@@ -417,6 +417,7 @@ The end result is a scalable, pay-as-you-go network for decentralized live video
 | `T` | Segment length in seconds | 2 seconds |
 | `N` | Number of active transcoders | 144 |
 | `RoundLength` | Length of time between election of a new round of transcoders | 1 day |
+| `InflationRate` | The current annual target inflation rate of LPT. | 15% |
 | `RateLockDeadline` | Transcoders rates lock in this amount of time prior to the next round start time so that delegators can review and delegate accordingly. | 6 hours |
 | `UnbondingPeriod` | Time between entering unbonding state, and ability to withdraw the funds. | 1 month |
 | `VerificationPeriod` | The deadline for verifying a job claim after submission of the job claim. This also serves as the minimum period that a receipt of data persistence must be provided in the decentralized storage solution. | 6 hours |
@@ -428,6 +429,7 @@ The end result is a scalable, pay-as-you-go network for decentralized live video
 | `*SlashingThresholds` (TBD) | Placeholder to indicate that we may not slash on all failures, only if they exceed some threshold % of failure rate. | |
 | `VerificationFailureThreshold` | % of verifications you can fail without being slashed. Useful because of external dependencies like Swarm/Truebit that could cause sporadic failure. | 1% |
 | `FinderFee` | % of slash amount that the finder will receive as compensation. | 5% |
+| `SlashingPeriod` | The deadline for invoking a slashing condition after the `VerificationPeriod` has completed. | 1 hour |
 
 ### Livepeer Protocol Transaction Types
 
