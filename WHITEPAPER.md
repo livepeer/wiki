@@ -226,13 +226,13 @@ At this point the broadcaster can begin streaming video segments towards the tra
 | **Broadcaster segment signature** | A signature from the broadcaster of Priv(StreamID, Seq#, Dhash) which can be used to attest and verify that the broadcaster claims this to be the true data for this unique segment. |
 | **Transcoder segment signature** | A signature of all of the above fields from the transcoder attesting to the claim that this specific output transcoding was performed on this specific input. |
 
-Whenever the transcoder observes that they are no longer receiving segments, they can call `EndJob()` to claim their work.
+Whenever the transcoder observes that they are no longer receiving segments, they can call `ClaimWork()` to claim their work.
 
 #### End Job
 
-10. **Transcoder** -> **Livepeer Smart Contract**: Call `EndJob(StreamID, StartSegmentSeq#, EndSegmentSeq#, MerkleRoot)`. Transcoder is claiming on chain they have performed work on the claimed segment range, with a merkle root of all of the transcode claim data to commit to the content of these encoded segments.
+10. **Transcoder** -> **Livepeer Smart Contract**: Call `ClaimWork(StreamID, StartSegmentSeq#, EndSegmentSeq#, MerkleRoot)`. Transcoder is claiming on chain they have performed work on the claimed segment range, with a merkle root of all of the transcode claim data to commit to the content of these encoded segments.
 11. Wait for this transaction to be mined, and observe the next blockhash. The protocol can then determine which segments will be verified based upon the `VerificationRate`.
-12. **Transcoder** -> **Livepeer Smart Contract**: Provide transcode claims on chain for each segment that needs to be verified, along with merkle proofs for each segment in the transcode claims. The smart contract can verify the signatures from Broadcaster and **Transcoder** to ensure all data necessary is available to conduct verification, and can verify the merkle proofs against the committed merkle root from `EndJob()`.
+12. **Transcoder** -> **Livepeer Smart Contract**: Provide transcode claims on chain for each segment that needs to be verified, along with merkle proofs for each segment in the transcode claims. The smart contract can verify the signatures from Broadcaster and **Transcoder** to ensure all data necessary is available to conduct verification, and can verify the merkle proofs against the committed merkle root from `ClaimWork()`.
 13.  **Transcoder** -> **Truebit**: `Verify()`. This is an onchain call to the Truebit smart contract, where the Transcoder provides the Swarm input hash for the challenged segment. (More on verification in the following section)
 14. **Truebit** -> **Livepeer Smart Contract**:  The result of the job is written on chain. This is compared to the transcoding claim result that the Transcoder provided.
 15.  **Livepeer Smart Contract**: at this point the Livepeer smart contract has all the information it needs to determine if the Transcoder’s work is verified.
@@ -253,13 +253,13 @@ Truebit works by having one participant (the solver) perform the actual work for
 
 The downside of this protocol is that it costs between 5x-50x the cost of the original work in order to verify all work. Livepeer uses Truebit as a black box to verify segments, but it gets around having to pay this very high verification tax by only verifying a small percentage of segments randomly, and using slashing in the case of failed verifications. The `VerificationRate` set within Livepeer determines how frequently a specific segment is to be selected for challenge within Truebit, and the randomness of a future block hash after the work has been committed to the blockchain, determines which segments specifically are selected.
 
-If work is committed via an `EndJob()` call in block `N`, then
+If work is committed via an `ClaimWork()` call in block `N`, then
 
 If `Sha3(N, BlockHash(N), Seg#) % VerificationRate == 0` then the segment # must be verified.
 
-The Transcoder provides `TranscodeClaims()` on chain for the candidate segments. The Livepeer Smart Contract can verify the authenticity of these claims using the internal signatures and provided merkle proofs, and then invoke a call to Truebit to verify only these segments.
+The Transcoder provides Transcode Claims on chain for the candidate segments by invoking the `Verify()` transaction. The Livepeer Smart Contract can verify the authenticity of these claims using the internal signatures and provided merkle proofs, and then invoke a call to Truebit to verify only these segments.
 
-Truebit solvers and verifiers access the input data for a segment from a persistent content addressed storage system, such as Swarm. The Transcoder is responsible for verifying that the segment data is available in Swarm, and can optionally look for receipts from the SWEAR protocol [[5](#references)] guaranteeing persistence for a certain period of time, which is long enough for Truebit to play out. Additionally, they can take it upon themselves to run a Swarm node ensuring that the data is available to Truebit verification. If they have reason to believe that data is not available in Swarm, they can provide it, or just call `EndJob()` on the previously available data.
+Truebit solvers and verifiers access the input data for a segment from a persistent content addressed storage system, such as Swarm. The Transcoder is responsible for verifying that the segment data is available in Swarm, and can optionally look for receipts from the SWEAR protocol [[5](#references)] guaranteeing persistence for a certain period of time, which is long enough for Truebit to play out. Additionally, they can take it upon themselves to run a Swarm node ensuring that the data is available to Truebit verification. If they have reason to believe that data is not available in Swarm, they can provide it, or just call `ClaimWork()` on the previously available data.
 
 Truebit will write the results of the computation (succeeded or failed) back to the Livepeer Smart Contract, which can then be used in the reward and slashing calculations within the protocol. A transcoding node can not predict in advance which segments will be verified, and the following penalties will be felt in the case of cheating or failing to transcode correctly:
 
@@ -441,12 +441,12 @@ The end result is a scalable, pay-as-you-go network for decentralized live video
 | `ResignAsTranscoder()` | Resign your intentions as a transcoder. |
 | `TranscodeAvailability()` | This transcoder is currently open to accepting another job. They’re in the pool to be assigned randomly on new job submissions. |
 | `Job()` | Submit a transcoding job on chain. |
+| `EndJob()` | End the job to relinquish transcoding responsibility. |
 | `Deposit()` | Submit a deposit on chain that will be used and drawn against to pay for jobs. |
 | `Withdraw()` | Withdraw from deposit and unbonded stake. |
-| `EndJob()` | End the transcode job and make the claim of which segments you can prove you’ve transcoded. |
-| `TranscodeClaims()` | Transcoder provides the transcode claims for segments which will be verified along with merkle proofs for comparison with merkle root from `EndJob()`. Invokes Truebit using data in transcode claims. |
+| `ClaimWork()` | End the transcode job and make the claim of which segments you can prove you’ve transcoded via segment range and merkle root. |
 | `Reward()` | Does all the verifications on chain to either slash or distribute token rewards. Can only be invoked by a transcoder who is active in the current round, once per round. |
-| `Verify()` | An explicit call to Truebit. May be unnecessary if this is included in `TranscodeClaims()` transaction. |
+| `Verify()` | Transcoder provides the transcode claims for segments which will be verified along with merkle proofs for comparison with merkle root from `ClaimWork()`. Explicitly call Truebit to perform verification. |
 | `InitializeRound()` | This transaction needs to be invoked once after the new round's start block to initialize the new active transcoder pool. |
 | `UpdateDelegatorStake()` | This allows a delegator to claim their fees + rewards from previous rounds. It's invoked automatically through unbonding and bonding, but it serves as a failsafe in case the delegator would like to update without changing state. |
 | `*GovernanceTransactions()` | TBD  |
