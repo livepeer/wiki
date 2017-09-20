@@ -173,7 +173,7 @@ A node indicates their willingness to be a transcoder by submitting a `Transcode
 - `BlockRewardCut`: The % of the block reward that bonded nodes will pay them for the service of transcoding. (Example 2%. If a bonded node were to receive 100 LPT in block reward, they would pay 2 LPT to the transcoder).
 - `FeeShare`: The % of the fees from broadcasting jobs that the transcoder is willing to share with the bonded nodes who delegate towards it. (Example 25%. If a transcoder were to receive 100 LPT in fees, they would pay 25 LPT to the bonded nodes).
 
-The Transcoder can update their availability and information up until `RateLockDeadline` time before the next transcoding round (Example 2 hours. They can change this information until 2 hours before the next transcoding round which lasts for `RoundLength` 1 day). This gives bonded nodes the chance to review the fee splits and token reward splits relative to other transcoders, as well as anticipated fees based upon the rate they're charging and network demand, and move their delegated stake if they wish. At the start of a transcoding round, the active transcoders for that round are determined based upon the total stake delegated towards each transcoder, and stakes and rates are locked in for the duration of that round.
+The Transcoder can update their availability and information up until `RateLockDeadline` time before the next transcoding round (Example 2 hours. They can change this information until 2 hours before the next transcoding round which lasts for `RoundLength` 1 day). This gives bonded nodes the chance to review the fee splits and token reward splits relative to other transcoders, as well as anticipated fees based upon the rate they're charging and network demand, and move their delegated stake if they wish. At the start of a transcoding round (triggered by a call to the `InitializeRound()` transaction, the active transcoders for that round are determined based upon the total stake delegated towards each transcoder, and stakes and rates are locked in for the duration of that round.
 
 Here is an example state of Transcoder options that a delegator can review when deciding whom to delegate towards.
 
@@ -446,6 +446,7 @@ The end result is a scalable, pay-as-you-go network for decentralized live video
 | `TranscodeClaims()` | Transcoder provides the transcode claims for segments which will be verified along with merkle proofs for comparison with merkle root from `EndJob()`. Invokes Truebit using data in transcode claims. |
 | `Reward()` | Does all the verifications on chain to either slash or distribute token rewards. Can only be invoked by a transcoder when it’s their turn and time window. |
 | `Verify()` | An explicit call to Truebit. May be unnecessary if this is included in `TranscodeClaims()` transaction. |
+| `InitializeRound()` | This transaction needs to be invoked once after the new round's start block to initialize the new active transcoder pool. |
 | `*GovernanceTransactions()` | TBD  |
 
 ## References ###########################################
