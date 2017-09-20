@@ -136,7 +136,7 @@ In addition to the above roles played by users running Livepeer nodes, the proto
 
 Here is a visual overview of the roles, and the ways in which they communicate with one another in the work verification process described below.
 
-<img src="https://s3.amazonaws.com/livepeerorg/LPProtocol.png" alt="Protocol Visual Overview" style="width: 750px">  
+<img src="https://livepeer-dev.s3.amazonaws.com/docs/lpprotocol.png" alt="Protocol Visual Overview" style="width: 750px">  
 
 *Segments flowing from the broadcaster to the transcoder and eventually to the consumer. The transcoder ensures they have signatures and proof of work to participate in the work verification procedure.*
 
