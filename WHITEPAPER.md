@@ -445,6 +445,7 @@ The end result is a scalable, pay-as-you-go network for decentralized live video
 | `Deposit()` | Submit a deposit on chain that will be used and drawn against to pay for jobs. |
 | `Withdraw()` | Withdraw from deposit and unbonded stake. |
 | `ClaimWork()` | End the transcode job and make the claim of which segments you can prove you’ve transcoded via segment range and merkle root. |
+| `DistributeFees()` | Transcoder claims the fees for a particular claim after verification. |
 | `Reward()` | Does all the verifications on chain to either slash or distribute token rewards. Can only be invoked by a transcoder who is active in the current round, once per round. |
 | `Verify()` | Transcoder provides the transcode claims for segments which will be verified along with merkle proofs for comparison with merkle root from `ClaimWork()`. Explicitly call Truebit to perform verification. |
 | `InitializeRound()` | This transaction needs to be invoked once after the new round's start block to initialize the new active transcoder pool. |
