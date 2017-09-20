@@ -438,15 +438,17 @@ The end result is a scalable, pay-as-you-go network for decentralized live video
 | `Bond()` | Bond stake towards a transcoder. |
 | `Unbond()` | Enter the unbonding state for the fixed `UnbondingPeriod`. |
 | `Transcoder()` | Declare your intentions as a transcoder. |
+| `ResignAsTranscoder()` | Resign your intentions as a transcoder. |
 | `TranscodeAvailability()` | This transcoder is currently open to accepting another job. They’re in the pool to be assigned randomly on new job submissions. |
 | `Job()` | Submit a transcoding job on chain. |
 | `Deposit()` | Submit a deposit on chain that will be used and drawn against to pay for jobs. |
 | `Withdraw()` | Withdraw from deposit and unbonded stake. |
 | `EndJob()` | End the transcode job and make the claim of which segments you can prove you’ve transcoded. |
 | `TranscodeClaims()` | Transcoder provides the transcode claims for segments which will be verified along with merkle proofs for comparison with merkle root from `EndJob()`. Invokes Truebit using data in transcode claims. |
-| `Reward()` | Does all the verifications on chain to either slash or distribute token rewards. Can only be invoked by a transcoder when it’s their turn and time window. |
+| `Reward()` | Does all the verifications on chain to either slash or distribute token rewards. Can only be invoked by a transcoder who is active in the current round, once per round. |
 | `Verify()` | An explicit call to Truebit. May be unnecessary if this is included in `TranscodeClaims()` transaction. |
 | `InitializeRound()` | This transaction needs to be invoked once after the new round's start block to initialize the new active transcoder pool. |
+| `UpdateDelegatorStake()` | This allows a delegator to claim their fees + rewards from previous rounds. It's invoked automatically through unbonding and bonding, but it serves as a failsafe in case the delegator would like to update without changing state. |
 | `*GovernanceTransactions()` | TBD  |
 
 ## References ###########################################
