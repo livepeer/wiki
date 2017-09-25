@@ -212,9 +212,7 @@ At this point the broadcaster can begin streaming video segments towards the tra
 3. The protocol can use the next block hash to deterministically select the correct Transcoder for this job.
 4. **Transcoder** -> **Broadcaster**: send output streamID and receipt that the job is accepted.
 5. **Broadcaster** -> **Transcoder**: send stream segments, which contain signatures verifying the input data.
-6. **Broadcaster** -> **Swarm**: Write input data payloads, using SWEAR params to ensure the data will be there long enough for verification (`VerificationPeriod` time).
 7. **Transcoder** performs transcoding and makes new output stream available on network
-8. **Transcoder** checks **Swarm** periodically to ensure that the original stream data is there. If not, end the job at your discretion and claim your work.
 9. **Transcoder**: Store a transcode claim for each segment of transcoding work. A transcode claim has the following fields.
 
 | Transcode Claim Field | Description |
@@ -232,16 +230,15 @@ Whenever the transcoder observes that they are no longer receiving segments, the
 
 10. **Transcoder** -> **Livepeer Smart Contract**: Call `ClaimWork(StreamID, StartSegmentSeq#, EndSegmentSeq#, MerkleRoot)`. Transcoder is claiming on chain they have performed work on the claimed segment range, with a merkle root of all of the transcode claim data to commit to the content of these encoded segments.
 11. Wait for this transaction to be mined, and observe the next blockhash. The protocol can then determine which segments will be verified based upon the `VerificationRate`.
-12. **Transcoder** -> **Livepeer Smart Contract**: Provide transcode claims on chain for each segment that needs to be verified, along with merkle proofs for each segment in the transcode claims. The smart contract can verify the signatures from Broadcaster and **Transcoder** to ensure all data necessary is available to conduct verification, and can verify the merkle proofs against the committed merkle root from `ClaimWork()`.
-13.  **Transcoder** -> **Truebit**: `Verify()`. This is an onchain call to the Truebit smart contract, where the Transcoder provides the Swarm input hash for the challenged segment. (More on verification in the following section)
-14. **Truebit** -> **Livepeer Smart Contract**:  The result of the job is written on chain. This is compared to the transcoding claim result that the Transcoder provided.
-15.  **Livepeer Smart Contract**: at this point the Livepeer smart contract has all the information it needs to determine if the Transcoder’s work is verified.
+12. **Transcoder** -> **Swarm**: Write input data payloads for the segments that will be challenged via verification, using SWEAR params to ensure the data will be there long enough for verification (`VerificationPeriod` time).
+13. **Transcoder** -> **Livepeer Smart Contract**: Provide transcode claims on chain for each segment that needs to be verified, along with merkle proofs for each segment in the transcode claims. The smart contract can verify the signatures from Broadcaster and **Transcoder** to ensure all data necessary is available to conduct verification, and can verify the merkle proofs against the committed merkle root from `ClaimWork()`.
+14.  **Transcoder** -> **Truebit**: `Verify()`. This is an onchain call to the Truebit smart contract, where the Transcoder provides the Swarm input hash for the challenged segment. (More on verification in the following section)
+15. **Truebit** -> **Livepeer Smart Contract**:  The result of the job is written on chain. This is compared to the transcoding claim result that the Transcoder provided.
+16.  **Livepeer Smart Contract**: at this point the Livepeer smart contract has all the information it needs to determine if the Transcoder’s work is verified.
     - If verified correct, then use as input to token reward algorithm and release of escrowed fees.
     - If incorrect, then Transcoder and its stakers get slashed `FailedVerificationSlashAmount` and the Broadcaster is refunded.
 
 The Broadcaster can stop sending segments at any point, which effectively is an `EndJob()`.
-
-*Note: the above scheme has the Broadcaster writing all segments to Swarm. A cheaper alternative exists, which is the Transcoder just remembers the segments, and then only writes the challenged segments to Swarm, with Broadcaster signature as proof, before verification. Livepeer may use this scheme if there are no secondary benefits to having an archive of the stream on Swarm. Recording of the stream for future viewing is one such benefit however.*
 
 At this point the transcoding has been performed, proof of the work has been claimed on the chain, and failure or success of the verification of the work has been reported. All the info is on chain to determine allocation of fees and newly minted token rewards to transcoders and delegators, or slashing in the case of failed verification. Let’s take a look at how work is actually verified.
 
