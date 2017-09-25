@@ -173,7 +173,7 @@ A node indicates their willingness to be a transcoder by submitting a `Transcode
 - `BlockRewardCut`: The % of the block reward that bonded nodes will pay them for the service of transcoding. (Example 2%. If a bonded node were to receive 100 LPT in block reward, they would pay 2 LPT to the transcoder).
 - `FeeShare`: The % of the fees from broadcasting jobs that the transcoder is willing to share with the bonded nodes who delegate towards it. (Example 25%. If a transcoder were to receive 100 LPT in fees, they would pay 25 LPT to the bonded nodes).
 
-The Transcoder can update their availability and information up until `RateLockDeadline` time before the next transcoding round (Example 2 hours. They can change this information until 2 hours before the next transcoding round which lasts for `RoundLength` 1 day). This gives bonded nodes the chance to review the fee splits and token reward splits relative to other transcoders, as well as anticipated fees based upon the rate they're charging and network demand, and move their delegated stake if they wish. At the start of a transcoding round (triggered by a call to the `InitializeRound()` transaction, the active transcoders for that round are determined based upon the total stake delegated towards each transcoder, and stakes and rates are locked in for the duration of that round.
+The Transcoder can update their availability and information up until `RateLockDeadline` time before the next transcoding round (Example 2 hours. They can change this information until 2 hours before the next transcoding round which lasts for `RoundLength` 1 day). This gives bonded nodes the chance to review the fee splits and token reward splits relative to other transcoders, as well as anticipated fees based upon the rate they're charging and network demand, and move their delegated stake if they wish. At the start of a transcoding round (triggered by a call to the `InitializeRound()` transaction), the active transcoders for that round are determined based upon the total stake delegated towards each transcoder, and stakes and rates are locked in for the duration of that round.
 
 Here is an example state of Transcoder options that a delegator can review when deciding whom to delegate towards.
 
@@ -284,7 +284,7 @@ Each transcoder will be required to call `Reward()` once per round.
 - Distribute the remainder into the delegators reward pool.
 - Update the bonded amount of token to this Transcoder.
 
-Failure to invoke `Reward()` not only results in slashing, it also has the direct consequence of losing a portion of token rewards, and showing up as a ding on one’s Transcoder reputation when it comes to being elected by Delegators for the role. Slashing for failure to invoke `Reward()` will be done proactively by users after they observe a missed call at the completion of a round.
+Failure to invoke `Reward()` results in the direct consequence of losing a portion of token rewards, and showing up as a ding on one’s Transcoder reputation when it comes to being elected by Delegators for the role.
 
 ### Slashing
 
@@ -292,7 +292,7 @@ As previously mentioned, the conditions for slashing are:
 
 - Failing a verification
 - Failing to invoke verification when required to do so
-- Failing to call `Reward()`
+- Not performing a proportional share of the required work within the platform based upon delegated stake
 
 One of the benefits of building within the Ethereum ecosystem are the network effect benefits you receive from being able to build on top of other protocols such as Truebit and Swarm/SWEAR. Unfortunately, with reliance on these external systems, which themselves have external dependencies and incentives, it’s possible that a flaw or weakness in one of those protocols could result in slashing within Livepeer.
 
@@ -300,7 +300,7 @@ For example, if a Truebit verification job sat in their queue for a long period 
 
 These risks can be mitigated by incentivizing these roles to be played in house by participants in the Livepeer protocol, who may find it in their best interest to serve as Truebit verifiers or Swarm nodes. But there’s also another approach which is introducing the concept of probability thresholds on the slashing parameters. Optional protocol variables such as `VerificationFailureThreshold` could be set to indicate that as long as the node passes 99% of verifications they won’t be slashed for example. This will remain a further area of research to be worked our prior to network deployment.
 
-The Failure to invoke verification slashing condition can be checked an invoked by any Livepeer protocol participant. There is a `FinderFee` which specifies the percent of the slash amount which the finder will receive as a reward for successfully invoking this slashing condition.
+The failure to invoke verification slashing condition can be checked and invoked by any Livepeer protocol participant. There is a `FinderFee` which specifies the percent of the slash amount which the finder will receive as a reward for successfully invoking this slashing condition.
 
 The remainder of the slashed funds will enter the `CommonPool`, which can be burned or allocated to common uses such as further ecosystem development, according to the governance mechanism of the protocol.
 
