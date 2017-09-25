@@ -347,19 +347,21 @@ In the first case, a Transcoder has to pay to claim their availability on chain.
 
 In the case of a Broadcaster preventing a Transcoder from doing work, this is merely a capacity planning calculation. A Transcoding node can maintain records of its capacity for concurrent jobs, likelihood of a job being active/inactive, and ensure that it always believes it will have capacity for the work that it claims. Simply ignoring or calling `EndJob()` on a node that's refusing to send segments hardly hurts the Transcoder.
 
-### Forced Slashing
-
-If a Broadcaster were to try to attempt to get a Transcoder slashed, they would probably do so by not writing all their segments to Swarm or not paying for SWEAR receipts to guarantee their availability for Truebit verification. It is on the Transcoder to check Swarm to ensure the data is there before claiming segments, but doing this for every segment may potentially be costly depending on Swarm pricing dynamics. Since this is unknown at the moment, the various solutions are on the table:
-
-1. Transcoder writes the data to Swarm itself, using the signature from the Broadcaster as proof of the correctness of the content.
-2. Transcoder requires SWEAR receipts from Broadcaster.
-3. Transcoder uses probability calculations to determine how often to check segments, and align this with the `VerificationFailureThreshold` to ensure that they remain above the threshold despite risking failing a couple verifications.
-
 ### Useless or Self Dealing Transcoder
 
 If a Transcoder has enough stake to maintain their position, they could theoretically list a 100% `BlockRewardCut`, 0% `FeeShare`, and charge a high `PricePerSegment` such that they would never have to do any work, yet could collect their token rewards. This is prevented by the `CompetitivenessTolerance` which requires them to contribute some amount of valid work. Additionally, because of the transaction costs of participating in the protocol incurred by Transcoders, it would be more profitable for them to simply stake their token toward a valid Transcoder who was sharing fees with them, than it would be to act as a useless Transcoder who would receive no fees to speak of.
 
 A misbehaving Transcoder who is outputting invalid output would quickly get slashed down to the point of their stake being reduced too low to actually keep their job and receive any work.
+
+### Transcoder Griefing
+
+If a Broadcaster wanted to make the protocol very expensive to operate for a transcoder, it could send transcoders non-consecutive segment numbers. This is because transcoders can claim work for a continuous range of segment numbers in a single transaction, but would have to make many transactions to claim work across random segment number ranges. This can be defended against by the following options:
+
+1. Transcoder calls `EndJob()` and doesn't bother doing the work or attempting to collect the fees. 
+2. Protocol implements on chain parsing or better segment claim encoding in order to reduce fees associated with claiming non-consecutive segments in a single call.
+3. Simply ignore the segments and never claim the work.
+
+This attack has a high cost to a broadcaster since they must have a deposit and submit jobs on chain in order to even get assigned to a transcoder in the first place. They have the ability to make life annoying for a transcoder and potentially lose efficiency, but not cause damage to the network.
 
 ### Chain Reorg
 
