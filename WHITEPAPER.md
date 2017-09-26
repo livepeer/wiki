@@ -304,7 +304,7 @@ One of the benefits of building within the Ethereum ecosystem are the network ef
 
 For example, if a Truebit verification job sat in their queue for a long period of time without any solver or verifier claiming it, Livepeer would fail to see the result of that verification in time before `Reward()` was called. Or if the Swarm network suffered a partition and couldn’t propagate the file to the Truebit verifier in time, then this could also create an issue.
 
-These risks can be mitigated by incentivizing these roles to be played in house by participants in the Livepeer protocol, who may find it in their best interest to serve as Truebit verifiers or Swarm nodes. But there’s also another approach which is introducing the concept of probability thresholds on the slashing parameters. Optional protocol variables such as `VerificationFailureThreshold` could be set to indicate that as long as the node passes 99% of verifications they won’t be slashed for example. This will remain a further area of research to be worked our prior to network deployment.
+These risks can be mitigated by incentivizing these roles to be played in house by participants in the Livepeer protocol, who may find it in their best interest to serve as Truebit verifiers or Swarm nodes. But there’s also another approach which is introducing the concept of probability thresholds on the slashing parameters. Optional protocol variables such as `VerificationFailureThreshold` could be set to indicate that as long as the node passes 99% of verifications they won’t be slashed for example. This will remain a further area of research to be worked out prior to network deployment.
 
 The failure to invoke verification slashing condition can be checked and invoked by any Livepeer protocol participant. There is a `FinderFee` which specifies the percent of the slash amount which the finder will receive as a reward for successfully invoking this slashing condition.
 
@@ -316,11 +316,9 @@ As a token that represents fuel for broadcasting video within the Livepeer netwo
 
 An initial allocation of the token will be distributed to people purchasing it to broadcast within the network or to stake into the role of Transcoder or Delegator. The proceeds of the distribution will be used in order to fund the future development of the protocol and bring it to market. A portion will be allocated to groups who contributed prior work and money towards the protocol before the sale, and a portion will be endowed to a Foundation in order to support ongoing development over time.
 
-At the launch of the network, token issuance will continue according to an inflationary schedule of a fixed `InflationRate`% per year of the original issuance amount. Over time this inflation trends towards 0% of the total supply. However there will still be additional LPT entering the market as an incentive to Transcoders/Delegators and to replace lost LPT.
+At the launch of the network, token issuance will continue according to an inflationary schedule with token being minted at `InflationRate`% per year of the original issuance amount. As token is issued in proportion to stake of all bonded participants in the protocol, it serves to incentivize active participation. Participants are "protected" from this inflation, due to earning their proportional share. Whereas transactional users who are acquiring token for the utility of broadcasting are also immune to inflation via their short hold time before broadcasting. It is only inactive participants who are sitting on token without bonding it for participation, who will see their proportional network ownership dilluted by this inflation.
 
-<img src="https://s3.amazonaws.com/livepeerorg/LPTInflation.png" alt="Sample Token Inflation" style="width: 640px">
-
-*Sample inflation of token supply vs total float over the first 100 years if the `InflationRate` is set at 26%*
+The initial target for `InflationRate` will be set such that it incentivizes approximately 50% of the LPT to be bonded and actively participating, and 50% to be used for transactional use. This rate can be moved via governance mechanics over time to incent the 50% participation target. A higher rate would incent more token to be bonded, and a lower rate would lead to more people choosing liquidity rather than participation. It's this liquidity preference vs network ownership percentage tradeoff which should find equilibrium due to a number of economic factors in the network.
 
 ### Governance
 
@@ -329,7 +327,7 @@ The role of governance within the Livepeer protocol is intended to be two fold:
 1. Determine the burning or appropriation of common funds which were slashed from misbehaving nodes.
 2. Adjust network parameters to ensure a healthy, thriving network which is valuable to broadcasters.
 
-Many of the network parameters referenced in this document such as `UnbondingPeriod`, `RoundLength`, and `VerificationRate` are adjustable. Proposals for adjustments to these parameters can be submitted, and the governance process, including voting by transcoders in proportion to their delegated stake, will determine adoption of these changes automatically within the protocol. The detailed spec for governance is left for another document. [See more here](https://github.com/livepeer/wiki/wiki/Governance). 
+Many of the network parameters referenced in this document such as `UnbondingPeriod`, `RoundLength`, `InflationRate`, and `VerificationRate` are adjustable. Proposals for adjustments to these parameters can be submitted, and the governance process, including voting by transcoders in proportion to their delegated stake, will determine adoption of these changes automatically within the protocol. The detailed spec for governance is left for another document. [See more here](https://github.com/livepeer/wiki/wiki/Governance). 
 
 ## Attacks
 
