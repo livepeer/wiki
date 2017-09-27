@@ -191,9 +191,9 @@ Here is an example state of Transcoder options that a delegator can review when 
 
 Transcoders who are open for business on the network, throw their hat into the ring for transcoding work by submitting a `TranscodeAvailability()` transaction. This indicates their availability and places them into a pool of transcoders available to take a newly submitted job.
 
-When a broadcaster submits their stream into the Livepeer network it is given a `StreamID`. This serves as both a unique identifier, and it also contains the origin node address so that nodes know how to request and route requests to consume this stream towards the origin. The stream contains many consecutive `Segments`, as described in the [Video Segments](#video-segments) section. If the broadcaster would like the network to take care of transcoding their stream into all the formats and bitrates necessary to reach every user on every device, then the first step is submitting a transcoding job transaction on chain. Jobs are given a unique ID as well, and job consists of:
+When a broadcaster submits their stream into the Livepeer network it is given a `StreamID`. This serves as both a unique identifier, and it also contains the origin node address so that nodes know how to request and route requests to consume this stream towards the origin. The stream contains many consecutive `Segments`, as described in the [Video Segments](#video-segments) section. If the broadcaster would like the network to take care of transcoding their stream into all the formats and bitrates necessary to reach every user on every device, then the first step is submitting a transcoding job transaction on chain. Jobs are given a unique ID as well, and the input data to job consists of:
 
-`Job(JobID, StreamID, TranscodingOptions, PricePerSegment)`
+`Job(StreamID, TranscodingOptions, PricePerSegment)`
 
 The `TranscodingOptions` define the output bitrates, formats, encodings, etc, and the `PricePerSegment` lists the price that the broadcaster will offer.
 
@@ -213,11 +213,11 @@ At this point the broadcaster can begin streaming video segments towards the tra
 4. **Transcoder** -> **Broadcaster**: send output streamID and receipt that the job is accepted.
 5. **Broadcaster** -> **Transcoder**: send stream segments, which contain signatures verifying the input data.
 7. **Transcoder** performs transcoding and makes new output stream available on network
-9. **Transcoder**: Store a transcode claim for each segment of transcoding work. A transcode claim has the following fields.
+9. **Transcoder**: Store a transcode receipt for each segment of transcoding work. A transcode receipt has the following fields.
 
-| Transcode Claim Field | Description |
+| Transcode Receipt Field | Description |
 |-------|------------|
-| **JobID** | Identifies the origin node and stream that this segment belongs to. | 
+| **StreamID** | Identifies the origin node and stream that this segment belongs to. | 
 | **Sequence Number** | The sequential order that this segment belongs in the original stream. |
 | **Input Data hash** | The hash of the input segment data payload. |
 | **Transcoded Data hash** | The hash of the output data after transcoding this segment. |
@@ -228,10 +228,10 @@ Whenever the transcoder observes that they are no longer receiving segments, the
 
 #### End Job
 
-10. **Transcoder** -> **Livepeer Smart Contract**: Call `ClaimWork(JobID, StartSegmentSeq#, EndSegmentSeq#, MerkleRoot)`. Transcoder is claiming on chain they have performed work on the claimed segment range, with a merkle root of all of the transcode claim data to commit to the content of these encoded segments.
+10. **Transcoder** -> **Livepeer Smart Contract**: Call `ClaimWork(JobID, StartSegmentSeq#, EndSegmentSeq#, MerkleRoot)`. Transcoder is claiming on chain they have performed work on the claimed segment range, with a merkle root of all of the transcode receipt data to commit to the content of these encoded segments.
 11. Wait for this transaction to be mined, and observe the next blockhash. The protocol can then determine which segments will be verified based upon the `VerificationRate`.
 12. **Transcoder** -> **Swarm**: Write input data payloads for the segments that will be challenged via verification, using SWEAR params to ensure the data will be there long enough for verification (`VerificationPeriod` time).
-13. **Transcoder** -> **Livepeer Smart Contract**: Provide transcode claims on chain for each segment that needs to be verified, along with merkle proofs for each segment in the transcode claims. The smart contract can verify the signatures from Broadcaster and **Transcoder** to ensure all data necessary is available to conduct verification, and can verify the merkle proofs against the committed merkle root from `ClaimWork()`.
+13. **Transcoder** -> **Livepeer Smart Contract**: Provide transcode claims on chain for each segment that needs to be verified, along with merkle proofs for the receipts for each segment in the transcode claims. The smart contract can verify the signatures from Broadcaster and **Transcoder** to ensure all data necessary is available to conduct verification, and can verify the merkle proofs against the committed merkle root from `ClaimWork()`.
 14.  **Transcoder** -> **Truebit**: `Verify()`. This is an onchain call to the Truebit smart contract, where the Transcoder provides the Swarm input hash for the challenged segment. (More on verification in the following section)
 15. **Truebit** -> **Livepeer Smart Contract**:  The result of the job is written on chain. This is compared to the transcoding claim result that the Transcoder provided.
 16.  **Livepeer Smart Contract**: at this point the Livepeer smart contract has all the information it needs to determine if the Transcoder’s work is verified.
