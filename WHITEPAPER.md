@@ -99,7 +99,7 @@ The core unit of media within Livepeer is what we will call a `segment`. A segme
 | **SequenceNumber** | The sequential order that this segment belongs in the original stream. |
 | **DataPayload** | The binary metadata and data representing the audio/video in this segment. |
 | **DataHash** | The hash of the data payload. |
-| **BroadcasterSignature** | A signature from the broadcaster of `Priv(StreamID, SequenceNumber, DataHash)` which can be used to attest and verify that the broadcaster claims this to be the true data for this unique segment. |
+| **BroadcasterSignature** | A signature from the broadcaster of `Priv(StreamID, SequenceNumber, hash(StreamID, SequenceNumber, DataHash))` which can be used to attest and verify that the broadcaster claims this to be the true data for this unique segment. |
 
 The Livepeer protocol generally uses segments as the unit of work for transcoding, distribution, and payments.
 
