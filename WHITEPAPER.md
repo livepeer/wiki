@@ -99,7 +99,7 @@ The core unit of media within Livepeer is what we will call a `segment`. A segme
 | **SequenceNumber** | The sequential order that this segment belongs in the original stream. |
 | **DataPayload** | The binary metadata and data representing the audio/video in this segment. |
 | **DataHash** | The hash of the data payload. |
-| **BroadcasterSignature** | A signature from the broadcaster of `Priv(StreamID, SequenceNumber, DataHash)` which can be used to attest and verify that the broadcaster claims this to be the true data for this unique segment. |
+| **BroadcasterSignature** | A signature from the broadcaster of `Priv(StreamID, SequenceNumber, hash(StreamID, SequenceNumber, DataHash))` which can be used to attest and verify that the broadcaster claims this to be the true data for this unique segment. |
 
 The Livepeer protocol generally uses segments as the unit of work for transcoding, distribution, and payments.
 
@@ -191,7 +191,7 @@ Here is an example state of Transcoder options that a delegator can review when 
 
 Transcoders who are open for business on the network, throw their hat into the ring for transcoding work by submitting a `TranscodeAvailability()` transaction. This indicates their availability and places them into a pool of transcoders available to take a newly submitted job.
 
-When a broadcaster submits their stream into the Livepeer network it is given a `StreamID`. This serves as both a unique identifier, and it also contains the origin node address so that nodes know how to request and route requests to consume this stream towards the origin. The stream contains many consecutive `Segments`, as described in the [Video Segments](#video-segments) section. If the broadcaster would like the network to take care of transcoding their stream into all the formats and bitrates necessary to reach every user on every device, then the first step is submitting a transcoding job transaction on chain. A job consists of:
+When a broadcaster submits their stream into the Livepeer network it is given a `StreamID`. This serves as both a unique identifier, and it also contains the origin node address so that nodes know how to request and route requests to consume this stream towards the origin. The stream contains many consecutive `Segments`, as described in the [Video Segments](#video-segments) section. If the broadcaster would like the network to take care of transcoding their stream into all the formats and bitrates necessary to reach every user on every device, then the first step is submitting a transcoding job transaction on chain. Jobs are given a unique ID as well, and the input data to job consists of:
 
 `Job(StreamID, TranscodingOptions, PricePerSegment)`
 
@@ -212,12 +212,10 @@ At this point the broadcaster can begin streaming video segments towards the tra
 3. The protocol can use the next block hash to deterministically select the correct Transcoder for this job.
 4. **Transcoder** -> **Broadcaster**: send output streamID and receipt that the job is accepted.
 5. **Broadcaster** -> **Transcoder**: send stream segments, which contain signatures verifying the input data.
-6. **Broadcaster** -> **Swarm**: Write input data payloads, using SWEAR params to ensure the data will be there long enough for verification (`VerificationPeriod` time).
 7. **Transcoder** performs transcoding and makes new output stream available on network
-8. **Transcoder** checks **Swarm** periodically to ensure that the original stream data is there. If not, end the job at your discretion and claim your work.
-9. **Transcoder**: Store a transcode claim for each segment of transcoding work. A transcode claim has the following fields.
+9. **Transcoder**: Store a transcode receipt for each segment of transcoding work. A transcode receipt has the following fields.
 
-| Transcode Claim Field | Description |
+| Transcode Receipt Field | Description |
 |-------|------------|
 | **StreamID** | Identifies the origin node and stream that this segment belongs to. | 
 | **Sequence Number** | The sequential order that this segment belongs in the original stream. |
@@ -230,18 +228,17 @@ Whenever the transcoder observes that they are no longer receiving segments, the
 
 #### End Job
 
-10. **Transcoder** -> **Livepeer Smart Contract**: Call `ClaimWork(StreamID, StartSegmentSeq#, EndSegmentSeq#, MerkleRoot)`. Transcoder is claiming on chain they have performed work on the claimed segment range, with a merkle root of all of the transcode claim data to commit to the content of these encoded segments.
+10. **Transcoder** -> **Livepeer Smart Contract**: Call `ClaimWork(JobID, StartSegmentSeq#, EndSegmentSeq#, MerkleRoot)`. Transcoder is claiming on chain they have performed work on the claimed segment range, with a merkle root of all of the transcode receipt data to commit to the content of these encoded segments.
 11. Wait for this transaction to be mined, and observe the next blockhash. The protocol can then determine which segments will be verified based upon the `VerificationRate`.
-12. **Transcoder** -> **Livepeer Smart Contract**: Provide transcode claims on chain for each segment that needs to be verified, along with merkle proofs for each segment in the transcode claims. The smart contract can verify the signatures from Broadcaster and **Transcoder** to ensure all data necessary is available to conduct verification, and can verify the merkle proofs against the committed merkle root from `ClaimWork()`.
-13.  **Transcoder** -> **Truebit**: `Verify()`. This is an onchain call to the Truebit smart contract, where the Transcoder provides the Swarm input hash for the challenged segment. (More on verification in the following section)
-14. **Truebit** -> **Livepeer Smart Contract**:  The result of the job is written on chain. This is compared to the transcoding claim result that the Transcoder provided.
-15.  **Livepeer Smart Contract**: at this point the Livepeer smart contract has all the information it needs to determine if the Transcoder’s work is verified.
+12. **Transcoder** -> **Swarm**: Write input data payloads for the segments that will be challenged via verification, using SWEAR params to ensure the data will be there long enough for verification (`VerificationPeriod` time).
+13. **Transcoder** -> **Livepeer Smart Contract**: Provide transcode claims on chain for each segment that needs to be verified, along with merkle proofs for the receipts for each segment in the transcode claims. The smart contract can verify the signatures from Broadcaster and **Transcoder** to ensure all data necessary is available to conduct verification, and can verify the merkle proofs against the committed merkle root from `ClaimWork()`.
+14.  **Transcoder** -> **Truebit**: `Verify()`. This is an onchain call to the Truebit smart contract, where the Transcoder provides the Swarm input hash for the challenged segment. (More on verification in the following section)
+15. **Truebit** -> **Livepeer Smart Contract**:  The result of the job is written on chain. This is compared to the transcoding claim result that the Transcoder provided.
+16.  **Livepeer Smart Contract**: at this point the Livepeer smart contract has all the information it needs to determine if the Transcoder’s work is verified.
     - If verified correct, then use as input to token reward algorithm and release of escrowed fees.
     - If incorrect, then Transcoder and its stakers get slashed `FailedVerificationSlashAmount` and the Broadcaster is refunded.
 
 The Broadcaster can stop sending segments at any point, which effectively is an `EndJob()`.
-
-*Note: the above scheme has the Broadcaster writing all segments to Swarm. A cheaper alternative exists, which is the Transcoder just remembers the segments, and then only writes the challenged segments to Swarm, with Broadcaster signature as proof, before verification. Livepeer may use this scheme if there are no secondary benefits to having an archive of the stream on Swarm. Recording of the stream for future viewing is one such benefit however.*
 
 At this point the transcoding has been performed, proof of the work has been claimed on the chain, and failure or success of the verification of the work has been reported. All the info is on chain to determine allocation of fees and newly minted token rewards to transcoders and delegators, or slashing in the case of failed verification. Let’s take a look at how work is actually verified.
 
@@ -269,6 +266,15 @@ Truebit will write the results of the computation (succeeded or failed) back to 
 - Not only will the Transcoder be slashed, but all their delegators will be slashed as well. They will take this account into their decision of who to delegate towards, and the Transcoder could lose the lucrative job they hold.
 
 It is important that it be more profitable to simply stake LPT towards a valid, honestly performing transcoder, than it can be to cheat and take slashing penalties while still collecting fees and rewards for dishonest work. Careful selection of the slashing params and verification rate can ensure this.
+
+#### A Note On Truebit
+
+*While the protocol makes use of Truebit in order to provide fully trustless verification of work, it may be necessary in practice to use available solutions that provide verification without the degree of trustlessness that Truebit can offer while Truebit is still under development and testing. Some options, ordered by degree of trustlessness, include:*
+
+*1. Livepeer API Based Oracle - Trust Livepeer to verify computation. Very centralized, not ideal for anything beyond testing.*  
+*2. Oraclize Computation Service - Trust a company who provides proofs of computation and who's entire reputation relies upon putting external data on chain with proofs that it wasn't tampered with.*  
+*3. Secure hardware enclaves - Services like Intel SGX or TownCrier provide trusted computing environments. Trust that their hardware implementation is correct and secure. This can be decentralized and audited.*
+
 
 ### Token Rewards
 
@@ -298,7 +304,7 @@ One of the benefits of building within the Ethereum ecosystem are the network ef
 
 For example, if a Truebit verification job sat in their queue for a long period of time without any solver or verifier claiming it, Livepeer would fail to see the result of that verification in time before `Reward()` was called. Or if the Swarm network suffered a partition and couldn’t propagate the file to the Truebit verifier in time, then this could also create an issue.
 
-These risks can be mitigated by incentivizing these roles to be played in house by participants in the Livepeer protocol, who may find it in their best interest to serve as Truebit verifiers or Swarm nodes. But there’s also another approach which is introducing the concept of probability thresholds on the slashing parameters. Optional protocol variables such as `VerificationFailureThreshold` could be set to indicate that as long as the node passes 99% of verifications they won’t be slashed for example. This will remain a further area of research to be worked our prior to network deployment.
+These risks can be mitigated by incentivizing these roles to be played in house by participants in the Livepeer protocol, who may find it in their best interest to serve as Truebit verifiers or Swarm nodes. But there’s also another approach which is introducing the concept of probability thresholds on the slashing parameters. Optional protocol variables such as `VerificationFailureThreshold` could be set to indicate that as long as the node passes 99% of verifications they won’t be slashed for example. This will remain a further area of research to be worked out prior to network deployment.
 
 The failure to invoke verification slashing condition can be checked and invoked by any Livepeer protocol participant. There is a `FinderFee` which specifies the percent of the slash amount which the finder will receive as a reward for successfully invoking this slashing condition.
 
@@ -310,11 +316,9 @@ As a token that represents fuel for broadcasting video within the Livepeer netwo
 
 An initial allocation of the token will be distributed to people purchasing it to broadcast within the network or to stake into the role of Transcoder or Delegator. The proceeds of the distribution will be used in order to fund the future development of the protocol and bring it to market. A portion will be allocated to groups who contributed prior work and money towards the protocol before the sale, and a portion will be endowed to a Foundation in order to support ongoing development over time.
 
-At the launch of the network, token issuance will continue according to an inflationary schedule of a fixed `InflationRate`% per year of the original issuance amount. Over time this inflation trends towards 0% of the total supply. However there will still be additional LPT entering the market as an incentive to Transcoders/Delegators and to replace lost LPT.
+At the launch of the network, token issuance will continue according to an inflationary schedule with token being minted at `InflationRate`% per year of the original issuance amount. As token is issued in proportion to stake of all bonded participants in the protocol, it serves to incentivize active participation. Participants are "protected" from this inflation, due to earning their proportional share. Whereas transactional users who are acquiring token for the utility of broadcasting are also immune to inflation via their short hold time before broadcasting. It is only inactive participants who are sitting on token without bonding it for participation, who will see their proportional network ownership dilluted by this inflation.
 
-<img src="https://s3.amazonaws.com/livepeerorg/LPTInflation.png" alt="Sample Token Inflation" style="width: 640px">
-
-*Sample inflation of token supply vs total float over the first 100 years if the `InflationRate` is set at 26%*
+The initial target for `InflationRate` will be set such that it incentivizes approximately 50% of the LPT to be bonded and actively participating, and 50% to be used for transactional use. This rate can be moved via governance mechanics over time to incent the 50% participation target. A higher rate would incent more token to be bonded, and a lower rate would lead to more people choosing liquidity rather than participation. It's this liquidity preference vs network ownership percentage tradeoff which should find equilibrium due to a number of economic factors in the network.
 
 ### Governance
 
@@ -323,7 +327,7 @@ The role of governance within the Livepeer protocol is intended to be two fold:
 1. Determine the burning or appropriation of common funds which were slashed from misbehaving nodes.
 2. Adjust network parameters to ensure a healthy, thriving network which is valuable to broadcasters.
 
-Many of the network parameters referenced in this document such as `UnbondingPeriod`, `RoundLength`, and `VerificationRate` are adjustable. Proposals for adjustments to these parameters can be submitted, and the governance process, including voting by transcoders in proportion to their delegated stake, will determine adoption of these changes automatically within the protocol. The detailed spec for governance is left for another document. [See more here](https://github.com/livepeer/wiki/wiki/Governance). 
+Many of the network parameters referenced in this document such as `UnbondingPeriod`, `RoundLength`, `InflationRate`, and `VerificationRate` are adjustable. Proposals for adjustments to these parameters can be submitted, and the governance process, including voting by transcoders in proportion to their delegated stake, will determine adoption of these changes automatically within the protocol. The detailed spec for governance is left for another document. [See more here](https://github.com/livepeer/wiki/wiki/Governance). 
 
 ## Attacks
 
@@ -350,19 +354,21 @@ In the first case, a Transcoder has to pay to claim their availability on chain.
 
 In the case of a Broadcaster preventing a Transcoder from doing work, this is merely a capacity planning calculation. A Transcoding node can maintain records of its capacity for concurrent jobs, likelihood of a job being active/inactive, and ensure that it always believes it will have capacity for the work that it claims. Simply ignoring or calling `EndJob()` on a node that's refusing to send segments hardly hurts the Transcoder.
 
-### Forced Slashing
-
-If a Broadcaster were to try to attempt to get a Transcoder slashed, they would probably do so by not writing all their segments to Swarm or not paying for SWEAR receipts to guarantee their availability for Truebit verification. It is on the Transcoder to check Swarm to ensure the data is there before claiming segments, but doing this for every segment may potentially be costly depending on Swarm pricing dynamics. Since this is unknown at the moment, the various solutions are on the table:
-
-1. Transcoder writes the data to Swarm itself, using the signature from the Broadcaster as proof of the correctness of the content.
-2. Transcoder requires SWEAR receipts from Broadcaster.
-3. Transcoder uses probability calculations to determine how often to check segments, and align this with the `VerificationFailureThreshold` to ensure that they remain above the threshold despite risking failing a couple verifications.
-
 ### Useless or Self Dealing Transcoder
 
 If a Transcoder has enough stake to maintain their position, they could theoretically list a 100% `BlockRewardCut`, 0% `FeeShare`, and charge a high `PricePerSegment` such that they would never have to do any work, yet could collect their token rewards. This is prevented by the `CompetitivenessTolerance` which requires them to contribute some amount of valid work. Additionally, because of the transaction costs of participating in the protocol incurred by Transcoders, it would be more profitable for them to simply stake their token toward a valid Transcoder who was sharing fees with them, than it would be to act as a useless Transcoder who would receive no fees to speak of.
 
 A misbehaving Transcoder who is outputting invalid output would quickly get slashed down to the point of their stake being reduced too low to actually keep their job and receive any work.
+
+### Transcoder Griefing
+
+If a Broadcaster wanted to make the protocol very expensive to operate for a transcoder, it could send transcoders non-consecutive segment numbers. This is because transcoders can claim work for a continuous range of segment numbers in a single transaction, but would have to make many transactions to claim work across random segment number ranges. This can be defended against by the following options:
+
+1. Transcoder calls `EndJob()` and doesn't bother doing the work or attempting to collect the fees. 
+2. Protocol implements on chain parsing or better segment claim encoding in order to reduce fees associated with claiming non-consecutive segments in a single call.
+3. Simply ignore the segments and never claim the work.
+
+This attack has a high cost to a broadcaster since they must have a deposit and submit jobs on chain in order to even get assigned to a transcoder in the first place. They have the ability to make life annoying for a transcoder and potentially lose efficiency, but not cause damage to the network.
 
 ### Chain Reorg
 
@@ -378,9 +384,15 @@ Different incentives exist when it comes to bandwidth for nodes playing differen
 * Broadcasters serve as origin nodes and may want to charge for consumption of the video, or may want to subsidize the cost of bandwidth so that everyone can access their video for free.
 * Transcoders and Relay nodes are willing to provide bandwidth in service of distributing video as long as it is profitable. This is similar to the role of traditional CDNs.
 
+
+
 With `Segments` as the core unit of data flowing through the network, it is possible to do tit-for-tat bandwidth accounting using the Livepeer Token as the basis for settlement. We borrow the Chequebook Contract abstraction from Swarm [[6](#references)] as a method of offchain payment passing with on chain settlement. Future developments in the ecosystem including the Raiden Network [[15](#references)] may allow of payment channels to be used for this purpose as well. Since token transfer is native to the protocol, it is also possible to embed pricing associated with content directly into the protocol. A broadcaster can charge for their time or content directly, and nodes will opt into this transfer of value by paying a higher price/segment which will flow back to the broadcaster.
 
-What's important to note is that while bandwidth accounting can be used to make it profitable to run Relay Nodes which just pass video segments around the network to add capacity, a-la a CDN, these nodes are purely incentivized by demand for the content, and not incentivized by newly minted token rewards. In fact, the output of Livepeer can be inserted into a traditional CDN (like Amazon S3, Cloudflare, etc) or decentralized CDN (like IPFS or Swarm). Development of this peer-to-peer protocol for video segment distribution itself will be an ongoing opportunity for optimization and improvement in performance. As non-critical to the cryptoeconomics of the Livepeer protocol, the details are spared from this document, but the interested can [follow along here](https://github.com/livepeer/go-livepeer) with the development, and look for a future document addressing purely the video distribution protocol.
+What's important to note is that while bandwidth accounting can be used to make it profitable to run Relay Nodes which just pass video segments around the network to add capacity, a-la a CDN, these nodes are purely incentivized by demand for the content, and not incentivized by newly minted token rewards. In fact, the output of Livepeer can be inserted into a traditional CDN (like Amazon S3, Cloudflare, etc) or decentralized CDN (like IPFS or Swarm). Development of this peer-to-peer protocol for video segment distribution itself will be an ongoing opportunity for optimization and improvement in performance.
+
+Peer-to-peer CDNs have been shown to reduce 80-98% of bandwidth requirements on an origin CDN server [[17](#references)], and the token mechanics seen in decentralized networks can align stakeholders for the development and maintenance of an open version of the proprietary P2P CDNs that exist today. The PPSPP Protocol [[18](#references)] serves as a viable candidate for an open implementation that focuses on delivery of live content.
+
+As non-critical to the cryptoeconomics of the Livepeer protocol, the details are spared from this document, but the interested can [follow along here](https://github.com/livepeer/go-livepeer) with the development, and look for a future document addressing purely the video distribution protocol.
 
 ## Use Cases ###########################################
 
@@ -470,3 +482,5 @@ The end result is a scalable, pay-as-you-go network for decentralized live video
 14. WebTorrent - <https://webtorrent.io/>
 15. Raiden Network - <http://raiden.network/>
 16. ERC20 Token Standard - <https://github.com/ethereum/EIPs/issues/20>
+17. Peer5 leverages viewers’ devices for a P2P approach to streaming video - <https://techcrunch.com/2017/01/26/peer5-y-combinator/>
+18. Peer-to-Peer Streaming Peer Protocol - <https://tools.ietf.org/html/rfc7574>
