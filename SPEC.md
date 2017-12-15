@@ -595,14 +595,15 @@ removed or replaced. However, the names of existing storage variables can be cha
 - `targetId` is the contract ID of the target contract, defined as `keccak256(targetName)`
 - `newTargetAddr` is the address of the new version of the target contract
 
+#### State Affected
+
+- `Controller`
+
 #### Algorithm
 
 1. `controller`'s owner calls `controller.setContract(targetId, newTargetAddr)`
 2. `controller` sets the contract address mapped to `targetId` as `newTargetAddr`
-
-#### End State
-
-- The manager proxy with ID `proxyId` uses `delegatecall` to forward function calls to the target contract with ID `targetId` and address `newTargetAddr`
+3. The manager proxy with ID `proxyId` uses `delegatecall` to forward function calls to the target contract with ID `targetId` and address `newTargetAddr`.
 
 ### Updating Parameters
 
@@ -615,15 +616,15 @@ The only user that is able to update a manager's parameter values is the owner o
 - `paramName` is the name of the parameter being updated
 - `newValue` is the new value for the parameter `paramName`
 
+#### State Affected
+
+- The manager
+
 #### Algorithm
 
 1. `controller`'s owner calls the parameter setter function defined in `manager` for `paramName`. For example, if `paramName == "unbondingPeriod"`, the function call is `manager.setUnbondingPeriod(newValue)`.
 2. `manager` sets the value for `paramName` as `newValue`
 3. `manager` fires an event notifying clients of the parameter update.
-
-#### End State
-
-- The value of `paramName` in `manager` is `newValue`
 
 ## Parameters
 
