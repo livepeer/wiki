@@ -111,7 +111,7 @@ The Livepeer Token (LPT) is the protocol token of the Livepeer network. Broadcas
 - It serves as a bonding mechanism in a delegated proof of stake system, in which stake is delegated towards transcoders (or validators) who participate in the protocol to transcode video and validate work. The token, and potential slashing that occurs due to protocol violation, is necessary in order to secure the network against a number of attacks. More below.
 - It is a unit of account that is specific to the Livepeer ecosystem, which forms the basis of a SectorCoin concept, applicable to additional functionality to be introduced in the future [[4](#references)]. Services such as DVR, closed captioning, ad insertion/monetization, and analytics can all plug into the Livepeer ecosystem using the Livepeer Token as a transfer of value.
 
-An initial allocation of Livepeer Token will be distributed so that stakeholders can fulfill various roles in, and use the network, and then additional token will be issued on a predictable inflation schedule over time. See the [Token Distribution](#token-distribution) section.
+An initial allocation of Livepeer Token will be distributed so that stakeholders can fulfill various roles in, and use the network, and then additional token will be issued according to algorithmically programmed inflation over time. See the [Token Distribution](#token-distribution) section.
 
 Following the conventions of Ethereum and many popular ERC20 tokens [[16](#references)], LPT will be divisible by 10 ^ 18, with larger denominations such as the LPT itself intended to be used for user level transactions and staking, and smaller denominations intended to be used for protocol fees, microtransactions, and accounting.
 
@@ -314,11 +314,11 @@ The remainder of the slashed funds will enter the `CommonPool`, which can be bur
 
 As a token that represents fuel for broadcasting video within the Livepeer network, the Livepeer Token distribution will follow a similar model to other fuel based token distributions such as Ethereum.
 
-An initial allocation of the token will be distributed to people purchasing it to broadcast within the network or to stake into the role of Transcoder or Delegator. The proceeds of the distribution will be used in order to fund the future development of the protocol and bring it to market. A portion will be allocated to groups who contributed prior work and money towards the protocol before the sale, and a portion will be endowed to a Foundation in order to support ongoing development over time.
+An initial allocation of the token will be distributed to the community at genesis and over the early stages of the network. Receipients can use it to broadcast within the network or to stake into the role of Transcoder or Delegator. A portion will be allocated to groups who contributed prior work and money towards the protocol before the genesis, and a portion will be endowed to a Foundation.
 
-At the launch of the network, token issuance will continue according to an inflationary schedule with token being minted at `InflationRate`% per year of the original issuance amount. As token is issued in proportion to stake of all bonded participants in the protocol, it serves to incentivize active participation. Participants are "protected" from this inflation, due to earning their proportional share. Whereas transactional users who are acquiring token for the utility of broadcasting are also immune to inflation via their short hold time before broadcasting. It is only inactive participants who are sitting on token without bonding it for participation, who will see their proportional network ownership dilluted by this inflation.
+At the launch of the network, token issuance will continue according to an inflationary schedule with token being minted at `InflationRate` per round relative to the outstanding float of token. As token is issued in proportion to stake of all bonded participants in the protocol, it serves to incentivize active participation. Participants are "protected" from this inflation, due to earning their proportional share. Whereas transactional users who are acquiring token for the utility of broadcasting are also immune to inflation via their short hold time before broadcasting. It is only inactive participants who are sitting on token without bonding it for participation, who will see their proportional network ownership dilluted by this inflation.
 
-The initial target for `InflationRate` will be set such that it incentivizes approximately 50% of the LPT to be bonded and actively participating, and 50% to be used for transactional use. This rate can be moved via governance mechanics over time to incent the 50% participation target. A higher rate would incent more token to be bonded, and a lower rate would lead to more people choosing liquidity rather than participation. It's this liquidity preference vs network ownership percentage tradeoff which should find equilibrium due to a number of economic factors in the network.
+The initial target for `InflationRate` will be set such that it aims to incentivize approximately `ParticipationRate` of the LPT to be bonded and actively participating, and 100-`ParticipationRate` to be used for transactional use. For example, if `ParticipationRate` is 50% then incentives will exist to have half the oustanding token bonded, and half liquid. This rate will move algorithmically each round to incent the participation target. A higher rate would incent more token to be bonded, and a lower rate would lead to more people choosing liquidity rather than participation. It's this liquidity preference vs network ownership percentage tradeoff which should find equilibrium due to a number of economic factors in the network.
 
 ### Governance
 
@@ -327,7 +327,7 @@ The role of governance within the Livepeer protocol is intended to be two fold:
 1. Determine the burning or appropriation of common funds which were slashed from misbehaving nodes.
 2. Adjust network parameters to ensure a healthy, thriving network which is valuable to broadcasters.
 
-Many of the network parameters referenced in this document such as `UnbondingPeriod`, `RoundLength`, `InflationRate`, and `VerificationRate` are adjustable. Proposals for adjustments to these parameters can be submitted, and the governance process, including voting by transcoders in proportion to their delegated stake, will determine adoption of these changes automatically within the protocol. The detailed spec for governance is left for another document. [See more here](https://github.com/livepeer/wiki/wiki/Governance). 
+Many of the network parameters referenced in this document such as `UnbondingPeriod`, `RoundLength`, `ParticipationRate`, and `VerificationRate` are adjustable. Proposals for adjustments to these parameters can be submitted, and the governance process, including voting by transcoders in proportion to their delegated stake, will determine adoption of these changes automatically within the protocol. The detailed spec for governance is left for another document. [See more here](https://github.com/livepeer/wiki/wiki/Governance). 
 
 ## Attacks
 
@@ -429,7 +429,8 @@ The end result is a scalable, pay-as-you-go network for decentralized live video
 | `T` | Segment length in seconds | 2 seconds |
 | `N` | Number of active transcoders | 144 |
 | `RoundLength` | Length of time between election of a new round of transcoders | 1 day |
-| `InflationRate` | The current annual target inflation rate of LPT. | 15% |
+| `InflationRate` | The current target inflation rate per round of LPT. (Moves algorithmically). | .04% (equivalent to 15%/year) |
+| `ParticipationRate` | The target percent of token bonded vs liquid. | 50% |
 | `RateLockDeadline` | Transcoders rates lock in this amount of time prior to the next round start time so that delegators can review and delegate accordingly. | 6 hours |
 | `UnbondingPeriod` | Time between entering unbonding state, and ability to withdraw the funds. | 1 month |
 | `VerificationPeriod` | The deadline for verifying a job claim after submission of the job claim. This also serves as the minimum period that a receipt of data persistence must be provided in the decentralized storage solution. | 6 hours |
