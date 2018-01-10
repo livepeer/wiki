@@ -40,7 +40,7 @@ that they believe will create the most economic value in the network by efficien
 the beginning of each round, the top transcoders with the largest amount of delegated stake amongst all registered transcoders are locked in as the members of the active transcoder set for that round.
 Members of the active transcoder set earn inflationary rewards during a round in proportion to their delegated stake. The transcoder keeps a portion of the rewards and shares the rest with its delegators based on the reward cut rate previously advertised.
 
-Broadcasters that seek to distribute live video to a large audience in a variety of bitrates and formats deposit tokens and submit transcode jobs which are psuedorandomly assigned to active transcoders
+Broadcasters that seek to distribute live video to a large audience in a variety of bitrates and formats deposit Ether and submit transcode jobs which are psuedorandomly assigned to active transcoders
 weighted by their delegated stake. Upon assignment, a transcoder requests video segments from the broadcaster and begins to transcode each input segment into
 output segments for the transcoded video streams that correspond to each of the video profiles requested by the broadcaster. As segments are being transcoded, transcoders can submit a claim of work
 for a range of segments. For each claim, certain segments are pseudorandomly challenged. For each challenged segment, a transcoder must submit a proof that verifies that the transcoder not only performed
@@ -85,7 +85,9 @@ For any contract with the name `Contract` we refer to the deployed instance of t
 
 Function calls on a specific contract are written as `contract.foo()`. Parameters are excluded when describing function calls and instead detailed in plain English.
 
-The native token of the protocol is the Livepeer token which will be referred to as LPT.
+The staking token of the protocol is the Livepeer token which will be referred to as LPT.
+
+The payment token of the protocol is currently regular Ether, which will be referred to as ETH, but the protocol could be modified to support other tokens such as stablecoins in the future.
 
 See the [developer documentation](#) for the full documentation of the contract API and descriptions of the contract functions described in this specification.
 
@@ -176,7 +178,7 @@ delegator structures stored that contain their bonded stake information.
 | Field                              | Description                                                           |
 |------------------------------------|-----------------------------------------------------------------------|
 | **bondedAmount**                   | The amount of bonded stake.                                           |
-| **unbondedAmount**                 | The amount of unbonded stake.                                         |
+| **fees**                           | The amount of fees collected.
 | **delegateAddress**                | The Ethereum address of the delegate.                                 |
 | **delegatedAmount**                | The amount of delegated stake.                                        |
 | **startRound**                     | The round the delegator becomes bonded and delegated to its delegate. |
@@ -342,7 +344,7 @@ their bonded stake.
 
 ---
 
-### Withdrawing Bonded LPT
+### Withdrawing Bonded Stake (LPT)
 
 #### *Requirements*
 
@@ -353,14 +355,42 @@ Delegators with bonded stake can unbond to start the process of withdrawing thei
 - User `T`
 - User `D` is delegated to `T`
 
+#### *State Affected*
+
+- `LivepeerToken`
+- `BondingManager`
+
 #### *Algorithm*
 
 1. `D` calls `bondingManager.unbond()` to unbond from `T`.
 2. `T`'s delegated stake decreases by `X`.
 3. If `T` is a transcoder, update `T`'s position in the transcoder pool.
 4. The protocol progresses through `unbondingPeriod` number of rounds.
-5. `D` calls `bondingManager.withdraw()` to withdraw `X` LPT.
-6. `D`'s LPT balance increases by `X`.
+5. `D` calls `bondingManager.withdrawStake()` to withdraw `X` LPT.
+6. `D`'s bonded stake decreases by `X`.
+7. `D`'s LPT balance increases by `X`.
+
+---
+
+### Withdrawing Fees (ETH)
+
+#### *Requirements*
+
+Delegators can withdraw any collected fees at any time.
+
+#### *State Affected*
+
+- `BondingManager`
+
+#### *Initial State*
+
+- User `D`
+
+#### *Algorithm*
+
+1. `D` calls `bondingManager.withdrawFees()` to withdraw `X` ETH.
+2. `D`'s collected fees decreases by `X`.
+3. `D`'s ETH balance increases by `X`.
 
 ---
 
@@ -444,6 +474,56 @@ delegated stake within the active transcoder set.
 5. `T` credits its own bonded stake with `rewardCut` percent of `rewards`.
 6. `T` places the rest of `rewards` in its reward pool for round `N`.
 
+#### *Notes*
+
+A delegator is not credited with its reward shares until it explicitly claims them. Thus, the total reward shares to be claimed added to a delegator's bonded stake is the
+delegator's `pendingStake`. If a delegator has claimed all of its reward shares, its bonded stake will be equal to its `pendingStake`.
+
+---
+
+### Broadcaster Deposits
+
+#### *Requirements*
+
+A broadcaster deposits ETH which is used to pay transcoders.
+
+#### *Initial State*
+
+- Broadcaster `B`
+
+#### *State Affected*
+
+- `JobsManager`
+
+#### *Algorithm*
+
+1. `B` calls `jobsManager.deposit()` to deposit `X` ETH.
+2. `B`'s ETH balance decreases by `X`.
+3. `B`'s on-chain deposit increases by `X`.
+
+---
+
+### Broadcaster Withdrawals
+
+#### *Requirements*
+
+A broadcaster withdraws ETH from its deposit. A broadcaster cannot withdraw if it has any active transcode jobs.
+
+#### *Initial State*
+
+- Broadcaster `B`
+
+#### *State Affected*
+
+- `JobsManager`
+
+#### *Algorithm*
+
+1. `B` calls `jobsManager.withdraw()` to withdraw `X` ETH.
+2. If `B` has an active transcode job, abort.
+3. `B`'s ETH balance increases by `X`.
+4. `B`'s on-chain deposit decreases by `X`.
+
 ---
 
 ### Job Creation & Assignment
@@ -500,6 +580,9 @@ corresponding to the range of segments claimed. The claim is created in block `M
 9. `T` credits its own bonded stake with the rest of the fees.
 
 #### *Notes*
+
+A delegator is not credited with its fee shares until it explicitly claims them. Thus, the total fee shares to be claimed added to a delegator's collected fees is the
+delegator's `pendingFees`. If a delegator has claimed all of its fee shares, its collected fees will be equal to its `pendingFees`.
 
 A broadcaster can try to launch a *griefing attack* on a transcoder by sending segments with non-consecutive sequence numbers which forces a transcoder to call `jobsManager.claimWork()` multiple for discontinuous ranges of segments thereby
 increasing the amount of transaction costs paid by the transcoder. As a defense, a transcoder can choose not to transcode segments if it observes that a broadcaster is consistently sending it segments with non-consecutive
