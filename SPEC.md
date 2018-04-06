@@ -423,7 +423,7 @@ in the transcoder pool with the least delegated stake, the user successfully reg
 
 #### *Requirements*
 
-A transcoder can change its rates during a round. A transcoder cannot change its rates during the lock period of a round.
+A transcoder can change its rates during a round. A transcoder cannot change its rates upwards during the lock period of a round, but it can adjust its price/segment downwards towards the lowest candidate offered price/segment during the lock period of a round.
 
 #### *Initial State*
 
@@ -436,7 +436,7 @@ A transcoder can change its rates during a round. A transcoder cannot change its
 #### *Algorithm*
 
 1. `T` calls `bondingManager.transcoder()` with percentage values for `rewardCut`, `feeShare` and `pricePerSegment`.
-2. If the protocol is in the lock period of the round, abort.
+2. If the protocol is in the lock period of the round, and the transcoder is attempting any change other than downwardly adjusting price/segment, abort.
 3. Set the rates for `T` as a transcoder.
 
 ---
@@ -823,7 +823,7 @@ Each of the parameters are defined in the manager that they are the most relevan
 | Parameter         | Description                                                                                                                                               | Default Value |
 |-------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------|---------------|
 | `roundLength`     | Number of blocks in a round.                                                                                                                              |          5760 |
-| `roundLockAmount` | Percentage of blocks in a round that are a part of the lock period during which transcoders cannot change their rates or enter/leave the transcoder pool. |            10 |
+| `roundLockAmount` | Percentage of blocks in a round that are a part of the lock period during which transcoders cannot change their rates upwards, or enter/leave the transcoder pool. |            10 |
 
 ### BondingManager
 
