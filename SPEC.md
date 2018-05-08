@@ -175,15 +175,22 @@ become the members of the active transcoder set for that round.
 Delegator information is stored in a delegator structure. All users that have bonded stake have a delegator structure associated with their address. As a result, users that are transcoders also have
 delegator structures stored that contain their bonded stake information.
 
-| Field                              | Description                                                           |
-|------------------------------------|-----------------------------------------------------------------------|
-| **bondedAmount**                   | The amount of bonded stake.                                           |
-| **fees**                           | The amount of fees collected.
-| **delegateAddress**                | The Ethereum address of the delegate.                                 |
-| **delegatedAmount**                | The amount of delegated stake.                                        |
-| **startRound**                     | The round the delegator becomes bonded and delegated to its delegate. |
-| **withdrawRound**                  | The round the delegator can withdraw its stake.                       |
-| **lastClaimTokenPoolsSharesRound** | The last round that the delegator claimed reward and fee pool shares. |
+| Field               | Description                                                           |
+|---------------------|-----------------------------------------------------------------------|
+| **bondedAmount**    | The amount of bonded stake.                                           |
+| **fees**            | The amount of fees collected.                                         |
+| **delegateAddress** | The Ethereum address of the delegate.                                 |
+| **delegatedAmount** | The amount of delegated stake.                                        |
+| **startRound**      | The round the delegator becomes bonded and delegated to its delegate. |
+| **withdrawRound**   | The round the delegator can withdraw its stake.                       |
+| **lastClaimRound**  | The last round that the delegator claimed reward and fee pool shares. |
+
+A delegator can be in one of the following states `Pending`, `Bonded`, `Unbonding` or `Unbonded`.
+- A delegator is in the `Pending` state if `startRound > currentRound`. A delegator enters the `Pending` state when it bonds from the `Unbonded` state.
+- A delegator is in the `Bonded` state if `startRound > 0 && startRound <= currentRound`. A delegator enters the `Bonded` state at the start of `startRound` which is set after it bonds.
+- A delegator is in the `Unbonding` state if `withdrawRound > 0 && withdrawRound < currentRound`. A delegator enters the `Unbonding` state when it unbonds.
+- A delegator is in the `Unbonded` state if `withdrawRound > 0 && withdrawRound <= currentRound` OR `startRound = 0`. A delegator starts off in the `Unbonded` state by default
+and also enters the `Unbonded` state if it unbonds and the unbonding period is over.
 
 #### Transcoder
 
@@ -198,7 +205,11 @@ Transcoder information is stored in a transcoder structure.
 | **pendingRewardCut**       | The pending reward cut for the next round a transcoder becomes active.              |
 | **pendingFeeShare**        | The pending fee share for the next round a transcoder becomes active.               |
 | **pendingPricePerSegment** | The pending price per segment for the next round a transcoder becomes active.       |
-| **tokenPoolsPerRound**     | The reward and fee pools for each round.                                            |
+| **earningsPoolPerRound**   | The reward and fee pools for each round.                                            |
+
+A transcoder can be in one of the following states `NotRegistered` or `Registered`.
+- A transcoder is in the `NotRegistered` state if it is not a member of the registered transcoder pool.
+- A transcoder is in the `Registered` state if it is a member of the registered transcoder pool such that it has non-zero bonded stake delegated towards itself.
 
 ## Faults
 
@@ -270,7 +281,8 @@ by the potential returns in the inflationary rewards and fees shared by the tran
 
 #### *Initial State*
 
-- Users `T` and `D`
+- User `T`
+- User `D` in the `Unbonded` state
 
 #### *State Affected*
 
@@ -281,9 +293,13 @@ by the potential returns in the inflationary rewards and fees shared by the tran
 
 1. `D` approves `bondingManager` to transfer an amount of LPT from `D` by calling `livepeerToken.approve()`.
 2. `D` calls `bondingManager.bond()` to bond `X` LPT to `T`.
-3. `T`'s delegated stake increases by `X`.
-4. `D`'s LPT balance decreases by `X`.
-5. `D` is delegated to `T`.
+3. If `D` is not in the `Unbonded` state, abort.
+4. `T`'s delegated stake increases by `X`.
+5. `D`'s LPT balance decreases by `X`.
+6. `D` is delegated to `T`.
+7. Set `startRound = currentRound + 1`.
+8. `D` enters the `Pending` state.
+9. Once `currentRound = startRound`, `D` enters the `Bonded` state.
 
 ---
 
@@ -291,12 +307,14 @@ by the potential returns in the inflationary rewards and fees shared by the tran
 
 #### *Requirements*
 
-Delegators that delegated their bonded stake to a transcoder can delegate their bonded stake to someone else.
+Delegators that delegated their bonded stake to a transcoder can delegate their bonded stake to someone else. Reward and fee shares from past rounds will
+automatically be claimed first - see [Automatically Claiming Rewards and Fees](#automatically-claiming-rewards-and-fees) for more details.
 
 #### *Initial State*
 
 - Users `T1`, `T2`
 - User `D` delegated to `T1`
+- User `D` in the `Bonded` state
 
 #### *State Affected*
 
@@ -318,12 +336,14 @@ Delegators that delegated their bonded stake to a transcoder can delegate their 
 #### *Requirements*
 
 Delegators that delegated their bonded stake to someone can atomically delegate their bonded stake to someone else and also increase
-their bonded stake.
+their bonded stake. Reward and fee shares from past rounds will
+automatically be claimed first - see [Automatically Claiming Rewards and Fees](#automatically-claiming-rewards-and-fees) for more details.
 
 #### *Initial State*
 
 - Users `T1` and `T2`
 - User `D` is delegated to `T1`
+- User `D` in the `Bonded` state
 
 #### *State Affected*
 
@@ -349,11 +369,13 @@ their bonded stake.
 #### *Requirements*
 
 Delegators with bonded stake can unbond to start the process of withdrawing their bonded LPT. Delegators cannot withdraw until the unbonding period is complete.
+Reward and fee shares from past rounds will automatically be claimed first - see [Automatically Claiming Rewards and Fees](#automatically-claiming-rewards-and-fees) for more details.
 
 #### *Initial State*
 
-- User `T`
+- User `T` in the `Registered` state
 - User `D` is delegated to `T`
+- User `D` in the `Bonded` state
 
 #### *State Affected*
 
@@ -363,12 +385,16 @@ Delegators with bonded stake can unbond to start the process of withdrawing thei
 #### *Algorithm*
 
 1. `D` calls `bondingManager.unbond()` to unbond from `T`.
-2. `T`'s delegated stake decreases by `X`.
-3. If `T` is a transcoder, update `T`'s position in the transcoder pool.
-4. The protocol progresses through `unbondingPeriod` number of rounds.
-5. `D` calls `bondingManager.withdrawStake()` to withdraw `X` LPT.
-6. `D`'s bonded stake decreases by `X`.
-7. `D`'s LPT balance increases by `X`.
+2. If `D` is not in the `Bonded` state, abort.
+3. `T`'s delegated stake decreases by `X`.
+4. If `D == T` and `T` is a transcoder, remove `T` from the transcoder pool and `T` enters the `NotRegistered` state.
+4. If `D != T` and `T` is a transcoder, update `T`'s position in the transcoder pool.
+5. Set `withdrawRound = currentRound + unbondingPeriod` for `D` and `D` enters the `Unbonding` state.
+6. The protocol progresses through `unbondingPeriod` number of rounds.
+7. `D` enters the `Unbonded` state.
+8. `D` calls `bondingManager.withdrawStake()` to withdraw `X` LPT.
+9. `D`'s bonded stake decreases by `X`.
+10. `D`'s LPT balance increases by `X`.
 
 ---
 
@@ -376,7 +402,8 @@ Delegators with bonded stake can unbond to start the process of withdrawing thei
 
 #### *Requirements*
 
-Delegators can withdraw any collected fees at any time.
+Delegators can withdraw any collected fees at any time. Reward and fee shares from past rounds will
+automatically be claimed first - see [Automatically Claiming Rewards and Fees](#automatically-claiming-rewards-and-fees) for more details.
 
 #### *State Affected*
 
@@ -404,7 +431,7 @@ in the transcoder pool with the least delegated stake, the user successfully reg
 
 #### Initial State
 
-- User `T`
+- User `T` in the `NotRegistered` state
 
 #### State Affected
 
@@ -413,9 +440,11 @@ in the transcoder pool with the least delegated stake, the user successfully reg
 #### Algorithm
 
 1. `T` calls `bondingManager.transcoder()` with percentage values for `rewardCut`, `feeShare` and `pricePerSegment`.
-2. Set the rates for `T` as a transcoder.
-3. If the transcoder pool is full and `T`'s delegated stake is greater than that of the transcoder with the least delegated stake, evict the transcoder. Else, abort.
-4. Add `T` to the transcoder pool.
+2. If `T` does not have non-zero bonded stake delegated towards itself, abort.
+3. Set the rates for `T` as a transcoder.
+4. If the transcoder pool is full and `T`'s delegated stake is greater than that of the transcoder with the least delegated stake, evict the transcoder. Else, abort.
+5. Add `T` to the transcoder pool.
+6. `T` enters the `Registered` state.
 
 ---
 
@@ -427,7 +456,7 @@ A transcoder can change its rates during a round. A transcoder cannot change its
 
 #### *Initial State*
 
-- Transcoder `T`
+- Transcoder `T` in the `Registered` state
 
 #### *State Affected*
 
@@ -662,7 +691,8 @@ When a delegator calls a bonding related function (ex. delegates to a new transc
 #### *Notes*
 
 If a delegator does not invoke a bonding related functions for a large number of rounds, it is possible that the number of rounds that it would need to automatically claim rewards and fees for becomes too large such
-that the bonding related function cannot be executed within the Ethereum block gas limit. In this situation, a delegator can manually claim rewards and fees through a chosen end round.
+that the bonding related function cannot be executed within the Ethereum block gas limit. A restriction is imposed such that a delegator cannot claim through more rounds than
+`maxEarningsClaimsRounds`. In this situation, a delegator can manually claim rewards and fees through a chosen end round.
 
 ---
 
@@ -684,15 +714,16 @@ last claim round through a chosen end round which does not necessarily have to b
 
 #### *Algorithm*
 
-1. `D` calls `bondingManager.claimTokenPoolsShares()` with the end round through which to claim rewards and fees.
+1. `D` calls `bondingManager.claimEarnings()` with the end round through which to claim rewards and fees.
 2. `D` claims rewards and fees for each it was delegated to its current delegate through the end round.
 3. `D` sets its last claim round as the chosen end round.
 
 #### *Notes*
 
 A client interacting with the protocol can check how many rounds a delegator would have to claim rewards and fees for before calling a bonding related function. If the number of rounds is too large,
-the client can divide the number of rounds into portions and make multiple calls to `bondingManager.claimTokenPoolsShares()` with the end rounds corresponding to each portion. After claiming all the rewards
-and fees, the client can then call the bonding related function without the risk of a function call not being executable within the Ethereum block gas limit.
+the client can divide the number of rounds into portions and make multiple calls to `bondingManager.claimEarnings()` with the end rounds corresponding to each portion. After claiming all the rewards
+and fees, the client can then call the bonding related function without the risk of a function call not being executable within the Ethereum block gas limit. A restriction is imposed such that
+a delegator cannot claim through more rounds than `maxEarningsClaimsRounds`.
 
 ---
 
@@ -820,22 +851,23 @@ Each of the parameters are defined in the manager that they are the most relevan
 
 ### RoundsManager
 
-| Parameter         | Description                                                                                                                                               | Default Value |
-|-------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------|---------------|
-| `roundLength`     | Number of blocks in a round.                                                                                                                              |          5760 |
+| Parameter         | Description                                                                                                                                                        | Example Value |
+|-------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------|
+| `roundLength`     | Number of blocks in a round.                                                                                                                                       |          5760 |
 | `roundLockAmount` | Percentage of blocks in a round that are a part of the lock period during which transcoders cannot change their rates upwards, or enter/leave the transcoder pool. |            10 |
 
 ### BondingManager
 
-| Parameter              | Description                                                                                                 | Default Value |
-|------------------------|-------------------------------------------------------------------------------------------------------------|---------------|
-| `unbondingPeriod`      | Number of rounds that a delegator must wait after calling `unbond` before it can withdraw its unbonded LPT. |             7 |
-| `numTranscoders`       | Maximum number of registered transcoders.                                                                   |            20 |
-| `numActiveTranscoders` | Maximum number of active transcoders during a round.                                                        |            10 |
+| Parameter                 | Description                                                                                                    | Example Value |
+|---------------------------|----------------------------------------------------------------------------------------------------------------|---------------|
+| `unbondingPeriod`         | Number of rounds that a delegator must wait after calling `unbond` before it can withdraw its unbonded LPT.    |             7 |
+| `numTranscoders`          | Maximum number of registered transcoders.                                                                      |            20 |
+| `numActiveTranscoders`    | Maximum number of active transcoders during a round.                                                           |            10 |
+| `maxEarningsClaimsRounds` | Maximum number of past rounds that a delegator can claim reward and fee shares through in a single transaction |            20 |
 
 ### JobsManager
 
-| Parameter                       | Description                                                                                                                        | Default Value |
+| Parameter                       | Description                                                                                                                        | Example Value |
 |---------------------------------|------------------------------------------------------------------------------------------------------------------------------------|---------------|
 | `verificationRate`              | Percentage of segments in a transcode claim that will be challenged for verification.                                              |             5 |
 | `verificationPeriod`            | Number of blocks after submitting a transcode claim during which a transcoder can submit transcode proofs for challenged segments. |           100 |
@@ -847,7 +879,7 @@ Each of the parameters are defined in the manager that they are the most relevan
 
 ### Minter
 
-| Parameter           | Description                                                                                                  | Default Value |
+| Parameter           | Description                                                                                                  | Example Value |
 |---------------------|--------------------------------------------------------------------------------------------------------------|---------------|
 | `inflation`         | Percentage of total LPT supply that is issued as new LPT during a round.                                     |             7 |
 | `inflationChange`   | Percentage change in inflation that occurs when the current bonding rate does not equal `targetBondingRate`. |           .02 |
@@ -855,6 +887,6 @@ Each of the parameters are defined in the manager that they are the most relevan
 
 ### Verifier
 
-| Parameter              | Description                                                                                        | Default Value                                  |
+| Parameter              | Description                                                                                        | Example Value                                  |
 |------------------------|----------------------------------------------------------------------------------------------------|------------------------------------------------|
 | `verificationCodeHash` | The content-addressed storage hash used to retrieve the code for verification of transcoding work. | QmZmvi1BaYSdxM1Tgwhi2mURabh46xCkzuH9PWeAkAZZGc |
