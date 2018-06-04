@@ -37,7 +37,7 @@ Livepeer项目旨在提供一种完全去中心化、高度可扩展、加密Tok
         - [Broadcast + Transcoding Job 直播+转码作业](#broadcast--transcoding-job-直播转码作业)
             - [Preprocessing 预处理](#preprocessing-预处理)
             - [The Job 作业](#the-job-作业)
-            - [End Job 完成工作](#end-job-完成工作)
+            - [End Job 结束工作](#end-job-结束工作)
         - [Verification of Work 工作的验证](#verification-of-work-工作的验证)
             - [A Note On Truebit 关于TruteBIT的备注](#a-note-on-truebit-关于trutebit的备注)
         - [Token Generation  Token的生成](#token-generation--token的生成)
@@ -365,7 +365,7 @@ At this point the broadcaster can begin streaming video segments towards the tra
 7. **Transcoder** performs transcoding and makes new output stream available on network
 9. **Transcoder**: Store a transcode receipt for each segment of transcoding work. A transcode receipt has the following fields.
 >
-2. **关闭者** -> **Livepeer智能合约**：Job(streamID, options, price/segment)
+2. **直播发布者** -> **Livepeer智能合约**：Job(streamID, options, price/segment)
     - 在链上创建作业请求，并在托管中放置一些ETH来支付工作。
 3. 该协议可以使用下一个块哈希来确定性地为该作业选择正确的转码器。
 4. **转码器**> **播音员**：发送输出流和收据，接受工作。
@@ -382,7 +382,7 @@ At this point the broadcaster can begin streaming video segments towards the tra
 | **Broadcaster segment signature** | A signature from the broadcaster of Priv(StreamID, Seq#, Dhash) which can be used to attest and verify that the broadcaster claims this to be the true data for this unique segment. |
 | **Transcoder segment signature** | A signature of all of the above fields from the transcoder attesting to the claim that this specific output transcoding was performed on this specific input. |
 
-| Transcode Receipt Field | 描述 |
+| 转码收据字段 | 描述 |
 |-------|------------|
 | **StreamID** | 标识此段属于的源节点和流。 | 
 | **Sequence Number** | 该段属于原始流的顺序。 |
@@ -395,7 +395,7 @@ Whenever the transcoder observes that they are no longer receiving segments, the
 
 每当转码器观察到它们不再接收片段时，它们可以调用 `ClaimWork()` 来声明它们的工作。
  
-#### End Job 完成工作
+#### End Job 结束工作
 
 10. **Transcoder** -> **Livepeer Smart Contract**: Call `ClaimWork(JobID, StartSegmentSeq#, EndSegmentSeq#, MerkleRoot)`. Transcoder is claiming on chain they have performed work on the claimed segment range, with a merkle root of all of the transcode receipt data to commit to the content of these encoded segments.
 11. Wait for this transaction to be mined, and observe the next blockhash. The protocol can then determine which segments will be verified based upon the `VerificationRate`.
@@ -414,8 +414,8 @@ Whenever the transcoder observes that they are no longer receiving segments, the
 14. **转码器** -> **Truebit**：`Verify()`。这是对Truebit智能合约的链接调用，转码者为挑战的段提供Swarm输入哈希。 （关于下一节中的验证的更多信息）
 15. **Truebit** -> **Livepeer智能合约**：工作结果以连锁书写。这与转码者提供的转码声明结果进行比较。
 16. **Livepeer智能合约**：此时，Livepeer智能合约拥有确定转码器工作是否得到验证所需的全部信息。
-     - 如果验证正确，则用作Token分配算法和释放托管费用的输入。
-     - 如果不正确，那么转码器及其代码会削减`FailedVerificationSlashAmount`，直播发布者将退还。
+    - 如果验证正确，则用作Token分配算法和释放托管费用的输入。
+    - 如果不正确，那么转码器及其代码会削减`FailedVerificationSlashAmount`，直播发布者将退还。
 
 The Broadcaster can stop sending segments at any point, which effectively is an `EndJob()`.
 
@@ -429,7 +429,7 @@ At this point the transcoding has been performed, proof of the work has been cla
 
 In order to allocate fees to transcoders who claim that they have performed a transcoding job, it’s necessary that the protocol can determine that the job was actually performed correctly with high probability. For this, Livepeer extends the research of, and makes use of, the [Truebit Protocol](http://truebit.io) [[6](#references)].
 
-为了向那些声称已经执行转码作业的转码器分配费用，协议有必要确定该作业实际上是以高概率正确执行的。为此，Livepeer扩展了 [Truebit Protocol](http://truebit.io) [[6](#references)]的研究，并使用。
+为了向那些声称已经执行转码作业的转码器分配费用，协议有必要确定该作业实际上是以高概率正确执行的。为此，Livepeer扩展了 [Truebit 协议](http://truebit.io) [[6](#references)]的研究，并使用。
 
 Truebit works by having one participant (the solver) perform the actual work for the fee, in this case transcoding, and then having additional participants (verifiers) verify the work in order to detect mistakes, errors, or cheating. The task is broken down into very small steps, and the verifiers check the work of the solver to find the first step that differs from what they expected it to be. Then, only this one very small step needs to be played out on chain by a smart contract (judge), who can tell which party did the work correctly. The economic incentives, including forced errors to incentivize checking on the part of verifiers, ensure that it is not profitable to cheat or challenge incorrectly, but it is profitable to play the role of checking the work.
 
@@ -483,9 +483,9 @@ It is important that it be more profitable to simply stake LPT towards a valid, 
 *2. Oraclize Computation Service - Trust a company who provides proofs of computation and who's entire reputation relies upon putting external data on chain with proofs that it wasn't tampered with.*  
 *3. Secure hardware enclaves - Services like Intel SGX or TownCrier provide trusted computing environments. Trust that their hardware implementation is correct and secure. This can be decentralized and audited.*
 
-* 1。基于Livepeer API的Oracle - 信任对Livepeer计算进行验证。非常集中，对于测试之外的任何东西都不理想。
-* 2。Oraclize计算服务 - 信任提供计算证明的公司和谁的整个声誉依赖于外部数据链上的证据，它没有被篡改。
-* 3。安全硬件包 - 英特尔SGX或TownCrier等服务提供可信计算环境。相信他们的硬件实现是正确的和安全的。这可以去中心化和审核。
+*1. Livepeer API Based Oracle - 信任对Livepeer计算进行验证。非常集中，对于测试之外的任何东西都不理想。* 
+*2. Oraclize Computation Service - 信任提供计算证明的公司和谁的整个声誉依赖于外部数据链上的证据，它没有被篡改。* 
+*3. 安全硬件包 - 英特尔SGX或TownCrier等服务提供可信计算环境。相信他们的硬件实现是正确的和安全的。这可以去中心化和审核。* 
 
 ### Token Generation  Token的生成
 
@@ -526,7 +526,7 @@ As previously mentioned, the conditions for slashing are:
 - Failing a verification
 - Failing to invoke verification when required to do so
 - Not performing a proportional share of the required work within the platform based upon delegated stake
-
+>
 - 未通过验证
 - 当需要时不调用验证
 - 不基于委托股份在平台内执行所需工作的比例份额
@@ -616,8 +616,8 @@ Livepeer中的拒绝服务有两种方式：
 1. A Transcoder can try to prevent or slow down a Broadcaster from getting their encoded stream out to the network by accepting a job but refusing to transcode.
 2. A Broadcaster can prevent a Transcoder from being able to do the job that they believe they were assigned by refusing to send them segments.
 >
-1.转码器可以尝试阻止或减慢直播发布者通过接受作业但拒绝转码将其编码流发送到网络。
-2.直播发布者可以阻止转码器完成他们认为是通过拒绝发送段来分配的工作。
+1. 转码器可以尝试阻止或减慢直播发布者通过接受作业但拒绝转码将其编码流发送到网络。
+2. 直播发布者可以阻止转码器完成他们认为是通过拒绝发送段来分配的工作。
 
 Both attacks have a cost and can be mitigated, with slight annoyance.
 
