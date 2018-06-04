@@ -4,16 +4,19 @@
 
 **Protocol and Economic Incentives For a Decentralized Live Video Streaming Network**
 
-Doug Petkanics <doug@livepeer.org>  
-Eric Tang <eric@livepeer.org>
+Doug Petkanics <doug@livepeer.org> <br>
+Eric Tang <eric@livepeer.org> <br>
+
+翻译 <br>
+Elnino Wang <elninowang@qq.com>
 
 ## 摘要 ###########################################
 
 The Livepeer project aims to deliver a live video streaming network protocol that is fully decentralized, highly scalable, crypto token incentivized, and results in a solution which can serve as the live media layer in the decentralized development (web3) stack. In addition, Livepeer is meant to provide an economically efficient alternative to centralized broadcasting solutions for any existing broadcaster. In this document we describe the Livepeer Protocol - a delegated stake based protocol for incentivizing participants in a live video broadcast network in a game-theoretically secure way. We present solutions for the scalable verification of decentralized work, as well as the prevention of useless work in an attempt to game the token allocations in an inflationary system.
 
-Livepeer项目旨在提供实时视频流媒体网络协议，该协议完全分散，高度可扩展，加密Token被激励，并产生可用作分散式开发（web3）堆栈中的实时媒体层的解决方案。 此外，Livepeer旨在为任何现有广播公司的集中广播解决方案提供经济高效的替代方案。 在本文中，我们描述了Livepeer协议 - 一种基于赌注的委托协议，用于以理论上安全的方式激励现场视频广播网络中的参与者。 我们提出了分散工作的可扩展验证解决方案，以及防止无用工作，试图在通货膨胀系统中进行Token分配。
+Livepeer项目旨在提供实时视频流媒体网络协议，该协议完全去中心化，高度可扩展，加密Token被激励，并产生可用作去中心化式开发（web3）堆栈中的实时媒体层的解决方案。 此外，Livepeer旨在为任何现有直播发布者的集中直播解决方案提供经济高效的替代方案。 在本文中，我们描述了Livepeer协议 - 一种基于赌注的委托协议，用于以理论上安全的方式激励现场视频直播网络中的参与者。 我们提出了去中心化工作的可扩展验证解决方案，以及防止无用工作，试图在通货膨胀系统中进行Token分配。
 
-Livepeer项目旨在提供一种完全分散、高度可扩展、加密Token激励的实时视频流网络协议，并产生一种解决方案，该解决方案可以作为分散式开发（Web3）堆栈中的实况媒体层。此外，LIVEPER旨在为任何现有的广播提供一种经济高效的集中广播解决方案。在本文中，我们描述了LIVEPELL协议——基于博弈的理论上安全的方法，用于授权直播视频广播网络中的参与者。我们提出的解决方案，分散工作的可扩展性验证，以及防止无用的工作，试图在通货膨胀系统中的Token分配游戏。
+Livepeer项目旨在提供一种完全去中心化、高度可扩展、加密Token激励的实时视频流网络协议，并产生一种解决方案，该解决方案可以作为去中心化式开发（Web3）堆栈中的实况媒体层。此外，LIVEPER旨在为任何现有的直播提供一种经济高效的集中直播解决方案。在本文中，我们描述了LIVEPELL协议——基于博弈的理论上安全的方法，用于授权直播视频直播网络中的参与者。我们提出的解决方案，去中心化工作的可扩展性验证，以及防止无用的工作，试图在通货膨胀系统中的Token分配游戏。
 
 ## 目录 ###########################################
 
@@ -31,7 +34,7 @@ Livepeer项目旨在提供一种完全分散、高度可扩展、加密Token激�
         - [Consensus 共识](#consensus-共识)
         - [Bonding + Delegation 绑定+授权](#bonding--delegation-绑定授权)
         - [Transcoder() Transaction 事务](#transcoder-transaction-事务)
-        - [Broadcast + Transcoding Job 广播+转码作业](#broadcast--transcoding-job-广播转码作业)
+        - [Broadcast + Transcoding Job 直播+转码作业](#broadcast--transcoding-job-直播转码作业)
             - [Preprocessing 预处理](#preprocessing-预处理)
             - [The Job 作业](#the-job-作业)
             - [End Job 完成工作](#end-job-完成工作)
@@ -45,13 +48,13 @@ Livepeer项目旨在提供一种完全分散、高度可扩展、加密Token激�
         - [Consensus Attacks 共识攻击](#consensus-attacks-共识攻击)
         - [DDoS](#ddos)
         - [Useless or Self Dealing Transcoder 无用的或者自消耗的转码器](#useless-or-self-dealing-transcoder-无用的或者自消耗的转码器)
-        - [Transcoder Griefing   转码器Griefing](#transcoder-griefing---转码器griefing)
+        - [Transcoder Griefing   转码器 Griefing](#transcoder-griefing---转码器-griefing)
         - [Chain Reorg 链重组](#chain-reorg-链重组)
-    - [Live Video Distribution 直播视频分布](#live-video-distribution-直播视频分布)
+    - [Live Video Distribution 直播视频分发](#live-video-distribution-直播视频分发)
     - [Use Cases 使用案例](#use-cases-使用案例)
-        - [Pay-As-You-Go Content Consumption](#pay-as-you-go-content-consumption)
-        - [Auto-scaling Social Video Services](#auto-scaling-social-video-services)
-        - [Uncensorable Live Journalism](#uncensorable-live-journalism)
+        - [Pay-As-You-Go Content Consumption 对内容消费即付即用](#pay-as-you-go-content-consumption-对内容消费即付即用)
+        - [Auto-scaling Social Video Services 自动缩放社交视频服务](#auto-scaling-social-video-services-自动缩放社交视频服务)
+        - [Uncensorable Live Journalism 不能现场直播的新闻业](#uncensorable-live-journalism-不能现场直播的新闻业)
         - [Video Enabled DApps 启动视频的DApps](#video-enabled-dapps-启动视频的dapps)
     - [Summary 总结](#summary-总结)
     - [Appendix 附录](#appendix-附录)
@@ -69,15 +72,15 @@ Livepeer项目旨在提供一种完全分散、高度可扩展、加密Token激�
 
 The vision of the decentralized web has begun to be realized over the past couple years with the emergence of networks like [Ethereum](http://ethereum.org) to enable trustless computing, [Swarm](http://swarm-gateways.net/bzz:/theswarm.eth/) and [IPFS/Filecoin](http://ipfs.io) to enable decentralized storage and content distribution, Bitcoin and various token projects to facilitate p2p transfer of value, and decentralized name registries like [Blockstack](http://blockstack.org) and [ENS](http://ens.readthedocs.io/en/latest/introduction.html) to provide human accessible names to content and identities. These elements form the basis for decentralized applications (DApps) to be built in the form of largely static or infrequently updated web or mobile content, but at the moment DApps still lack the ability to include streaming media and data in an open and decentralized way. The goal of the Livepeer project is to decentralize live video broadcast over the internet.
 
-在过去的几年中，去中心化网络的愿景已经开始实现，随着[Ethereum](http://ethereum.org)等网络的出现，使得计算是可信任的，[Swarm](http://swarm-gateways.net/bzz:/theswarm.eth/) 和  [IPFS/Filecoin](http://ipfs.io)，以实现分散的存储和内容分发，比特币和各种代币项目以促进p2p价值转移，以及分散的名称注册管理机构 如[Blockstack](http://blockstack.org)和[ENS](http://ens.readthedocs.io/en/latest/introduction.html) 为内容和身份提供人性化的名称。 这些元素构成了分布式应用程序(DApps)的基础，以大部分静态或不常更新的Web或移动内容的形式构建，但目前DApps仍然缺乏以开放和分散的方式包含流媒体和数据的能力。 Livepeer项目的目标是通过互联网分散实况视频广播。
+在过去的几年中，去中心化网络的愿景已经开始实现，随着[Ethereum](http://ethereum.org)等网络的出现，使得计算是可信任的，[Swarm](http://swarm-gateways.net/bzz:/theswarm.eth/) 和  [IPFS/Filecoin](http://ipfs.io)，以实现去中心化的存储和内容分发，比特币和各种代币项目以促进p2p价值转移，以及去中心化的名称注册管理机构 如[Blockstack](http://blockstack.org)和[ENS](http://ens.readthedocs.io/en/latest/introduction.html) 为内容和身份提供人性化的名称。 这些元素构成了分布式应用程序(DApps)的基础，以大部分静态或不常更新的Web或移动内容的形式构建，但目前DApps仍然缺乏以开放和去中心化的方式包含流媒体和数据的能力。 Livepeer项目的目标是通过互联网去中心化视频直播。
 
 The [Livepeer Project Overview](https://github.com/livepeer/wiki/wiki/Project-Overview) provides a nice introduction to the current state of live video on the internet. This whitepaper will largely focus on the cryptoeconomic protocol details of Livepeer, rather than the business case, but in summary the overview describes the current state of live streaming as growing at a rapid pace, centralized, and expensive. On the other hand, a fully decentralized P2P solution, where nodes contributed their own computation and bandwidth in service of streaming live video would be more open and scalable, as there would be no limit to the number of connections that could be served.
 
-Livepeer项目概述](https://github.com/livepeer/wiki/wiki/Project-Overview) 提供了一个很好的介绍当前视频在互联网上的状态。该白皮书将主要集中于Live对等的加密经济协议细节，而不是业务案例，但总而言之，该概述描述了以快速、集中和昂贵的方式增长的直播流的当前状态。另一方面，完全分散的P2P解决方案，其中节点贡献自己的计算和带宽的流式直播视频服务将更加开放和可扩展性，因为将没有限制的数量，可以提供的连接。
+Livepeer项目概述](https://github.com/livepeer/wiki/wiki/Project-Overview) 提供了一个很好的介绍当前视频在互联网上的状态。该白皮书将主要集中于Live对等的加密经济协议细节，而不是业务案例，但总而言之，该概述描述了以快速、集中和昂贵的方式增长的直播流的当前状态。另一方面，完全去中心化的P2P解决方案，其中节点贡献自己的计算和带宽的流式直播视频服务将更加开放和可扩展性，因为将没有限制的数量，可以提供的连接。
 
 This technology is certainly available to a certain extent, but to date there has been no incentive to get users to run nodes that provide this functionality, nor has there been proper funding for the development of an open protocol that can facilitate this in a way that benefits the entire internet rather than one centralized company. However, with the recent emergence of crypto token powered protocols [[2, 3](#references)], there is now an opportunity to simultaneously incentivize users to contribute computation and bandwidth towards live video broadcast, in a way that aligns with financing the development of an open media server solution capable of delivering live streamed video according to all the latest standards and formats required to reach the full range of devices. Additionally, the economic actions traditionally seen as a result of token powered protocols indicate that the cost to the broadcaster in order to use the Livepeer network could be cheaper than the cost of any centralized solution.
 
-当然，这种技术在一定程度上是可用的，但到目前为止，还没有激励用户运行提供此功能的节点，也没有合适的资金来开发开放协议，这可以有利于整个因特网的发展。而不是一个集中的公司。然而，随着最近出现的密码Token供电协议 [[2, 3](#references)]，现在有机会同时激励用户向实时视频广播贡献计算和带宽，这与资助开放媒体服务的发展相一致。ER解决方案能够根据所有最新的标准和格式，以达到全范围的设备提供实时流视频。此外，传统上认为是Token供电协议的经济行为表明，为了使用Livepeer网络，广播公司的成本可能比任何集中式解决方案的成本便宜。
+当然，这种技术在一定程度上是可用的，但到目前为止，还没有激励用户运行提供此功能的节点，也没有合适的资金来开发开放协议，这可以有利于整个因特网的发展。而不是一个集中的公司。然而，随着最近出现的密码Token供电协议 [[2, 3](#references)]，现在有机会同时激励用户向实时视频直播贡献计算和带宽，这与资助开放媒体服务的发展相一致。ER解决方案能够根据所有最新的标准和格式，以达到全范围的设备提供实时流视频。此外，传统上认为是Token供电协议的经济行为表明，为了使用Livepeer网络，直播发布者的成本可能比任何集中式解决方案的成本便宜。
 
 As the Livepeer technology and protocol are delivered, it will enable users to participate in the following flow:
 
@@ -100,7 +103,7 @@ As the Livepeer technology and protocol are delivered, it will enable users to p
 
 The technology stack for broadcasting live video has evolved over many years and contains many layers. Broadcasters need to capture video at the source, interface with a media server to process and transcode the video into many different formats, distribute the video across a network, and then allow the video to be played in high perceived quality by the end consumer. There are also economic questions that are introduced when one thinks through this stack, such as whether it should be the broadcaster or consumer who should be paying for the bandwidth to transfer the video.
 
-广播直播视频的技术栈已经发展了多年，包含了很多层。广播公司需要在视频源处捕获视频，与媒体服务器接口，以处理和将视频转换成多种不同的格式，通过网络分发视频，然后允许终端消费者以高感知质量播放视频。当人们思考这个堆栈时，也会出现一些经济问题，比如应该是广播员还是消费者，他们应该支付带宽来传输视频。
+直播视频的技术栈已经发展了多年，包含了很多层。直播发布者需要在视频源处捕获视频，与媒体服务器接口，以处理和将视频转换成多种不同的格式，通过网络分发视频，然后允许终端消费者以高感知质量播放视频。当人们思考这个堆栈时，也会出现一些经济问题，比如应该是直播发布者还是消费者，他们应该支付带宽来传输视频。
 
 A typical live streaming platform today needs to support RTMP, HLS, Mpeg-Dash video formats in H.264 and VP8 codec. New codecs like H.265/HEVC, VP9, and AV1 will become more popular in the near future as consumers become more accustomed to higher video quality.  For HLS alone, [Apple suggests](https://developer.apple.com/library/content/documentation/General/Reference/HLSAuthoringSpec/Requirements.html#//apple_ref/doc/uid/TP40016596-CH2-SW1) bitrates from 145kb/s all the way up to 7800kb/s, in order to serve the different types of devices under different conditions. All of this adds a significant amount of complexity and cost to live video broadcasting.
 
@@ -108,7 +111,7 @@ A typical live streaming platform today needs to support RTMP, HLS, Mpeg-Dash vi
 
 The existing decentralized development stack (web3) contains solutions for some of the layers required for a live video platform, like file transfer and payments, but currently there are no solutions for the capture and interface, transcoding and processing, and serving layers of live video. For this, Livepeer introduces the [Livepeer Media Server (LPMS)](https://github.com/livepeer/wiki/wiki/Livepeer-Media-Server) - an open source implementation of a media server which provides all of the live video specific functionality necessary for DApp developers and existing broadcasters to build live functionality into their applications. [Read more about it here](https://github.com/livepeer/wiki/wiki/Livepeer-Media-Server).
 
-现有的去中心化开发堆栈（Web3）包含了对直播视频平台所需的一些层的解决方案，如文件传输和支付，但目前还没有解决方案，用于捕获和接口、转码和处理，以及现场视频的服务层。为此，Livepeer 介绍了 [Livepeer Media Server (LPMS)](https://github.com/livepeer/wiki/wiki/Livepeer-Media-Server) —— 一个媒体服务器的开源实现，它提供了DAPP开发者和现有广播者所需的所有直播视频特定功能。将活的功能应用到他们的应用程序中。[在这里阅读更多关于它](https://github.com/livepeer/wiki/wiki/Livepeer-Media-Server)。
+现有的去中心化开发堆栈（Web3）包含了对直播视频平台所需的一些层的解决方案，如文件传输和支付，但目前还没有解决方案，用于捕获和接口、转码和处理，以及现场视频的服务层。为此，Livepeer 介绍了 [Livepeer Media Server (LPMS)](https://github.com/livepeer/wiki/wiki/Livepeer-Media-Server) —— 一个媒体服务器的开源实现，它提供了DAPP开发者和现有直播发布者所需的所有直播视频特定功能。将活的功能应用到他们的应用程序中。[在这里阅读更多关于它](https://github.com/livepeer/wiki/wiki/Livepeer-Media-Server)。
 
 As a standalone application, any developer could build a live application on top of the LPMS, but it would still be centralized and would need to be scaled through traditional means. However when every node on the Livepeer network is running the LPMS, and the protocol’s economic incentives ensure that those nodes will contribute their processing power and bandwidth in service of transcoding and distributing live video, **a self-scaling, pay-as-you-go network is made available to developers, who can simply send their live stream into the network, and have the implementation details of scaling, payment, and media hosting abstracted away**.
 
@@ -146,7 +149,7 @@ Livepeer协议被设计用于解决工作的验证和预防伪造工作，同时
 
 The core unit of media within Livepeer is what we will call a `segment`. A segment is a time sliced chunk of multiplexed audio and video of time length `t`. Every segment in the Livepeer network is unique, and contains the cryptographic evidence to verify that the broadcaster intended this specific data for this specific segment. Each stream is made up of many consecutive segments, each containing a sequence number identifying their proper ordering. A segment contains the following fields:
 
-Livepeer中的媒体的核心单元是我们将称为 `segment`”的部分。段是时间长度`t`的多路复用音频和视频的时间切片块。Livepeer网络中的每个段都是唯一的，并且包含加密证据，以验证广播公司为这个特定的段打算这个特定的数据。每个流由许多连续的段组成，每个段包含一个序列号来标识它们的正确排序。一个段包含以下字段：
+Livepeer中的媒体的核心单元是我们将称为 `segment`”的部分。段是时间长度`t`的多路复用音频和视频的时间切片块。Livepeer网络中的每个段都是唯一的，并且包含加密证据，以验证直播发布者为这个特定的段打算这个特定的数据。每个流由许多连续的段组成，每个段包含一个序列号来标识它们的正确排序。一个段包含以下字段：
 
 | Video Segment Field | Description |
 |--------|--------|
@@ -161,8 +164,8 @@ Livepeer中的媒体的核心单元是我们将称为 `segment`”的部分。�
 | **StreamID** | 标识此段属于的源节点和流。 |
 | **SequenceNumber** | 该段属于原始流的顺序。 |
 | **DataPayload** | 表示该段中音频/视频的二进制元数据和数据。 |
-| **DataHash** | 数据有效载荷的散列。 |
-| **BroadcasterSignature** | 来自 `Priv(StreamID, SequenceNumber, hash(StreamID, SequenceNumber, DataHash))` 的一个签名，它可以用来证明和验证广播者声称这是这个独特片段的真实数据。 |
+| **DataHash** | 数据有效载荷的哈希。 |
+| **BroadcasterSignature** | 来自 `Priv(StreamID, SequenceNumber, hash(StreamID, SequenceNumber, DataHash))` 的一个签名，它可以用来证明和验证直播发布者声称这是这个独特片段的真实数据。 |
 
 
 The Livepeer protocol generally uses segments as the unit of work for transcoding, distribution, and payments.
@@ -173,7 +176,7 @@ Livepeer协议通常使用段作为转码、分发和支付的工作单元。
 
 The Livepeer Token (LPT) is the protocol token of the Livepeer network. But it is not the medium of exchange token. Broadcasters use Ethereum's Ether (ETH) to broadcast video on the network. Nodes who contribute processing and bandwidth earn ETH in the form of fees from broadcasters. LPT is a staking token that participants who want to perform work on the network stake in order to coordinate how work gets distributed on the network, and to provide security that the work will get done honestly and correctly. LPT has the following purposes:
 
-Livepeer Token（LPT）是Livepeer网络的协议Token。但它不是交换Token的媒介。广播者使用以太币（ETH）在网络上播放视频。贡献处理和带宽的节点从广播者的收费形式获得ETH。LPT是一个标记Token，参与者想要在网络上执行工作，以协调工作如何分布在网络上，并提供工作将得到诚实和正确地完成的安全性。LPT有以下目的：
+Livepeer Token（LPT）是Livepeer网络的协议Token。但它不是交换Token的媒介。直播发布者使用以太币（ETH）在网络上播放视频。贡献处理和带宽的节点从直播发布者的收费形式获得ETH。LPT是一个标记Token，参与者想要在网络上执行工作，以协调工作如何分布在网络上，并提供工作将得到诚实和正确地完成的安全性。LPT有以下目的：
 
 - It serves as a bonding mechanism in a delegated proof of stake system, in which stake is delegated towards transcoders (or validators) who participate in the protocol to transcode video and validate work. The token, and potential slashing that occurs due to protocol violation, is necessary in order to secure the network against a number of attacks. More below.
 - It routes work through the network in proportion to the amount of staked and delegated token, essentially serving as a coordination mechanism.
@@ -206,7 +209,7 @@ Before going forward, let’s define the roles in the network so that there is a
 
 | 节点角色 | 描述 |
 |--------|-----------|
-| **广播者** | Livepeer节点发布原始流。 |
+| **直播发布者** | Livepeer节点发布原始流。 |
 | **转码器** | Livepeer节点执行将流转码为另一种编解码器，比特率或打包格式的工作。 |
 | **中继节点** | Livepeer节点参与实时视频的分发和协议消息的传递，但不一定执行任何代码转换。 |
 | **消费者** | 请求流的Livepeer节点，可能会查看它或通过网关将其提供给他们的应用程序或DApp的用户。 |
@@ -236,11 +239,11 @@ Here is a visual overview of the roles, and the ways in which they communicate w
 
 *Segments flowing from the broadcaster to the transcoder and eventually to the consumer. The transcoder ensures they have signatures and proof of work to participate in the work verification procedure.*
 
-*从广播者到转码器的部分，最终流向消费者。转码器确保他们有签名和证明工作参与工作验证程序。
+*从直播发布者到转码器的部分，最终流向消费者。转码器确保他们有签名和证明工作参与工作验证程序。
 
 **Note on Transcoders:** Transcoders play the most critical role in the Livepeer ecosystem. They are the ones who are taking an input stream and converting it into many different formats in a timely manner for low latency distribution. As such they benefit from high availability, efficient, powerful hardware (potentially with GPU accelerated transcoding), high bandwidth connections, and solid DevOps practices. Transcoders should churn far less than other network participants, as when they take on the job of transcoding a stream, it’s less than ideal if they drop off the network. While the network can scale to support many participants playing the role of transcoder (and earning the requisite token allocations), this is a special role that’s delegated from most network participants, in order to ensure that a reliable network that provides value to broadcasters is maintained. More below on this delegation.
 
-**关于转码器的注释：** 转码器在Livepeer生态系统中扮演最关键的角色。他们是谁采取的输入流，并将其转换成许多不同的格式，及时为低延迟分布。因此，它们受益于高可用性、高效、强大的硬件（潜在地具有GPU加速的转码）、高带宽连接和坚实的DevOps实践。转码器应该比其他网络参与者少得多，因为当他们从事对流进行转码的工作时，如果它们掉在网络上就不太理想了。虽然网络可以缩放以支持许多参与者扮演代码转码器的角色（并且赚取必要的Token分配），但这是从大多数网络参与者委派的特殊角色，以确保为广播提供价值的可靠网络是维持的。更多关于这个代表团。
+**关于转码器的注释：** 转码器在Livepeer生态系统中扮演最关键的角色。他们是谁采取的输入流，并将其转换成许多不同的格式，及时为低延迟分布。因此，它们受益于高可用性、高效、强大的硬件（潜在地具有GPU加速的转码）、高带宽连接和坚实的DevOps实践。转码器应该比其他网络参与者少得多，因为当他们从事对流进行转码的工作时，如果它们掉在网络上就不太理想了。虽然网络可以缩放以支持许多参与者扮演代码转码器的角色（并且赚取必要的Token分配），但这是从大多数网络参与者委派的特殊角色，以确保为直播提供价值的可靠网络是维持的。更多关于这个代表团。
 
 ### Consensus 共识
 
@@ -250,7 +253,7 @@ Livepeer有两层共识系统。LPT分类帐和交易由基础链链（如Ethere
 
 This second level of consensus governing the newly generated token is based upon Delegated Proof of Stake (DPOS), as inspired by systems like Bitshares, Steem, Tendermint, and Casper [[5, 9, 10, 11](#references)]. The role of validators in the network is played by Transcoders. Any user can delegate their stake towards a transcoder, who then needs to perform transcoding jobs in the network, participate in the work verification protocol, and invoke functions on chain at specific intervals to validate this work. The protocol will distribute fees and newly generated token, and it will slash the stake of badly behaved actors. The validation result will be recorded on-chain via Truebit after it performs the validation, so there will be no room for disputes between the broadcaster and the transcoder.
 
-第二层次的共识管理新生成的Token是基于委托的股份证明（DPOS），灵感来自于系统，如Bitshares，Steem，Tendermint，和Casper [[5, 9, 10, 11](#references)]。验证器在网络中的角色由转码器来扮演。任何用户都可以将他们的股份委托给代码转码器，后者需要在网络中执行代码转换作业，参与工作验证协议，并在特定的时间间隔调用链上的函数来验证这项工作。该协议将分发费用和新生成的token，并将削减行为不良的角色的股份。验证结果将在TwiteBIT完成验证之后通过Truebit记录在链上，因此广播和转码器之间不会有争执的余地。
+第二层次的共识管理新生成的Token是基于委托的股份证明（DPOS），灵感来自于系统，如Bitshares，Steem，Tendermint，和Casper [[5, 9, 10, 11](#references)]。验证器在网络中的角色由转码器来扮演。任何用户都可以将他们的股份委托给代码转码器，后者需要在网络中执行代码转换作业，参与工作验证协议，并在特定的时间间隔调用链上的函数来验证这项工作。该协议将分发费用和新生成的token，并将削减行为不良的角色的股份。验证结果将在TwiteBIT完成验证之后通过Truebit记录在链上，因此直播发布者和转码器之间不会有争执的余地。
 
 ### Bonding + Delegation 绑定+授权
 
@@ -264,7 +267,7 @@ The bonded amount is used to delegate stake towards a Transcoder. The network su
 
 Newly generated token in Livepeer is distributed to bonded nodes in relative proportion to the amount of work that they have bonded (minus fees), as long as they’ve delegated towards transcoding nodes that behave according to the protocol. Bonds can be slashed (reduced by a certain percentage) if the nodes that they’ve delegated towards do not behave and violate one of the slashing conditions. Nodes who have bonded and delegated towards a Transcoder also receive a portion of the fees that the Transcoder generates through transcoding jobs on the network. In essence, nodes who perform work, earn the fees that broadcasters paid for that work.
 
-在Livepeer中，新生成的token与绑定的节点的数量成比例（减去费用），只要它们被委托给根据协议运行的转码节点。如果他们委托的节点不遵守和违反一个削减条件，则可以削减债券（减少一定百分比）。向转码器绑定和委托的节点还接收转码器通过网络上的转码作业生成的部分费用。本质上，执行工作的节点赚取广播者为该工作支付的费用。
+在Livepeer中，新生成的token与绑定的节点的数量成比例（减去费用），只要它们被委托给根据协议运行的转码节点。如果他们委托的节点不遵守和违反一个削减条件，则可以削减债券（减少一定百分比）。向转码器绑定和委托的节点还接收转码器通过网络上的转码作业生成的部分费用。本质上，执行工作的节点赚取直播发布者为该工作支付的费用。
 
 Going forward, when this document uses the term "delegator", it is referring to bonded nodes who have delegated their stake towards a transcoder candidate, instead of delegating it towards themselves as a transcoder.
 
@@ -279,7 +282,7 @@ In summary, participants choose to bond their stake for the following reasons:
 - Earn fees generated from transcoders.
 - They may wish to be a Transcoder.
 
-- 参与向有效的转码器的委派，为网络提供巨大的服务，确保其对广播电台的价值。
+- 参与向有效的转码器的委派，为网络提供巨大的服务，确保其对直播电台的价值。
 - 以分配比例与持股比例建立声誉和未来的工作分配。
 - 赚取来自转码器生辰的费用。
 - 他们可能希望成为转码器。
@@ -296,7 +299,7 @@ A node indicates their willingness to be a transcoder by submitting a `Transcode
 >
 - 'PricePerSegment'：他们愿意接受的最低价格来转码一段视频
 - `BlockRewardCut`：保税节点为转码服务支付的块奖励的百分比。 （例2％，如果一个绑定节点在块奖励中接收到100个LPT，则向转码器接收2个LPT）。
-- 'FeeShare'：转码器愿意与委托给它的保税节点共享广播作业的费用百分比。 （例如25％。如果一个代码转码器收到100个ETH的费用，他们将向保税节点支付25个ETH）。
+- 'FeeShare'：转码器愿意与委托给它的保税节点共享直播作业的费用百分比。 （例如25％。如果一个代码转码器收到100个ETH的费用，他们将向保税节点支付25个ETH）。
 
 The Transcoder can update their availability and information up until `RoundLockAmount` time before the next transcoding round. This is offered as a % of the round. (Example 10% == 2.4 hours. They can change this information until 2.4 hours before the next transcoding round which lasts for `RoundLength` 1 day). This gives bonded nodes the chance to review the fee splits and token reward splits relative to other transcoders, as well as anticipated fees based upon the rate they're charging and network demand, and move their delegated stake if they wish. At the start of a transcoding round (triggered by a call to the `InitializeRound()` transaction), the active transcoders for that round are determined based upon the total stake delegated towards each transcoder, and stakes and rates are locked in for the duration of that round.
 
@@ -322,7 +325,7 @@ Here is an example state of Transcoder options that a delegator can review when 
 
 *注意价格：在这份文件中，我们列出价格/段。在现实中，Livepeer计划使用一个gas会计启发模型，其中有一个概念的单位的gas所需的某些工作参数的一个环节，如比特率，编码，帧大小等。价格/段是一个站在那里，激励是相同的，但实际上，他们很可能是沟通中的价格/gas*
 
-### Broadcast + Transcoding Job 广播+转码作业
+### Broadcast + Transcoding Job 直播+转码作业
 
 Transcoders who are open for business on the network, throw their hat into the ring for transcoding work by submitting a `TranscodeAvailability()` transaction. This indicates their availability and places them into a pool of transcoders available to take a newly submitted job.
 
@@ -330,13 +333,13 @@ Transcoders who are open for business on the network, throw their hat into the r
 
 When a broadcaster submits their stream into the Livepeer network it is given a `StreamID`. This serves as both a unique identifier, and it also contains the origin node address so that nodes know how to request and route requests to consume this stream towards the origin. The stream contains many consecutive `Segments`, as described in the [Video Segments](#video-segments) section. If the broadcaster would like the network to take care of transcoding their stream into all the formats and bitrates necessary to reach every user on every device, then the first step is submitting a transcoding job transaction on chain. Jobs are given a unique ID as well, and the input data to job consists of:
 
-当广播员将其流提交到Livepeer网络时，它被赋予`StreamID`。这既充当唯一标识符，又包含源节点地址，以便节点知道如何请求和路由请求，以将该流消耗到原点。该流包含许多连续的`Segments`，如[Video Segments](#video-segments) 中所描述的。如果广播者希望网络将其流转换成所有的格式和比特率，以达到每个设备上的每个用户，那么第一步就是提交一个链上的转码作业事务。作业也被赋予唯一的ID，并且作业的输入数据包括：
+当直播发布者将其流提交到Livepeer网络时，它被赋予`StreamID`。这既充当唯一标识符，又包含源节点地址，以便节点知道如何请求和路由请求，以将该流消耗到原点。该流包含许多连续的`Segments`，如[Video Segments](#video-segments) 中所描述的。如果直播发布者希望网络将其流转换成所有的格式和比特率，以达到每个设备上的每个用户，那么第一步就是提交一个链上的转码作业事务。作业也被赋予唯一的ID，并且作业的输入数据包括：
 
 `Job(StreamID, TranscodingOptions, PricePerSegment)`
 
 The `TranscodingOptions` define the output bitrates, formats, encodings, etc, and the `PricePerSegment` lists the price that the broadcaster will offer.
 
- `TranscodingOptions` 定义了输出比特率、格式、编码等，并且`PricePerSegment`列出了广播公司将提供的价格。
+ `TranscodingOptions` 定义了输出比特率、格式、编码等，并且`PricePerSegment`列出了直播发布者将提供的价格。
 
 As soon as this transaction is mined, the next blockhash will be used to pseudo-randomly determine the transcoder selected for this job. All transcoders with a price that’s lower than or equal to the price offered will be considered, and the blockhash modulus the number of candidate transcoders (weighted by their stakes) will determine the index of the selected transcoder.
 
@@ -344,13 +347,13 @@ As soon as this transaction is mined, the next blockhash will be used to pseudo-
 
 At this point the broadcaster can begin streaming video segments towards the transcoder, and they’ll participate in the following protocol. The protocol also makes use of a persistent storage solution, for example Swarm, as part of the work verification process.
 
-在这一点上，广播者可以开始向转码器流视频片段，并且他们将参与以下协议。该协议还使用持久性存储解决方案，例如Swarm，作为工作验证过程的一部分。
+在这一点上，直播发布者可以开始向转码器流视频片段，并且他们将参与以下协议。该协议还使用持久性存储解决方案，例如Swarm，作为工作验证过程的一部分。
 
 #### Preprocessing 预处理
 
 1.  **Broadcaster**  -> **Livepeer Smart Contract**: submits a deposit on chain to cover the cost of the full transcoding job. This can be refilled later at any point, but the Transcoder may stop work if the deposit runs out as they gradually cash in for work done.
 
-1. **广播者** -> **Livepeer智能合约**：在链上提交一个定金以覆盖完整的转码作业的费用。这可以在以后的任何时候重新填写，但是如果存款在完成工作时逐渐用完，转码器就可以停止工作。
+1. **直播发布者** -> **Livepeer智能合约**：在链上提交一个定金以覆盖完整的转码作业的费用。这可以在以后的任何时候重新填写，但是如果存款在完成工作时逐渐用完，转码器就可以停止工作。
 
 #### The Job 作业
 
@@ -366,7 +369,7 @@ At this point the broadcaster can begin streaming video segments towards the tra
     - 在链上创建作业请求，并在托管中放置一些ETH来支付工作。
 3. 该协议可以使用下一个块哈希来确定性地为该作业选择正确的转码器。
 4. **转码器**> **播音员**：发送输出流和收据，接受工作。
-5. **广播者**> **转码器**：发送流段，其中包含验证输入数据的签名。
+5. **直播发布者**> **转码器**：发送流段，其中包含验证输入数据的签名。
 7. **转码器** 执行转码，并使新的输出流可在网络上使用。
 9. **转码器**：为转换工作的每一段存储一个转码收据。转码收据具有以下字段。
 
@@ -385,7 +388,7 @@ At this point the broadcaster can begin streaming video segments towards the tra
 | **Sequence Number** | 该段属于原始流的顺序。 |
 | **Input Data hash** | 输入段数据有效载荷的哈希。 |
 | **Transcoded Data hash** | 在对该段进行转码后输出数据的哈希。 |
-| **Broadcaster segment signature** | 来自 Priv(StreamID, Seq#, Dhash)的广播者的签名，可以用来证明和证实广播者声称这是这个独特片段的真实数据。 |
+| **Broadcaster segment signature** | 来自 Priv(StreamID, Seq#, Dhash)的直播发布者的签名，可以用来证明和证实直播发布者声称这是这个独特片段的真实数据。 |
 | **Transcoder segment signature** | 来自转码器的所有上述字段的签名，证明该特定输出转码是在该特定输入上执行的。 |
 
 Whenever the transcoder observes that they are no longer receiving segments, they can call `ClaimWork()` to claim their work.
@@ -403,10 +406,20 @@ Whenever the transcoder observes that they are no longer receiving segments, the
 16.  **Livepeer Smart Contract**: at this point the Livepeer smart contract has all the information it needs to determine if the Transcoder’s work is verified.
     - If verified correct, then use as input to token allocation algorithm and release of escrowed fees.
     - If incorrect, then Transcoder and its stakers get slashed `FailedVerificationSlashAmount` and the Broadcaster is refunded.
+>
+10. **转码器** -> **Livepeer智能合约**：调用`ClaimWork(JobID, StartSegmentSeq#, EndSegmentSeq#, MerkleRoot)`。转码器声称在链上他们已经在声明的代码段范围内执行了任务，所有代码转换接收数据的merkle根都提交给这些编码代码段的内容。
+11. 等待这笔交易被挖矿，并观察下一个块冲突。协议然后可以根据`VerificationRate`确定哪些段将被验证。
+12. **转码器** -> **Swarm**：使用SWEAR参数为将要通过验证挑战的片段写入输入数据有效载荷，以确保数据在那里足够长以进行验证（`VerificationPeriod`时间）。
+13. **转码器** -> **Livepeer智能合约**：为需要验证的每个细分市场提供链式转码声明，以及转码声明中每个细分市场收据的merkle证明。智能合同可以验证来自直播发布者和**转码者**的签名以确保所有必要的数据可用于进行验证，并且可以验证来自`ClaimWork()`的承诺的merkle根的merkle证据。
+14. **转码器** -> **Truebit**：`Verify()`。这是对Truebit智能合约的链接调用，转码者为挑战的段提供Swarm输入哈希。 （关于下一节中的验证的更多信息）
+15. **Truebit** -> **Livepeer智能合约**：工作结果以连锁书写。这与转码者提供的转码声明结果进行比较。
+16. **Livepeer智能合约**：此时，Livepeer智能合约拥有确定转码器工作是否得到验证所需的全部信息。
+     - 如果验证正确，则用作Token分配算法和释放托管费用的输入。
+     - 如果不正确，那么转码器及其代码会削减`FailedVerificationSlashAmount`，直播发布者将退还。
 
 The Broadcaster can stop sending segments at any point, which effectively is an `EndJob()`.
 
-广播者可以在任何点停止发送段，这实际上是一个`EndJob()`。
+直播发布者可以在任何点停止发送段，这实际上是一个`EndJob()`。
 
 At this point the transcoding has been performed, proof of the work has been claimed on the chain, and failure or success of the verification of the work has been reported. All the info is on chain to determine allocation of fees and token allocations to transcoders and delegators, or slashing in the case of failed verification. Let’s take a look at how work is actually verified.
 
@@ -453,7 +466,7 @@ Truebit会将计算结果（成功或失败）写回到Livepeer智能合约中�
 >
 - 如果失败了来自Truebit的验证，则`FailedVerificationSlashAmount`将被削减。
 - 如果他们未能提供转码声明并且在他们被要求的部分上调用Truebit，则`MissedVerificationSlashAmount`将被削减。
-- 从广播者收取费用。
+- 从直播发布者收取费用。
 - 转码者不仅会被削减，而且他们的所有委托人也会被削减。 他们会将这个帐户纳入他们决定由谁来委派的方式，而转码者可能会失去他们持有的有利可图的工作。
 
 It is important that it be more profitable to simply stake LPT towards a valid, honestly performing transcoder, than it can be to cheat and take slashing penalties while still collecting fees and token allocations for dishonest work. Careful selection of the slashing params and verification rate can ensure this.
@@ -472,7 +485,7 @@ It is important that it be more profitable to simply stake LPT towards a valid, 
 
 * 1。基于Livepeer API的Oracle - 信任对Livepeer计算进行验证。非常集中，对于测试之外的任何东西都不理想。
 * 2。Oraclize计算服务 - 信任提供计算证明的公司和谁的整个声誉依赖于外部数据链上的证据，它没有被篡改。
-* 3。安全硬件包 - 英特尔SGX或TownCrier等服务提供可信计算环境。相信他们的硬件实现是正确的和安全的。这可以分散和审核。
+* 3。安全硬件包 - 英特尔SGX或TownCrier等服务提供可信计算环境。相信他们的硬件实现是正确的和安全的。这可以去中心化和审核。
 
 ### Token Generation  Token的生成
 
@@ -567,8 +580,8 @@ The role of governance within the Livepeer protocol is intended to be three fold
 3. Invoke proposed protocol updates in a decentralized fashion.
 >
 1. 确定由不当行为节点削减的共同基金的燃烧或挪用。
-2. 调整网络参数，以确保健康、繁荣的网络，这对广播者是有价值的。
-3. 以分散的方式调用提议的协议更新。
+2. 调整网络参数，以确保健康、繁荣的网络，这对直播发布者是有价值的。
+3. 以去中心化的方式调用提议的协议更新。
 
 Many of the network parameters referenced in this document such as `UnbondingPeriod`, `RoundLength`, `ParticipationRate`, and `VerificationRate` are adjustable. Proposals for adjustments to these parameters can be submitted, and the governance process, including voting by transcoders in proportion to their delegated stake, will determine adoption of these changes automatically within the protocol. The detailed spec for governance is left for another document. [See more here](https://github.com/livepeer/wiki/wiki/Governance). 
 
@@ -603,8 +616,8 @@ Livepeer中的拒绝服务有两种方式：
 1. A Transcoder can try to prevent or slow down a Broadcaster from getting their encoded stream out to the network by accepting a job but refusing to transcode.
 2. A Broadcaster can prevent a Transcoder from being able to do the job that they believe they were assigned by refusing to send them segments.
 >
-1.转码器可以尝试阻止或减慢广播者通过接受作业但拒绝转码将其编码流发送到网络。
-2.广播者可以阻止转码器完成他们认为是通过拒绝发送段来分配的工作。
+1.转码器可以尝试阻止或减慢直播发布者通过接受作业但拒绝转码将其编码流发送到网络。
+2.直播发布者可以阻止转码器完成他们认为是通过拒绝发送段来分配的工作。
 
 Both attacks have a cost and can be mitigated, with slight annoyance.
 
@@ -612,75 +625,119 @@ Both attacks have a cost and can be mitigated, with slight annoyance.
 
 In the first case, a Transcoder has to pay to claim their availability on chain. If they are not going to receive a fee because they didn't do the work, then they're throwing ETH away. The Broadcaster can just resubmit the job and be assigned a new Transcoder. One potential option for scalability is that the protocol can identify a number of valid Transcoders in priority order instead of just one, and this way the Broadcaster can just move on without another on chain transaction. Additionally, all stats about accepted jobs and average # of segments transcoded/job, etc, can be calculated from on-chain data, and delegators would use this as input into their decision about whom to delegate towards. Behave poorly and lose your role.
 
-在第一种情况下，转码喆必须支付声明他们可用性在链上。如果他们不收取费用，因为他们没有做这项工作，那么他们就扔了。广播者可以重新提交任务并分配一个新的转码器。可扩展性的一个潜在选择是，协议可以以优先级顺序标识多个有效的转码器，而不是仅一个，并且这样，广播者可以在没有另一个链上事务的情况下继续前进。此外，关于接受的工作的所有统计数据和平均代码段的转码/作业等，都可以从链数据中计算出来，并且委托人将其作为输入来决定他们向谁委托。表现不好，失去你的角色。
+在第一种情况下，转码喆必须支付声明他们可用性在链上。如果他们不收取费用，因为他们没有做这项工作，那么他们就扔了。直播发布者可以重新提交任务并分配一个新的转码器。可扩展性的一个潜在选择是，协议可以以优先级顺序标识多个有效的转码器，而不是仅一个，并且这样，直播发布者可以在没有另一个链上事务的情况下继续前进。此外，关于接受的工作的所有统计数据和平均代码段的转码/作业等，都可以从链数据中计算出来，并且委托人将其作为输入来决定他们向谁委托。表现不好，失去你的角色。
 
 In the case of a Broadcaster preventing a Transcoder from doing work, this is merely a capacity planning calculation. A Transcoding node can maintain records of its capacity for concurrent jobs, likelihood of a job being active/inactive, and ensure that it always believes it will have capacity for the work that it claims. Simply ignoring or calling `EndJob()` on a node that's refusing to send segments hardly hurts the Transcoder.
+
+如果直播发布者阻止转码器工作，这只是一个容量规划计算。 代码转换节点可以维护并发作业的容量记录，作业处于活动/不活动状态的可能性，并确保它始终认为它可以处理它声称的作业。 简单地忽略或调用拒绝发送段的节点上的`EndJob()`几乎不会伤害转码器。
 
 ### Useless or Self Dealing Transcoder 无用的或者自消耗的转码器
 
 If a Transcoder has enough stake to maintain their position, they could theoretically list a 100% `BlockRewardCut`, 0% `FeeShare`, and charge a high `PricePerSegment` such that they would never have to do any work, yet could collect their token allocation. This is prevented by the `CompetitivenessTolerance` which requires them to contribute some amount of valid work. Additionally, because of the transaction costs of participating in the protocol incurred by Transcoders, it would be more profitable for them to simply stake their token toward a valid Transcoder who was sharing fees with them, than it would be to act as a useless Transcoder who would receive no fees to speak of.
 
+如果转码器拥有足够的股份来维持其位置，他们理论上可以列出100％ `BlockRewardCut`，0％`FeeShare`，并收取高价`PricePerSegment`，以便他们永远不必做任何工作，但可以收集他们的 Token分配。 这是由`CompetitivenessTolerance` （竞争力容忍度）阻止的，要求他们贡献一定数量的有效工作。 另外，由于参与转码器产生的协议的交易成本，他们只需将他们的代币放在与他们分享费用的有效转码器上就会更有利，而不是像一个无用的转码器那样工作 将不收取任何费用。
+
 A misbehaving Transcoder who is outputting invalid output would quickly get slashed down to the point of their stake being reduced too low to actually keep their job and receive any work.
 
-### Transcoder Griefing   转码器Griefing
+输出无效输出的行为不端的转码器很快就会被削减到他们的股份被降低到不能实际保留他们的工作和接收任何工作的程度。
+
+### Transcoder Griefing   转码器 Griefing
 
 If a Broadcaster wanted to make the protocol very expensive to operate for a transcoder, it could send transcoders non-consecutive segment numbers. This is because transcoders can claim work for a continuous range of segment numbers in a single transaction, but would have to make many transactions to claim work across random segment number ranges. This can be defended against by the following options:
+
+如果一个直播发布者想要使协议对于转码器非常昂贵，它可以发送转码器非连续的段号。这是因为在单个事务中，转码器可以要求对连续数量的段编号进行工作，但必须进行许多事务以在随机段编号范围内请求工作。这可以通过以下选项进行辩护：
 
 1. Transcoder calls `EndJob()` and doesn't bother doing the work or attempting to collect the fees. 
 2. Protocol implements on chain parsing or better segment claim encoding in order to reduce fees associated with claiming non-consecutive segments in a single call.
 3. Simply ignore the segments and never claim the work.
+>
+1. 转码器调用`EndJob()`，不费心做这项工作，也不想收取费用。
+2. 协议实现链分析或更好的分段请求编码，以减少与在单个呼叫中请求非连续段相关联的费用。
+3. 简单地忽略分段，从不要求工作。
 
 This attack has a high cost to a broadcaster since they must have a deposit and submit jobs on chain in order to even get assigned to a transcoder in the first place. They have the ability to make life annoying for a transcoder and potentially lose efficiency, but not cause damage to the network.
+
+这种攻击对直播发布者来说成本很高，因为他们必须有一个存款，并提交工作链上，甚至分配到一个转码器在第一位。他们有能力使生活烦扰的转码器，并可能失去效率，但不造成损害网络。
 
 ### Chain Reorg 链重组
 
 When a broadcaster submits a job to the Livepeer Smart Contract, the protocol uses the current block hash to determine which transcoder will be assigned the job. Reorganizations of the underlying blockchain can cause confusion in this scenario. While this is not "an attack" directly, a transcoder will be valid one second, and then upon reorganization, will no longer be valid. When a reorg is detected the broadcaster can either redirect the stream towards the new valid transcoder, or the protocol can detect uncle blocks that are included in the main chain, and consider a transcoder to be valid if an uncle block within a given threshold would have made them valid. 
 
-## Live Video Distribution 直播视频分布 ###########################################
+当直播发布者向Livepeer智能合约提交作业时，协议使用当前区块哈希来确定哪个转码器将被分配作业。 底层区块链的重组可能会导致混淆。 尽管这不是直接的“攻击”，但转码器将有效一秒，然后在重组时，将不再有效。 当检测到重组时，直播发布者可以将流重定向到新的有效转码器，或者协议可以检测包含在主链中的叔代码块，并且如果在给定阈值内的叔代码块将具有转码器是有效的使其有效。
+
+## Live Video Distribution 直播视频分发 ###########################################
 
 This whitepaper has largely focused on the economic incentives and protocol for ensuring proper transcoding of live video, which is necessary to support adaptive bitrate streaming and reach every device. But equally important is the distribution of video throughout the network so that it can be consumed with high quality and low latency. The economics of distribution rely on tit-for-tat bandwidth accounting as popularized by Bittorrent, and extended via protocols like SWAP [[13](#references)]. As a simplification, nodes pay to request a segment of video, and nodes get paid to serve a segment of video. If a node already has a segment and can serve it to multiple requestors, it is profitable. We call this type of node, a Relay node.
 
+本白皮书主要集中在确保实时视频正确转码的经济激励和协议，这对于支持自适应比特率流和每个设备都是必要的。 但同样重要的是在整个网络中分配视频，以便能够以高质量和低延迟消费视频。 分发的经济性依赖于BitTorrent流行的的tit-for-tat带宽核算，并通过诸如 SWAP [[13](#references)] 等协议进行扩展。 作为简化，节点付费请求一段视频，节点获得付费以服务一段视频。 如果一个节点已经有一个段并且可以将它提供给多个请求者，这是有利可图的。 我们称这种类型的节点为中继节点。
+
 Different incentives exist when it comes to bandwidth for nodes playing different roles in the network.
+
+当涉及网络中扮演不同角色的节点的带宽时，存在不同的激励机制。
 
 * Consumers may be willing to exchange upstream bandwidth to serve the content to additional Consumers in exchange for being able to consume the video themselves free of charge. See systems like Webtorrent [[14](#references)].
 * Broadcasters serve as origin nodes and may want to charge for consumption of the video, or may want to subsidize the cost of bandwidth so that everyone can access their video for free.
 * Transcoders and Relay nodes are willing to provide bandwidth in service of distributing video as long as it is profitable. This is similar to the role of traditional CDNs.
-
-
+>
+* 消费者可能愿意交换上行带宽以将内容提供给额外的消费者，以换取自己能够免费使用视频。 请参阅 Webtorrent [[14](#references)] 之类的系统。
+* 直播发布者作为原始节点，可能希望为视频消费收费，或者可能希望补贴带宽成本，以便每个人都可以免费访问他们的视频。
+* 只要有利可图，转码器和中继节点都愿意提供分配视频服务的带宽。 这与传统CDN的作用相似。
 
 With `Segments` as the core unit of data flowing through the network, it is possible to do tit-for-tat bandwidth accounting using ETH as the basis for settlement. We borrow the Chequebook Contract abstraction from Swarm [[6](#references)] as a method of offchain payment passing with on chain settlement. Future developments in the ecosystem including the Raiden Network [[15](#references)] may allow of payment channels to be used for this purpose as well. Since token transfer is native to the protocol, it is also possible to embed pricing associated with content directly into the protocol. A broadcaster can charge for their time or content directly, and nodes will opt into this transfer of value by paying a higher price/segment which will flow back to the broadcaster.
 
+利用`Segments`作为数据流经网络的核心单元，可以使用ETH作为结算基础来进行tit-for-tat的带宽记帐。 我们借用的支票簿合同抽象的Swarm[[6](#references)]作为链式结算通过的离线支付方式。 包括雷电网络[[15](#references)] 在内的生态系统未来的发展也可能允许支付渠道用于此目的。 由于Token传输是协议的本地特性，因此也可以将与内容相关的定价直接嵌入到协议中。 直播发布者可以直接对其时间或内容收费，并且节点将通过支付更高的价格/分段来选择进行该价值转移，该价格/分段将流回直播发布者。
+
 What's important to note is that while bandwidth accounting can be used to make it profitable to run Relay Nodes which just pass video segments around the network to add capacity, a-la a CDN, these nodes are purely incentivized by demand for the content, and not incentivized by new token allocations. In fact, the output of Livepeer can be inserted into a traditional CDN (like Amazon S3, Cloudflare, etc) or decentralized CDN (like IPFS or Swarm). Development of this peer-to-peer protocol for video segment distribution itself will be an ongoing opportunity for optimization and improvement in performance.
+
+需要注意的是，虽然带宽记帐可以用于运行仅通过网络传输视频片段以增加容量的中继节点（CDN），但这些节点完全被对内容的需求所激励，并且 没有被新的Token分配激励。 事实上，Livepeer的输出可以插入传统CDN（如Amazon S3，Cloudflare等）或去中心化式CDN（如IPFS或Swarm）中。 这种用于视频段分配的P2P协议的开发本身将是优化和改善性能的持续机会。
 
 Peer-to-peer CDNs have been shown to reduce 80-98% of bandwidth requirements on an origin CDN server [[17](#references)], and the token mechanics seen in decentralized networks can align stakeholders for the development and maintenance of an open version of the proprietary P2P CDNs that exist today. The PPSPP Protocol [[18](#references)] serves as a viable candidate for an open implementation that focuses on delivery of live content.
 
+P2P的CDN已经被证明可以减少原始CDN服务器上的80-98％的带宽需求[[17](#references)]，去中心化网络中看到的token机制可以让利益相关者协调开发和维护今天存在的专有P2P得CDN的开放版本。 PPSPP协议[[18](#references)]作为开放实施的可行候选，专注于提供实时内容。
+
 As non-critical to the cryptoeconomics of the Livepeer protocol, the details are spared from this document, but the interested can [follow along here](https://github.com/livepeer/go-livepeer) with the development, and look for a future document addressing purely the video distribution protocol.
+
+对于Livepeer协议的密码组学s而言，并非至关重要，详细信息不在此文件中，但感兴趣的人可以[在此处](https://github.com/livepeer/go-livepeer) 进行开发，并查看为将来的文件寻址纯粹的视频分配协议。
 
 ## Use Cases 使用案例 ###########################################
 
 The Livepeer project is concerned with decentralizing one-to-many live video broadcast (multicast). This is the truest form of media distribution, as it allows a broadcaster to connect directly with their audience in a first-hand manner, free from alterations, after-the-fact interpretation, and spin. It gives everyone a platform to have a voice. Existing centralized solutions can suffer from censorship, third party control over user data/relationship/monetization, and inefficient cost structures around payment for the service. Here are some of the logical use cases for applications and services to be built on top of Livepeer.
 
-### Pay-As-You-Go Content Consumption
+Livepeer项目涉及去中心化一到多个视频直播（多播）。这是最真实的媒体分发形式，因为它允许直播发布者以直接的方式直接与听众联系，不受事实的解释和旋转的影响。它给每个人提供了一个发言的平台。现有的集中式解决方案可能遭受审查，第三方对用户数据/关系/货币化的控制，以及围绕服务付费的低效成本结构。下面是应用程序和服务在Livepeer之上构建的一些逻辑用例。
+
+### Pay-As-You-Go Content Consumption 对内容消费即付即用
 
 With a transfer of value transaction baked into the protocol, it is now possible for broadcasters to charge viewers directly for the consumption of their live broadcast, without requiring a credit card, account, or control over user identity via a centralized platform. This has applications in education (pay to attend an online course), events (pay to view a concert or live sporting event), entertainment (pay to watch a gamer or performer's live stream), and many other use cases - all while preserving the privacy of the viewer, and allowing them to pay for only what they consume directly to the broadcaster.
 
-### Auto-scaling Social Video Services
+通过将价值交易转移到协议中，现在直播发布者可以直接向观众收取其直播的费用，而不需要通过集中式平台对信用卡、账户或用户身份进行控制。这在教育（付费参加在线课程）、活动（支付观看音乐会或直播体育赛事）、娱乐（支付观看游戏者或表演者的直播流）以及许多其他用例中都有应用-都在保持观众的隐私，并允许他们只直接支付给直播发布者。
+
+### Auto-scaling Social Video Services 自动缩放社交视频服务
 
 One of the challenges of building consumer video services today is scaling infrastructure to support the demand for the growing number of streams and growing number of consumers as new users are added. A service layer that easily lets developers begin building their video solution on top of the Livepeer Network, which will automatically scale to support any number of streams and viewers as they go, will be a welcome solution to infrastructure developers who would otherwise have to continue provisioning servers, licensing media servers, and efficiently manage resources to handle spikes.
 
-### Uncensorable Live Journalism
+如今构建消费视频服务面临的挑战之一是扩展基础设施以支持不断增加的流的需求和随着新用户的加入而不断增长的消费者数量。一个易于让开发者开始在Livepeer网络之上构建他们的视频解决方案的服务层，它将自动缩放以支持任何数量的流和观众，这将是一个值得欢迎的解决方案。IONE服务器，授权媒体服务器，并有效地管理资源来处理尖峰。
+
+### Uncensorable Live Journalism 不能现场直播的新闻业
 
 Current platforms such as Twitter and Facebook provide amazing live video solutions for reaching a large audience, but they're also the first to get blocked or censored in a variety of political conflict situations. Use of a decentralized network such as Livepeer would render it nearly impossible to prevent the word from getting out as to what is really going on on the ground in realtime.
+
+目前的平台，如Twitter和Facebook提供惊人的现场视频解决方案，以达到广大观众，但他们也是第一个被封锁或审查在各种政治冲突的情况下。使用一个去中心化的网络，例如Livepeer会使它几乎不可能防止这个词真正出现在地面上。
 
 ### Video Enabled DApps 启动视频的DApps
 
 Decentralized apps (DApps) are beginning to emerge, driven largely by the Ethereum ecosystem. However, to date there hasn't been a viable solution for embedding live video within a DApp without using a centralized solution or limiting the number of consuming clients based on the constraints of WebRTC. By introducing Livepeer to the stack, an application can be fully decentralized, yet still contain live video, at scale, to as many users as wish to consume it.
 
+去中心化应用（Dapp）开始出现，主要是由生态系统驱动的。然而，到目前为止，还没有一种可行的解决方案，在不使用集中式解决方案的情况下嵌入DAPP中的直播视频，或者基于WebRTC的约束来限制消费客户端的数量。通过将Livepeer引入到堆栈中，应用程序可以完全去中心化，但仍然包含实时视频，在规模上，与希望消费的用户一样多。
+
 ## Summary 总结 ###########################################
 
 In summary, the Livepeer protocol incentivizes nodes to contribute their processing and bandwidth to the network in service of transcoding and distributing live video. The verification of work is solved by a scalable extension on top of the Truebit protocol which incentivizes nodes to perform transcoding operations correctly in order to earn their fees and token allocations and preserve their value earning role as a transcoder. The gamification of the network and false work problem is solved via the economics of the delegated proof of stake block reward accounting. It becomes more economically rational to simply stake one's tokens towards a value adding node than to pay fees into the network to be distributed to other delegators when performing work that there wasn't actually real demand for.
 
+总之，Livepeer协议激励节点在转码和分发实时视频的服务中贡献他们的处理和带宽到网络。工作的验证通过TtrueBIT协议上的可扩展扩展来解决，Truebit协议激励节点正确地执行代码转换操作，以赚取它们的费用和Token分配，并保持其作为转码器的价值获取角色。通过股权分置奖励会计委派证明的经济学解决了网络的虚假化和虚假工作问题。在执行实际上没有实际需求的工作时，简单地将一个Token绑定到一个增值节点比在网络上支付费用来分配给其他委托人更加经济合理。
+
 The end result is a scalable, pay-as-you-go network for decentralized live video broadcast - a missing layer in the web3 stack that Livepeer seeks to fill.
+
+最终的结果是一个可扩展的即付即用网络，用于去中心化式视频直播 - Livepeer寻求填补的web3堆栈中缺失的一层。
 
 ## Appendix 附录 ###########################################
 
@@ -706,6 +763,27 @@ The end result is a scalable, pay-as-you-go network for decentralized live video
 | `FinderFee` | % of slash amount that the finder will receive as compensation. | 5% |
 | `SlashingPeriod` | The deadline for invoking a slashing condition after the `VerificationPeriod` has completed. | 1 hour |
 
+
+| 参数名称 | 描述 | 例如值 |
+|----|------|---|
+| `T` | 秒段长度 | 2 seconds |
+| `N` | 能用的转码器数量 | 144 |
+| `RoundLength` | 选择新一轮转码器之间的时长 | 1 day |
+| `InflationRate` | 目前每轮LPT的目标通胀率（算法移动） | .04% (相当于 15%/year) |
+| `ParticipationRate` | token与流通盘的目标百分比 | 50% |
+| `RoundLockAmount` | 转码器的费率在轮次结束时锁定该比例的这个百分比，以便委派者可以相应地进行审查和委托，而不用担心最后一刻的费率变化 | 10% == 2.4 hours |
+| `UnbondingPeriod` | 进入无约束状态和撤回资金的能力之间的时间 | 1 month |
+| `VerificationPeriod` | 提交工作索赔后验证工作声明的最后期限。 这也是在去中心化存储解决方案中必须提供数据持久性接收的最短时间 | 6 hours |
+| `VerificationRate` | 将被验证的分段的百分比 | 1/500 |
+| `FailedVerificationSlashAmount` | 在失败验证（超出潜在的允许失败阈值）的情况下可以削减的百分比 | 5% |
+| `MissedRewardSlashAmount` | 在缺少一个区块奖励轮的情况下可以削减的百分比（也许只有在连续n次失败的情况下才会这样做） | 3% |
+| `MissedVerificationSlashAmount` | 在换码转器未调用验证的情况可以削减的百分比 | 10% |
+| `CompetitivenessTolerance` | 如果所有转码器总是可用并且设置相同的价格和费用，则他们将按照他们的股份获得相应的工作。 该参数设置了必须在此目标工作百分比内才能符合token分配的百分比。 这可以防止转码器相对于他们的股份做少量工作 | 90% （极端的例子，100个转码器和100,000个代码段，这意味着如果我只做了100个代码段（1000个代码段中的10％应该这样做)）|
+| `*SlashingThresholds` (TBD) | Placeholder to indicate that we may not slash on all failures, only if they exceed some threshold % of failure rate. | 占位符表明我们可能不会对所有失败进行削减，只要它们超过失败率的阈值百分比 |
+| `VerificationFailureThreshold` | 可以在不被削减的情况下失败的验证百分比。因为像Swarm/Truebit这样可能导致零星故障的外部依赖关系很有用 | 1% |
+| `FinderFee` | % of slash amount that the finder will receive as compensation. 发现者作为补偿的金额削减的百分比 | 5% |
+| `SlashingPeriod` | 在 `VerificationPeriod` 结束后，调用截取条件的最后期限 | 1 hour |
+
 ### Livepeer Protocol Transaction Types Livepeer协议事务类型
 
 | Transaction | Description |
@@ -725,6 +803,25 @@ The end result is a scalable, pay-as-you-go network for decentralized live video
 | `Verify()` | Transcoder provides the transcode claims for segments which will be verified along with merkle proofs for comparison with merkle root from `ClaimWork()`. Explicitly call Truebit to perform verification. |
 | `InitializeRound()` | This transaction needs to be invoked once after the new round's start block to initialize the new active transcoder pool. |
 | `UpdateDelegatorStake()` | This allows a delegator to claim their fees + token allocation from previous rounds. It's invoked automatically through unbonding and bonding, but it serves as a failsafe in case the delegator would like to update without changing state. |
+| `*GovernanceTransactions()` | TBD  |
+
+| 事务 | 描述 |
+|----|------|
+| `Bond()` | 债券转码 |
+| `Unbond()` | 输入固定的 `UnbondingPeriod` 的解除绑定状态 |
+| `Transcoder()` | 宣布你的意图是一个转码器 |
+| `ResignAsTranscoder()` | 作为转码器辞去你的意图 |
+| `TranscodeAvailability()` | 该转码器目前可以接受另一份工作。 他们在池中随机分配新的工作提交 |
+| `Job()` | 提交链上的转码作业 |
+| `EndJob()` | 结束工作以放弃转码责任 |
+| `Deposit()` | 提交一份将被用来支付工作的链条上的定金 |
+| `Withdraw()` | 撤回存款和无担保股份 |
+| `ClaimWork()` | 结束转码工作，并声明哪些段可以证明您已经通过段范围和merkle根进行了转码 |
+| `DistributeFees()` | 转码器在验证后声明特定索赔的费用。 |
+| `Reward()` | 链上的所有验证是否会削减或分配Token分配。 只能由当前一轮活动的转码器调用，每轮一次 |
+| `Verify()` | 转码器提供了分段的转码声明，这些代码段将与来自`ClaimWork()`的merkle根的merkle证明一起验证。 显式调用Truebit来执行验证 |
+| `InitializeRound()` | 该事务需要在新一轮启动块之后调用一次以初始化新的活动转码器 |
+| `UpdateDelegatorStake()` | 这允许授权人从前几轮申请费用+Token分配。 它是通过非绑定和绑定自动调用的，但是如果委托者希望在不更改状态的情况下进行更新，它可以作为故障安全。 |
 | `*GovernanceTransactions()` | TBD  |
 
 ## References 参考 ###########################################
