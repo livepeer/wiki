@@ -440,11 +440,9 @@ in the transcoder pool with the least delegated stake, the user successfully reg
 #### Algorithm
 
 1. `T` calls `bondingManager.transcoder()` with percentage values for `rewardCut`, `feeShare` and `pricePerSegment`.
-2. If `T` does not have non-zero bonded stake delegated towards itself, abort.
+2. If `T` has zero bonded stake delegated towards itself, abort.
 3. Set the rates for `T` as a transcoder.
-4. If the transcoder pool is full and `T`'s delegated stake is greater than that of the transcoder with the least delegated stake, evict the transcoder. Else, abort.
-5. Add `T` to the transcoder pool.
-6. `T` enters the `Registered` state.
+4. If the transcoder pool is full and `T`'s delegated stake is greater than that of the transcoder with the least delegated stake, evict the latter and add the former to the transcoder pool thereby transitioning `T` into the `Registered` state
 
 ---
 
