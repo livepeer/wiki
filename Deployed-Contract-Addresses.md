@@ -30,6 +30,8 @@
 - JobsManager (Target): [0x65276A141e914eA8100DE2660A17632546f20e9d](https://rinkeby.etherscan.io/address/0x65276a141e914ea8100de2660a17632546f20e9d)
 - RoundsManager (Proxy): [0xEB0EF46B5771D523402234FF0d7596d2C62411dE](https://rinkeby.etherscan.io/address/0xEB0EF46B5771D523402234FF0d7596d2C62411dE)
 - RoundsManager (Target): [0xE0F05Ad1eEB0aBf849E843632eCAeDBf56CA2901](https://rinkeby.etherscan.io/address/0xe0f05ad1eeb0abf849e843632ecaedbf56ca2901)
+- ServiceRegistry (Proxy): [0x21b1E9dcFf801f71C3e5c7385FD16d0742cb64D1](https://rinkeby.etherscan.io/address/0x21b1e9dcff801f71c3e5c7385fd16d0742cb64d1)
+- ServiceRegistry (Target): [0x2f99B275E0581df2859a10Eb2DB907eED163aEaA](https://rinkeby.etherscan.io/address/0x2f99b275e0581df2859a10eb2db907eed163aeaa)
 - LivepeerTokenFaucet: [0xD69A2eC8f2F83267CE82A6d01837045BaE0EB9Bc](https://rinkeby.etherscan.io/address/0xD69A2eC8f2F83267CE82A6d01837045BaE0EB9Bc)
 - SortedDoublyLL: [0xD9Fff7E9c61648B16c6FB24b0119841221Bcfd3E](https://rinkeby.etherscan.io/address/0xd9fff7e9c61648b16c6fb24b0119841221bcfd3e)
 - MerkleProof: [0xA3866C21062E6d308F03e26e8d654bBcCb444978](https://rinkeby.etherscan.io/address/0xa3866c21062e6d308f03e26e8d654bbccb444978)
