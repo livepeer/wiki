@@ -12,6 +12,7 @@
 - RoundsManager (Target): [0xa3aa52ce79e85a21d9ccda705c57e426b160112c](https://etherscan.io/address/0xa3aa52ce79e85a21d9ccda705c57e426b160112c)
 - GenesisManager: [0x3a9543d4767b2c914ea22fd0b07e17b0901aaebf](https://etherscan.io/address/0x3a9543d4767b2c914ea22fd0b07e17b0901aaebf)
 - MerkleMine: [0x8e306b005773bee6ba6a6e8972bc79d766cc15c8](https://etherscan.io/address/0x8e306b005773bee6ba6a6e8972bc79d766cc15c8)
+- MultiMerkleMine: [0x182ebf4c80b28efc45ad992ecbb9f730e31e8c7f](https://etherscan.io/address/0x182ebf4c80b28efc45ad992ecbb9f730e31e8c7f)
 - SortedDoublyLL: [0x1a0b2ca69ca2c7f96e2529faa6d63f881655d81a](https://etherscan.io/address/0x1a0b2ca69ca2c7f96e2529faa6d63f881655d81a)
 - MerkleProof: [0x289ba1701c2f088cf0faf8b3705246331cb8a839](https://etherscan.io/address/0x289ba1701c2f088cf0faf8b3705246331cb8a839)
 - ECRecovery: [0xd8e8328501e9645d16cf49539efc04f734606ee4](https://etherscan.io/address/0xd8e8328501e9645d16cf49539efc04f734606ee4)
