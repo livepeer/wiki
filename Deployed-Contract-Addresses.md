@@ -1,15 +1,16 @@
 # Mainnet
 - Controller: [0xf96d54e490317c557a967abfa5d6e33006be69b3](https://etherscan.io/address/0xf96d54e490317c557a967abfa5d6e33006be69b3)
 - LivepeerToken: [0x58b6a8a3302369daec383334672404ee733ab239](https://etherscan.io/address/0x58b6a8a3302369daec383334672404ee733ab239)
-- LivepeerVerifier: [0xf623811b08b45792d0223d77d9c922dae29712ec](https://etherscan.io/address/0xf623811b08b45792d0223d77d9c922dae29712ec)
+- LivepeerVerifier: [0xe4be2a35dec0063f9dfccb9b740b1acb7eefefec](https://etherscan.io/address/0xe4be2a35dec0063f9dfccb9b740b1acb7eefefec)
 - Minter: [0x8573f2f5a3bd960eee3d998473e50c75cdbe6828](https://etherscan.io/address/0x8573f2f5a3bd960eee3d998473e50c75cdbe6828)
 - BondingManager (Proxy): [0x511bc4556d823ae99630ae8de28b9b80df90ea2e](https://etherscan.io/address/0x511bc4556d823ae99630ae8de28b9b80df90ea2e)
-- BondingManager (Target): [0x5A9512826EAAF1FE4190f89443314E95A515fE24](https://etherscan.io/address/0x5a9512826eaaf1fe4190f89443314e95a515fe24)
-- BondingManager (Target) (DEPRECATED): [0x81eb0b10ff8703905904e4d91cf6aa575d59736f](https://etherscan.io/address/0x81eb0b10ff8703905904e4d91cf6aa575d59736f)
+- BondingManager (Target): [0x633101b3f15f93c5f415830d48e56b9b1f7ba584](https://etherscan.io/address/0x633101b3f15f93c5f415830d48e56b9b1f7ba584)
 - JobsManager (Proxy): [0xbf07ff45f14c9ff0571b9fbdc7e2b62d29931224](https://etherscan.io/address/0xbf07ff45f14c9ff0571b9fbdc7e2b62d29931224)
 - JobsManager (Target): [0x68b463bca7d561118636e9f028ff0f2e8398dd6a](https://etherscan.io/address/0x68b463bca7d561118636e9f028ff0f2e8398dd6a)
 - RoundsManager (Proxy): [0x3984fc4ceeef1739135476f625d36d6c35c40dc3](https://etherscan.io/address/0x3984fc4ceeef1739135476f625d36d6c35c40dc3)
 - RoundsManager (Target): [0xa3aa52ce79e85a21d9ccda705c57e426b160112c](https://etherscan.io/address/0xa3aa52ce79e85a21d9ccda705c57e426b160112c)
+- ServiceRegistry (Proxy): [0x406a112f3218b988c66778fd72fc8467f2601366](https://etherscan.io/address/0x406a112f3218b988c66778fd72fc8467f2601366)
+- ServiceRegistry (Target): [0x72d9dfa25f75a5f2c27b7336e643a559ae6aeb8e](https://etherscan.io/address/0x72d9dfa25f75a5f2c27b7336e643a559ae6aeb8e)
 - GenesisManager: [0x3a9543d4767b2c914ea22fd0b07e17b0901aaebf](https://etherscan.io/address/0x3a9543d4767b2c914ea22fd0b07e17b0901aaebf)
 - MerkleMine: [0x8e306b005773bee6ba6a6e8972bc79d766cc15c8](https://etherscan.io/address/0x8e306b005773bee6ba6a6e8972bc79d766cc15c8)
 - MultiMerkleMine: [0x182ebf4c80b28efc45ad992ecbb9f730e31e8c7f](https://etherscan.io/address/0x182ebf4c80b28efc45ad992ecbb9f730e31e8c7f)
@@ -37,6 +38,13 @@
 - MerkleProof: [0xA3866C21062E6d308F03e26e8d654bBcCb444978](https://rinkeby.etherscan.io/address/0xa3866c21062e6d308f03e26e8d654bbccb444978)
 - ECRecovery: [0x95845C221c39Fa6515Badfc7463C97E8Df3ab87F](https://rinkeby.etherscan.io/address/0x95845c221c39fa6515badfc7463c97e8df3ab87f)
 - JobLib: [0x8a1C49721934EFBBF1B330376c786b7a503Fa4a8](https://rinkeby.etherscan.io/address/0x8a1c49721934efbbf1b330376c786b7a503fa4a8)
+
+# Mainnet (Deprecated)
+- LivepeerVerifier
+  - V1: [0xf623811b08b45792d0223d77d9c922dae29712ec](https://etherscan.io/address/0xf623811b08b45792d0223d77d9c922dae29712ec)
+- BondingManager (Target)
+  - V1: [0x81eb0b10ff8703905904e4d91cf6aa575d59736f](https://etherscan.io/address/0x81eb0b10ff8703905904e4d91cf6aa575d59736f)
+  - V2: [0x5A9512826EAAF1FE4190f89443314E95A515fE24](https://etherscan.io/address/0x5a9512826eaaf1fe4190f89443314e95a515fe24)
 
 # Rinkeby (Deprecated)
 - LivepeerVerifier
