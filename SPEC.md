@@ -69,7 +69,7 @@ off-chain computation as long as the contract adheres to the `Verifier` interfac
   - `LivepeerVerifier`: Maintains a whitelist of addresses associated with trusted solver nodes. When the contract receives a verification request, solver nodes perform the relevant transcoding computation
   for a segment and submit the result hash on-chain.
   - `OraclizeVerifier`: Integrates with the Oraclize off-chain computation service. When the contract receives a verification request, it sends a computation query to Oraclize. Then, Oraclize performs
-  the relevant tarnscoding computation for a segment and submits the result hash on-chain.
+  the relevant transcoding computation for a segment and submits the result hash on-chain.
   - `TrueBitVerifier`: Integrates with TrueBit's interactive verification game. When the contract receives a verification request, it sends a computation task to TrueBit which initiates the interactive
   verification game. Upon the completion of the verification game, the TrueBit solver's result hash is submitted on-chain. This implementation will not be included in the initial version of the protocol
   since TrueBit is not yet in production, but it will be included in a future protocol update.
@@ -268,8 +268,7 @@ Note: A transcoder must also be a delegator delegated to itself.
 #### *Requirements*
 
 At the start of each round, the round must be initialized before any other protocol actions can be executed. Round initialization entails
-locking in the latest active transcoder set for the round and setting the maximum number of tokens that can be issued (based on the current inflation rate) and redistributed (from a redistribution pool) during the round.
-A round can only be initialized once and anybody can invoke the function to initialize a round.
+locking in the latest active transcoder set for the round and setting the maximum number of tokens that can be issued (based on the current inflation rate). A round can only be initialized once and anybody can invoke the function to initialize a round.
 
 #### *Initial State*
 
@@ -289,7 +288,6 @@ A round can only be initialized once and anybody can invoke the function to init
 3. Set the last initialized round to `currentRound`.
 4. Take the first `numActiveTranscoders` transcoders from the transcoder pool and set them as the members of the active transcoder set for the round.
 5. Set the maximum number of LPT that can be issued in the round based on the current LPT supply and the current `inflationRate`.
-6. Set the maximum number of LPT that can be redistributed for the round based on the current redistribution pool and some constant number of rounds to spread the redistribution across.
 
 #### *Notes*
 
@@ -604,9 +602,8 @@ A transcoder can change its rates during a round. A transcoder cannot change its
 
 #### *Requirements*
 
-LPT rewards are distributed every round to the members of the active transcoder set for the round. The total rewards available for a round is a combination of newly issued LPT and redistributed LPT.
-The amount of issued LPT during a round cannot exceed the maximum amount of LPT to be issued for a round which is set at the start of a round. The amount of redistributed LPT during a round
-cannot exceed the maximum amount of LPT to be redistributed for a round which is set at the start of a round. An active transcoder's share of the rewards is based on the transcoder's proportional
+LPT rewards are distributed every round to the members of the active transcoder set for the round. The total rewards available for a round is based on newly issued LPT from inflation.
+The amount of issued LPT during a round cannot exceed the maximum amount of LPT to be issued for a round which is set at the start of a round. An active transcoder's share of the rewards is based on the transcoder's proportional
 delegated stake within the active transcoder set.
 
 #### *Initial State*
@@ -614,7 +611,6 @@ delegated stake within the active transcoder set.
 - Total delegated stake of the active transcoder set is `X`
 - Active transcoder `T` has `Y` delegated stake
 - Maximum amount of LPT to be issued in round `N` is `A`.
-- Maximum amount of LPT to be redistributed in round `N` is `B`.
 
 #### *State Affected*
 
@@ -627,11 +623,8 @@ delegated stake within the active transcoder set.
 1. `T` calls `bondingManager.reward()` in round `N`.
 2. `(A * Y) / X` new LPT is issued.
 3. Total supply of LPT increased by `(A * Y) / X`.
-3. `T`'s rewards are computed as `rewards = ((A * Y) / Z) + ((B * Y) / Z)`.
-4. Increase amount of LPT already issued in round `N` by `(A * Y) / Z`.
-5. Increase the amount of LPT already redistributed in round `N` by `(B * Y) / Z`.
-5. `T` credits its own bonded stake with `rewardCut` percent of `rewards`.
-6. `T` places the rest of `rewards` in its reward pool for round `N`.
+4. Increase amount of LPT already issued in round `N` by `(A * Y) / X`.
+5. `T` places `(A * Y) / X` LPT in its reward pool for round `N`.
 
 #### *Notes*
 
@@ -735,8 +728,7 @@ corresponding to the range of segments claimed. The claim is created in block `M
 5. If `Verifier` submits a result hash on-chain that does not match the transcoded data hash submitted by `T`, `T` loses `failedVerificationSlashAmount` percent of its bonded stake and abort
 6. Blocks are mined up through `M + slashingPeriod`.
 7. `T` calls `jobsManager.distributeFees()` with the job ID and the claim ID.
-8. `T` places `feeShare` percent of the fees into the fee pool for the job creation round.
-9. `T` credits its own bonded stake with the rest of the fees.
+8. `T` places the fees into the fee pool for the job creation round.
 
 #### *Notes*
 
@@ -767,10 +759,10 @@ submits a transcoded data hash that does not match the transcoded data hash incl
 
 Delegators that delegate their bonded stake to an active transcoder are entitled to a portion of the rewards and fees that the transcoder earns during a round. The reward and fee portions shared
 by the transcoder to its delegators are based on the `rewardCut` and `feeShare` rates set by a transcoder. When a transcoder earns rewards during a round, it places the LPT in a reward pool associated
-with the round. When a transcoder earns fees for a transcode job, it places the LPT in a fee pool associated with the round during which the transcode job was created.
+with the round. When a transcoder earns fees for a transcode job, it places the ETH in a fee pool associated with the round during which the transcode job was created.
 The delegator reward share for a round is split amongst delegators that were delegated to the transcoder during the round based on a delegator's proportional bonded stake relative to the transcoder's delegated
-stake. The delegator fee share for a round is split amongst delegators that were delegated to the transcoder during the round a transcode job was created based
-on a delegator's proportional bonded stake relative to the transcoder's delegated stake.
+stake. The transcoder is entitled to `rewardCut` percent of the reward pool. The delegator fee share for a round is split amongst delegators that were delegated to the transcoder during the round a transcode job was created based
+on a delegator's proportional bonded stake relative to the transcoder's delegated stake. The transcoder is entitled to `100 - feeShare` percent of the fee pool.
 
 #### *Initial State*
 
@@ -787,7 +779,8 @@ on a delegator's proportional bonded stake relative to the transcoder's delegate
 2. `T` allocates `delegatorsRewards = (R * (100 - rewardCut)) / 100` rewards for its delegators and `delegatorsFees = (F * feeShare) / 100` for its delegators.
 3. `D` claims reward and fees for round `N` either automatically or manually.
 2. `D` credits `(delegatorsRewards * X) / Y` rewards into its bonded stake.
-3. `D` credits `(delegatorsFees * X) / Y` fees into its unbonded stake.
+3. `D` credits `(delegatorsFees * X) / Y` fees into its collected fees.
+4. If `D == T`, `D` also credits `R - delegatorsRewards` rewards into its bonded stake and `F - delegatorsFees` into its collected fees.
 
 #### *Notes*
 
