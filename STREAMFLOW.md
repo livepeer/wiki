@@ -2,6 +2,8 @@
 
 **Livepeer Scalability on Ethereum through Orchestration, Probabilistic Micropayments, and Offchain Job Negotiation**
 
+**STATUS: DRAFT - THIS IS AN ONGOING WORK IN PROGRESS, AND IS NOT A FINALIZED PROPOSAL**
+
 ## Abstract #####################################
 
 The Streamflow proposal introduces updates to the Livepeer protocol and offchain implementations which will allow Livepeer to scale beyond the current limitations of the alpha protocol deployed to the Ethereum blockchain. Key elements are introduced including a service registry, an offchain job negotiation and payments mechanism, a split between orchestration nodes and transcoding nodes, the elimination of the data availability problem solution as a dependency on trustless verification, and the removal of artificial limitations upon who can compete to perform work on the network. The resulting architecture will allow users of the network to perform high scale transcoding jobs on the network across many concurrent work providers, while significantly reducing the impact of the underlying blockchain's demand and price volatility on the economic viability of using the network. 
