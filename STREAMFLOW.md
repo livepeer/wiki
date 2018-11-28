@@ -6,14 +6,14 @@
 
 ## Abstract #####################################
 
-The Streamflow proposal introduces updates to the Livepeer protocol and offchain implementations which will allow Livepeer to scale beyond the current limitations of the alpha protocol deployed to the Ethereum blockchain. It suggests updates that address affordability, reliability, performance, and scalability of the network. Key elements are introduced including a service registry, an offchain job negotiation and payments mechanism, a split between orchestration nodes and transcoding nodes, the elimination of the data availability problem solution as a dependency on trustless verification, and the removal of artificial limitations upon who can compete to perform work on the network. The resulting architecture will allow users of the network to perform high scale transcoding jobs on the network across many concurrent work providers, while significantly reducing the impact of the underlying blockchain's demand and price volatility on the economic viability of using the network. 
+The Streamflow proposal introduces updates to the Livepeer protocol and offchain implementations which will allow Livepeer to scale beyond the current limitations of the alpha protocol deployed to the Ethereum blockchain. It suggests updates that address affordability, reliability, performance, and scalability of the network. Key elements are introduced including a service registry, an offchain job negotiation and payments mechanism, a split between orchestration nodes and transcoding nodes, the elimination of the data availability problem solution as a dependency on trustless verification, and the opening up of the number of nodes that can compete to perform work on the network from the low arbitrary limits during the alpha. The resulting architecture will allow users of the network to perform high scale transcoding jobs on the network across many concurrent work providers, while significantly reducing the impact of the underlying blockchain's demand and price volatility on the economic viability of using the network. 
 
 ## Table of Contents ###########################################
 
 * [Introduction and Background](#introduction-and-background)
 * [Streamflow Protocol Proposal](#streamflow-protocol-proposal)
     * [Orchestrators and Transcoders](#orchestrators-and-transcoders)
-    * [Removal of Transcoder Limit and Client Enforced Security](#removal-of-transcoder-limit-and-client-enforced-configurable-security)
+    * [Relaxation of Transcoder Limit and Stake Enforced Security](#relaxation-of-transcoder-limit-and-stake-enforced-security)
     * [Service Registry](#service-registry)
     * [Offchain Job Negotiation](#offchain-job-negotiation)
     * [Probabilistic Micropayments](#probabilistic-micropayments)
@@ -61,7 +61,7 @@ _Note: To properly absorb the protocol updates, it's important to have an unders
 This proposal introduces a number of changes and new concepts into the Livepeer ecosystem. They include:
 
 * Introduction of a new role of Orchestrator, to the existing roles of Broadcasters and Transcoders. 
-* Removal of the limitation on number of transcoders, allowing open access to compete for work amongst any aspiring token holding orchestrator.
+* Relaxation on the limitation on number of transcoders, allowing open access to compete for work amongst any aspiring token holding Orchestrator meeting the minimum stake and security requirements.
 * Service registry in which Orchestrators advertise their available capabilities and services on chain.
 * Offchain price negotiation and job assignment between Broadcasters and Orchestrators.
 * Offchain payments using Probabilistic Micropayments, with on chain settlement and security deposits.
@@ -90,9 +90,9 @@ Some benefits of this two-tiered setup include:
 While this paper will describe the protocol for Broadcaster/Orchestrator communication and security, it leaves the second tier of Orchestrator/Transcoder protocol to varying implementations. In the simple case where an Orchestrator is its own Transcoder Pool, then the protocol’s security holds, while other trust/performance tradeoffs can be made in alternative implementations for coordinating pools, ranging from centralized and trusted, to decentralized secured by blockchain based stakes and deposit within layer two. It is theorized that since verification of work performed by random actors in a public pool incurs additional cost to an O, then private pools may outperform public pools, however this can potentially be overcome by solid cryptoeconomic deposits, slashing, and verification protocols. 
 
 
-### Removal of Transcoder Limit and Client Enforced Configurable Security
+### Relaxation of Transcoder Limit and Stake Enforced Security
 
-The second major change proposed by Streamflow is to remove the artificial limit on number of active Transcoders (Orchestrators in Streamflow). At genesis this parameter was set to 10, and has since expanded to 15, however this still creates a major barrier to entry, in that a node needs increasingly more LPT staked in order to enter the active pool. In Streamflow, with the removal of any limit on who can be an active Orchestrator, anyone who believes they can compete and perform valuable orchestration on the network will have instant access to do so.
+The second major change proposed by Streamflow is to relax the artificial limit on number of active Transcoders (Orchestrators in Streamflow). At genesis this parameter was set to 10, and has since expanded to 15, however this still creates a major barrier to entry, in that a node needs increasingly more LPT staked in order to enter the active pool. In Streamflow, the goal is to remove this arbitrary limit and to allow any node who provides enough security in the form of stake (or delegated stake) access to compete on the network.
 
 The reasons for the limit in the first place were:
 
@@ -101,26 +101,23 @@ The reasons for the limit in the first place were:
 * During the alpha it was important to be in close contact and coordination with the active set so that they could update software frequently, respond to bugs, and help develop and QA the network.
 * Active transcoders needed enough stake at risk to secure the network, such that if they cheated they would receive a steep economic penalty.
 
-The effects on the above of the removal of this artificial limit will be realized by:
+The effects on the above of the reduction in this artificial limit will be realized by:
 
 * Offchain job negotiation and failover, meaning that Orchestrators who aren’t available or don’t perform work will just lose future work, but won’t hurt the Broadcaster experience.
 * The active set won’t have to be calculated per round, and instead can just be maintained in place as Orchestrators bond, unbond, or get slashed.
 * Active, competitive Orchestrators will still want to pay close attention to upgrades, bugs, and the development of the network - but inactive Orchestrators who don’t will simply fail to attract work on the network without hurting the Broadcaster experience.
-* Rather than enforce stake requirements at the protocol level, client implementations can enforce this and allow it to be configured for different use cases.
+* Now that a large percentage of the initial stake is actively participating, the requirements can be set such that enough stake and security is in play to secure a larger number of nodes competing for work on the network.
 
-The last point is an interesting one. It was strongly considered that there should be a minimum required stake in order to compete for work on the network - the thinking being that the stake provides security, and Broadcasters would have a bad experience if cheating nodes didn’t stand to lose much by disrupting streams. However, at the same time, the idea of determining what exactly this minimum stake should be for all use cases felt arbitrary, and moving the amount due to fluctuations in LPT perceived value, inflation, and demand on the network felt like a very difficult governance challenge.
+The exact number of target Orchestrators and implementation method is still an open research problem. Initially, there should be an order of magnitude increase - such as hundreds of active Orchestrators rather than 15 - with a goal of eventually expanding into the 1000's in order to offer each service in every region in the world with redundancies. Here are a few considered mechanisms, with a short description of some of their tradeoffs:
 
-The solution arrived at was to let the client implementations enforce a minimum stake by default, but to allow this to be configurable. And of course different client implementations could modify this preference. This can achieve the same default security for a new user as a protocol enforced stake, while still allowing flexibility for other use cases. For example:
+1. **Expand N (# of orchestrator slots) from 15 to something much larger, such as 200**: Things would essentially work the way they do today, with a much lower barrier to entry to activating a node. But this would make bonding related actions more expensive. Ethereum scaling and gas issues may come into play.
+2. **Set a minimum required stake to become an Orchestrator**: This would establish a maximum possible `N`, while allowing anyone to know exactly what it takes to achieve that security bar and remain in the active set. It would also enable an expanding network of Orchestrators as inflationary LPT is generated, and encourage Delegators to actively seek out new potential Orchestrators offering fee shares, who are looking to surpass the minimum to become active to compete for work.
+3. **Set a fixed stake amount for any Orchestrator**: This would force Orchestrators to run additional nodes, and Delegators to constantly restake, in order to put their inflatiory LPT to use. But it comes with some weaknesses around the resulting user experience for both Orchestrators and Delegators, as well as some complex implementation details.
+4. **Eliminate any minimum stake requirement from the protocol, and let clients configure how much stake is required to secure a job**: This creates the most open access and is the most decentralized initially, however it offers the least coordination between token holding Delegators and Orchestrators aligning to create a high quality network - essentially reputation plays a larger role, and therefore it could lead to more centralization of the work performed over the longer term as delegators have less collective ability to route work.
 
-* The client default could be that naive Broadcasters only work with nodes who stand to lose the equivalent of 10,000 LPT worth of stake for improper transcoding.
-* A Broadcaster who is doing a really low priority stream, such as a personal home security camera feed, and wants the cheapest price possible, may be willing to reduce the security requirement all the way down to 500 LPT in order to work with a new node offering a cheap price. They would simply start their node with a flag or configure this option.
-* An enterprise using the Livepeer protocol to send transcoding jobs to their own internally operated pool may require 0 LPT staked, since they’re running their own infrastructure and can trust it.
-* An enterprise with a high end critical stream may require even more security than the default, in order to ensure the job is only performed by those who are very careful not to lose a tremendous amount of stake and their reputation on the network.
+While the benefits and weaknesses of the above approaches are being considered, it's important to note that the result achieved from implementing any of the above will be an expanded Orchestrator network, more redundancies and competition provided to the benefit of Broadcasters, and the continued incentives to route stake towards nodes who can perform additional services reliably and cost effectively to the network in exchange for fees.
 
-This approach brings many benefits, but there are also some drawbacks to weigh. In particular, what is the effect of having 1000’s of non-contributing Orchestrators registered in the service registry? 
-
-* Nodes will perform network requests to negotiate with them, won’t receive responses, and will filter them out. This may initially incur a little bit of overhead, but with stake as an input, the number of nodes who meet the client enforced minimum stake requirement but sit idle should be limited. Clients can additionally build a history of nodes whom they have not found to be reliable and not engage with them again in the future by default.
-* These nodes incur actual costs in terms of doing the required Orchestrator Ethereum transactions. If they do not intend to actually compete for fees, then they are better off just delegating towards another Orchestrator rather than running their own Orchestrator.
+One of the benefits of the minimum stake models is that as fees flow through the network, there is little reason to operate a node that isn't competing for work on the network. The number of slots is limited, and that stake is better put to use delegating towards a node that would provide a fee share, than simply sitting on an idle node only collecting rewards. 
 
 
 ### Service Registry
@@ -200,11 +197,11 @@ One impact of this is that the cost of Truebit doesn’t need to be incurred, ex
 
 The Livepeer Token (LPT) could always be described as a work token. Those who staked it had the opportunity to perform work on the network, and therefore earn the future fees (in ETH) for doing said work. Work was routed in direct proportion to stake, if prices offered by all nodes were constant. There were conceived mechanisms from the beginning for a “work requirement”, in that if a node did not perform enough work within some threshold proportion of their stake, then they could be slashed. This was an attempt at ensuring that nodes would actually contribute value (or incur overhead tax for not doing so or faking it), rather than just sit idly on stake and accrue inflation. In addition, there was no requirement that work be done cost effectively or in a performant manner. Competition could be socially encouraged, but not enforced at a protocol level.
 
-The updates to the protocol to remove the artificially constrained number of Orchestrators, and the offchain job negotiation appear to change this direct connection between token and the right to do work on the surface, but upon further analysis, the same value accrues in an equilibrium state. Let’s look at the function that a token holder is attempting to maximize:
+The updates to the protocol to relax the artificially constrained number of Orchestrators, and the offchain job negotiation appear to change this direct connection between token and the right to do work on the surface, but upon further analysis, the same value accrues in an equilibrium state. Let’s look at the function that a token holder is attempting to maximize:
 
 `Value accrued in a single round = inflationary LPT earned + fees earned.`
 
-The inflationary LPT is predictable, based upon the rewardCut of an orchestrator. A delegator can choose exactly how much LPT they would like to earn in exchange for the QA work they are doing. 
+The inflationary LPT is predictable, based upon the rewardCut of an orchestrator. A Delegator can choose exactly how much LPT they would like to earn in exchange for the QA work they are doing. 
 
 The fees earned on the other hand are less in control of the token holder. This is because it depends on: 
 
@@ -212,13 +209,13 @@ The fees earned on the other hand are less in control of the token holder. This 
 2. The Orchestrator’s `feeShare`
 3. How much total stake is delegated towards the Orchestrator, and therefore what percent of the fee pool they are entitled to
 
-At the completion of a round, a delegator will be able to calculate the earning power of their staked LPT. It’s this fee ratio:
+At the completion of a round, a Delegator will be able to calculate the earning power of their staked LPT. It’s this fee ratio:
 
 `ETH in fees / unit of staked LPT`
 
-Which will be the visible statistic that delegators can use to compare Orchestrators to one another, and predictably, delegation should shift from round to round towards nodes where there is opportunity to maximize this ratio. In short, why stick with a node who’s sharing out 1gwei /  LPT staked when there’s another node you could switch to that is sharing out 2 gwei / LPT staked?
+Which will be the visible statistic that Delegators can use to compare Orchestrators to one another, and predictably, delegation should shift from round to round towards nodes where there is opportunity to maximize this ratio. In short, why stick with a node who’s sharing out 1gwei /  LPT staked when there’s another node you could switch to that is sharing out 2 gwei / LPT staked?
 
-But then it is worth noting that the act of switching more stake onto this opportunistic node, means that the fees will be split amongst more stake, and the fee ratio will decrease. The equilibrium state is that nodes who are performing more work (earning more) have more stake, and nodes performing less work with same fee share have less stake. Essentially all competitive nodes should end up with the same equilibrium fee ratios, with intelligently delegated stake earning a delegator the equilibrium return - and hence staked LPT intelligently applied yields access to do work to earn fees on the network independently of how jobs are assigned.
+But then it is worth noting that the act of switching more stake onto this opportunistic node, means that the fees will be split amongst more stake, and the fee ratio will decrease. The equilibrium state is that nodes who are performing more work (earning more) have more stake, and nodes performing less work with same fee share have less stake. Essentially all competitive nodes should end up with the same equilibrium fee ratios, with intelligently delegated stake earning a Delegator the equilibrium return - and hence staked LPT intelligently applied yields access to do work to earn fees on the network independently of how jobs are assigned.
 
 ### Delegation as Security and Reputational Signal
 
@@ -231,6 +228,8 @@ One of the criticisms of the uncapped stake model with no minimum stakes is that
 This may be the case in the very early days of the network, before fees serve as an additional incentive for delegators to take action, but is unlikely to yield a maximal result when Orchestrators are competing to do work, earn, and distribute fees. At this point, autopilot behavior may still lead to accruing LPT, but would be forgoing the potential fees that could be earned by switching to Orchestrators who are yielding a higher ETH/staked LPT ratio. 
 
 As the inflation rate is likely to decrease under scaled usage, when token holders are staking to compete to earn the fees, the portion of the reward function that is accounted for by inflationary LPT also continues to decrease, with a great portion coming from fees. And as outlined above in the LPT section, the necessity to constantly QA the network and route work towards nodes who are outcompeting other nodes is financially motivated by the opportunistic returns. In short, an apathetic delegator is rewarded less than an active delegator.
+
+Additionally, as Orchestrators who once needed to attract outside delegation in order to achieve the minimum stake, accrue enough stake themselves to secure their own node, they may decrease their fee share. At this stage, an optimizing delegator would be best served by seeking out a new up-and-coming node - essentially one who can expand the footprint of the network - who may be offering a higher fee share in order to attract stake. It's this constant QA performed by the optimizing Delegator, and stake-for-fee tradeoff which will create constant competition and further the decentralization of the network.
 
 ### Offchain Engineering Considerations
 As previously mentioned, one of the core philosophies within Streamflow is to move many of the opinions about valid parameter values and p2p interactions out of the core protocol and into client implementations and configurations. Multiple implementations and configurations of these parameters will lead to a robust network that is resillient to attacks and malicious actors. However since the protocol itself is less opinionated, a lot is left up to client implementation. Here are some of the major considerations that need to be undertaken from an engineering perspective to make Streamflow work really effectively out of the box:
