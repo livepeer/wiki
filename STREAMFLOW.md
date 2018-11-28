@@ -13,7 +13,7 @@ The Streamflow proposal introduces updates to the Livepeer protocol and offchain
 * [Introduction and Background](#introduction-and-background)
 * [Streamflow Protocol Proposal](#streamflow-protocol-proposal)
     * [Orchestrators and Transcoders](#orchestrators-and-transcoders)
-    * [Removal of Transcoder Limit and Client Enforced Security](#removal-of-transcoder-limit-and-client-enforced-security)
+    * [Removal of Transcoder Limit and Client Enforced Security](#removal-of-transcoder-limit-and-client-enforced-configurable-security)
     * [Service Registry](#service-registry)
     * [Offchain Job Negotiation](#offchain-job-negotiation)
     * [Probabilistic Micropayments](#probabilistic-micropayments)
