@@ -83,7 +83,7 @@ Currently a Transcoder on the Livepeer network is a protocol-aware node that bot
 * An Orchestrator which is protocol aware, negotiates work with Broadcasters, is responsible for delivering verified transcoded segments to the Broadcasters, and coordinates the execution of this work amongst a potentially large pool of transcoders.
 * A Transcoder which is not necessarily aware of the Livepeer staking protocol or blockchain, and instead is just competitive, cost-effective hardware, which does the sole job of racing to transcode video as cheaply and quickly as possible, as coordinated by Orchestrators.
 
-<img src="https://livepeer-dev.s3.amazonaws.com/docs/otsplit.png" alt="Orchestrator Transcoder Split" style="width:750px">
+<img src="https://livepeer-dev.s3.amazonaws.com/docs/otsplit.jpg" alt="Orchestrator Transcoder Split" style="width:750px">
 
 Tier one of this architecture is similar to the current Livepeer protocol, wherein current Transcoders are renamed to Orchestrators. These Orchestrators stake LPT to provide security deposits against the work that they perform, such that should they harm the network, they incur economic penalty. Broadcasters are aware of these Orchestrators, negotiate jobs with them, and receive transcoded segments back from them, with the ability to slash the Orchestrators if they perform work dishonestly. 
 
@@ -171,7 +171,7 @@ Clearly step 5 in this protocol leaves a lot up to implementation. The summary h
 
 They can work with their own Orchestrator if they’d like, and then start sending segments only to another candidate when they reach their own compute capacity. They can work with the same node that they have a long standing relationship with, and only switch over to another when that node goes down or becomes unavailable. They can start with 5x redundancy CPU encoding from the beginning for a very important premium live stream, or they can use the cheapest possible GPU encoding across the world for a very low reliability on demand job in order to save costs.
 
-<img src="https://livepeer-dev.s3.amazonaws.com/docs/pricenegotiation.png" alt="Offchain Job Negotiation" style="width: 750px">
+<img src="https://livepeer-dev.s3.amazonaws.com/docs/pricenegotiation.jpg" alt="Offchain Job Negotiation" style="width: 750px">
 
 Switching and adding redundancy does not introduce any on chain transaction cost overhead for the Broadcaster, whereas in the alpha version of the protocol, switching requires an additional on chain transaction and 15-30+ second confirmation times.
 
@@ -197,7 +197,7 @@ The final major change proposed by Streamflow is to adjust the verification prot
 * Broadcasters are responsible to verify received transcoded segments, and only challenge them to Truebit on chain if they believe that the segment failed verification.
 * If Truebit (or other appropriate on chain verification function) agrees, then the Orchestrator’s stake is slashed, and the Broadcaster receives a significant bounty.
 
-<img src="https://livepeer-dev.s3.amazonaws.com/docs/faultverification.png" alt="Fault Based Verificaiton">
+<img src="https://livepeer-dev.s3.amazonaws.com/docs/faultverification.jpg" alt="Fault Based Verificaiton">
 
 Part of the argument against this method is that the Broadcaster doesn’t have significant compute resources to re-encode video to check whether the job was done correctly or not. Using the same randomized approach as the original protocol however, the Broadcaster can check 1 out of `VerificationRate` segments should it choose to. It could check more if it requires more reliability, or it could outsource the checking to another node on the network and pay that node to check efficiently on its behalf - the equivalent of hiring a second Orchestrator just for one out of `VerificationRate` segments. They could be using a cheap Orchestrator for the main work, but rely on the high reputation high cost Orchestrator as a more trusted verifier. There are also far cheaper checks that can be done by analyzing frames of the output video rather than fully re-encoding, such as metrics-based verification. These cheap checks can be used to test whether there is a likely fault, and only in that case then re-encode before bringing the challenge to Truebit.
 
@@ -230,7 +230,7 @@ At the completion of a round, a Delegator will be able to calculate the earning 
 
 Which will be the visible statistic that Delegators can use to compare Orchestrators to one another, and predictably, delegation should shift from round to round towards nodes where there is opportunity to maximize this ratio. In short, why stick with a node who’s sharing out 1gwei /  LPT staked when there’s another node you could switch to that is sharing out 2 gwei / LPT staked?
 
-<img src="https://livepeer-dev.s3.amazonaws.com/docs/feeratio.png" alt="Fee Ratio">
+<img src="https://livepeer-dev.s3.amazonaws.com/docs/feeratio.jpg" alt="Fee Ratio">
 
 But then it is worth noting that the act of switching more stake onto this opportunistic node, means that the fees will be split amongst more stake, and the fee ratio will decrease. The equilibrium state is that nodes who are performing more work (earning more) have more stake, and nodes performing less work with same fee share have less stake. Essentially all competitive nodes should end up with the same equilibrium fee ratios, with intelligently delegated stake earning a Delegator the equilibrium return - and hence staked LPT intelligently applied yields access to do work to earn fees on the network independently of how jobs are assigned.
 
