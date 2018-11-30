@@ -2,6 +2,15 @@
 
 **Livepeer Scalability on Ethereum through Orchestration, Probabilistic Micropayments, and Offchain Job Negotiation**
 
+**Authors**    
+Doug Petkanics <doug@livepeer.org>
+Yondon Fu <yondon@livepeer.org>
+
+**Researchers**
+Eric Tang <eric@livepeer.org>
+Philipp Angele <philipp@livepeer.org>
+Josh Allmann <josh@livepeer.org>
+
 **STATUS: DRAFT - THIS IS AN ONGOING WORK IN PROGRESS, AND IS NOT A FINALIZED PROPOSAL**
 
 ## Abstract #####################################
