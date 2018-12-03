@@ -11,7 +11,7 @@ Eric Tang <eric@livepeer.org>
 Philipp Angele <philipp@livepeer.org>
 Josh Allmann <josh@livepeer.org>
 
-**STATUS: DRAFT - THIS IS AN ONGOING WORK IN PROGRESS, AND IS NOT A FINALIZED PROPOSAL**
+**STATUS: PROPOSAL - Feedback and review is requested on this early proposal.**
 
 ## Abstract #####################################
 
@@ -49,7 +49,7 @@ The Streamflow proposal introduces updates to the Livepeer protocol and offchain
 
 The Livepeer protocol incentivizes and secures a decentralized network of video transcoding nodes. Users who would like to transcode video can submit a job to the network at a price they determine to be acceptable, be assigned a transcoder, have the video transcoding performed with economically secured guarantees of accuracy. The live protocol uses a delegated-stake based mechanism for electing the nodes who are deemed reliable and high quality enough to perform live video encoding in a timely and performant manner. 
 
-The alpha version of the protocol currently deployed on the Ethereum blockchain has implemented many of the designs originally specified in the Livepeer Whitepaper. The delegated stake based system, with its inflationary incentives, has shown to be effective in incentivizing participation, and creating an engaged early network of transcoders and delegators to perform transcoding work and QA accordingly. The network is usable, and for a number of use cases such as long running live transcoding, or decentralized app prototyping, is a viable option today in its early state. However, for the scaled usage of video infrastructure services, the alpha version suffers from the following weaknesses:
+The alpha version of the protocol currently deployed on the Ethereum blockchain has implemented many of the designs originally specified in the [Livepeer Whitepaper](https://github.com/livepeer/wiki/blob/master/WHITEPAPER.md). The delegated stake based system, with its inflationary incentives, has shown to be effective in incentivizing participation, and creating an engaged early network of transcoders and delegators to perform transcoding work and QA accordingly. The network is usable, and for a number of use cases such as long running live transcoding, or decentralized app prototyping, is a viable option today in its early state. However, for the scaled usage of video infrastructure services, the alpha version suffers from the following weaknesses:
 
 1. Cost of using the network is too correlated to fluctuations in Ethereum gas pricing, and therefore at times of high gas prices, or encoding scenarios which require many transactions, the network becomes too expensive to be viable relative to centralized alternatives.
 1. Stake based job assignment and on-chain transcoder negotiation creates unreliable scenarios for the broadcaster - if their assigned transcoder goes offline, they incur additional costs and delays in negotiating for a second transcoder, which can be prohibitively disruptive in a live streaming context.
@@ -67,7 +67,7 @@ _Note: To properly absorb the protocol updates, it's important to have an unders
 
 ## Streamflow Protocol Proposal #################################
 
-This proposal introduces a number of changes and new concepts into the Livepeer ecosystem. They include:
+This proposal introduces a number of changes and new concepts into the Livepeer ecosystem. Each delivers impacts across one or many of the areas of affordability, performance, reliability, or scalability. They include:
 
 * Introduction of a new role of Orchestrator, to the existing roles of Broadcasters and Transcoders. 
 * Relaxation on the limitation on number of transcoders, allowing open access to compete for work amongst any aspiring token holding Orchestrator meeting the minimum stake and security requirements.
@@ -78,7 +78,7 @@ This proposal introduces a number of changes and new concepts into the Livepeer 
 
 ### Orchestrators and Transcoders
 
-Currently a Transcoder on the Livepeer network is a protocol-aware node that both watches and interacts with the blockchain protocol and performs video transcoding work. In short, it both orchestrates work on the network, and transcodes video. Streamflow proposes a two tiered architecture, which contains a split between:
+Currently a Transcoder on the Livepeer network is a protocol-aware node that both watches and interacts with the blockchain protocol and performs video transcoding work. In short, it both orchestrates work on the network, and transcodes video. This can create performance and reliability issues, and make it difficult for nodes to scale their operations. Streamflow proposes a two tiered architecture, which contains a split between:
 
 * An Orchestrator which is protocol aware, negotiates work with Broadcasters, is responsible for delivering verified transcoded segments to the Broadcasters, and coordinates the execution of this work amongst a potentially large pool of transcoders.
 * A Transcoder which is not necessarily aware of the Livepeer staking protocol or blockchain, and instead is just competitive, cost-effective hardware, which does the sole job of racing to transcode video as cheaply and quickly as possible, as coordinated by Orchestrators.
@@ -133,7 +133,7 @@ One of the benefits of the minimum stake models is that as fees flow through the
 
 ### Service Registry
 
-Streamflow expands the role of the Service Registry in the on chain protocol. Orchestrators will continue to advertise their `rewardCut`, `feeShare`, and connection information, however they will also advertise the services that their node is offering. They will no longer advertise the price that they are charging, as price and availability negotiation is moving off chain. As for considered services, there are likely two abstractions:
+Streamflow expands the role of the Service Registry in the on chain protocol. Orchestrators will continue to advertise their `rewardCut`, `feeShare`, and connection information, however they will also advertise the services that their node is offering, and region(s) their node is serving. This will lead to performance impacts and Broadcasters can look for the specific services they want, served by a nearby node. Orchestrators will no longer advertise the price that they are charging, as price and availability negotiation is moving off chain. As for considered services, there are likely two abstractions:
 
 1. **Service**
     1. Service identifier - the id that represents this particular service, such as “CPUTranscoding”, “GPUTranscoding”, or “SegmentVerification". There is still work to be done on the exact definition here, and it’s possible the services are more granular such as input/output encoding pairs such as “H264 1080p -> 720p”. 
@@ -208,6 +208,8 @@ One impact of this is that the cost of Truebit doesn’t need to be incurred, ex
 
 ## Economic Analysis #################################
 
+The changes proposed by Streamflow lead to slightly different incentives and behaviors for both Orchestrators and Delegators, resulting in what will be a more scalable, reliable, cost effective network. This section begins an economic impact analysis of these proposed changes, including a look at the role of the Livepeer Token, the role of delegation, how inflation effects the network, and some offchain economic considerations.
+
 ### Livepeer Token
 
 The Livepeer Token (LPT) could always be described as a work token. Those who staked it had the opportunity to perform work on the network, and therefore earn the future fees (in ETH) for doing said work. Work was routed in direct proportion to stake, if prices offered by all nodes were constant. There were conceived mechanisms from the beginning for a “work requirement”, in that if a node did not perform enough work within some threshold proportion of their stake, then they could be slashed. This was an attempt at ensuring that nodes would actually contribute value (or incur overhead tax for not doing so or faking it), rather than just sit idly on stake and accrue inflation. In addition, there was no requirement that work be done cost effectively or in a performant manner. Competition could be socially encouraged, but not enforced at a protocol level.
@@ -238,6 +240,8 @@ But then it is worth noting that the act of switching more stake onto this oppor
 
 One negative outcome people could foresee is that nodes who are winning a lot of work could provide 0% fee share, and hence not attract any delegation. This is ok - they are running hardware and incurring costs, and providing great service to the network - they may not need delegation. But delegation on the other hand provides additional security - it is more stake that can be slashed if the node cheats - more reputational signal. Clients use this signal to select nodes to work with, and so a competitive node advertising a > 0% fee share would be more likely to attract stake, and hence work - as long as they can perform it competitively or better or cheaper than the 0% fee share node. Again, this contributes to the flexible setups and use cases of the network. It increases the opportunity for competition, decentralization, diversity, and resilience of the network.
 
+As new nodes are looking to compete to do work on the network, they may need to attract enough stake to offer the security required by Broadcasters. In these cases, it is likely that these nodes would set a greater fee share. Active delegators will have the opportunity to search for and stake towards nodes that are winning outsized portions of works, with greater fee shares, resulting in higher fee ratios. In short, delegated stake can provide security and route work, in exchange for fees shared back when the work is performed well. Active delegation can lead to giving more opportunistic nodes the ability to expand the footprint and capabilities of the network in a competitive way.
+
 
 ### Inflation into Bonded State and Apathetic Delegators
 One of the criticisms of the uncapped stake model with no minimum stakes is that it enables lazy behavior on behalf of the delegators. Inflationary LPT continues to accrue into the bonded state, continues to compound, and allows a delegator to set-it-and-forget-it while collecting LPT without adding significant value to the network. 
@@ -257,6 +261,8 @@ As previously mentioned, one of the core philosophies within Streamflow is to mo
 * Redundancy and failover algorithms for Broadcasters under different scenarios and use cases.
 * Price discovery strategy for Broadcasters.
 * Low latency streaming protocols and signature/payment verification when final segment isn't available before work needs to begin.
+
+Each of the above can effect the efficiency of the network from the perspective of a Broadcaster - and hence the necessary redundancies, and eventually costs. The good news is that much of the above can be handled via off chain strategies, and can be constantly experimented with across different competing implementations or configurations. A network that has agents acting in different and unpredictable ways is harder to optimize for an attacker who would otherwise be looking to game a single implementation. 
 
 
 ## Attacks ###############################
@@ -278,6 +284,8 @@ This can be counteracted by having expiration dates on the PM tickets, which occ
 
 
 ## Open Research Areas ############################
+
+As with all work in the early field of blockchain based crypto economic protocols, there are still many research problems which need to be persued before the systems can achieve full decentralization, trustlessness, and economic efficiency. Here are a couple areas that the project is actively conducting research in. Community participation is welcome in pressing forward on these areas as well.
 
 ### Non Deterministic Verification
 
