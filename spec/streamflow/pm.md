@@ -129,7 +129,7 @@ function redeemWinningTicket(
 - The ticket's recipient is the null address
 - The ticket's sender is the null address
 - `_recipientRand` is not the pre-image for the ticket's `recipientRandHash`
-- The ticket's `creationRoundHash` is a valid Ethereum block hash that has been stored for `creationRound`
+- The ticket's `creationRoundHash` is not a valid Ethereum block hash that has been stored for `creationRound`
 - The ticket has already been redeemed previously
 - `_senderSig` is not a valid signature over the ticket hash from the ticket's sender
 - The ticket did not win i.e. `uint256(keccak256(abi.encodePacked(_senderSig, _recipientRand))) >= _ticket.winProb`
