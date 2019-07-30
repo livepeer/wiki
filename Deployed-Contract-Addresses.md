@@ -6,7 +6,7 @@
 - BondingManager (Proxy): [0x511bc4556d823ae99630ae8de28b9b80df90ea2e](https://etherscan.io/address/0x511bc4556d823ae99630ae8de28b9b80df90ea2e)
 - BondingManager (Target): [0xCBAa6eA4886b535FC7ABACe3F3985Ed03b3b80a0](https://etherscan.io/address/0xcbaa6ea4886b535fc7abace3f3985ed03b3b80a0)
 - JobsManager (Proxy): [0xbf07ff45f14c9ff0571b9fbdc7e2b62d29931224](https://etherscan.io/address/0xbf07ff45f14c9ff0571b9fbdc7e2b62d29931224)
-- JobsManager (Target): [0x68b463bca7d561118636e9f028ff0f2e8398dd6a](https://etherscan.io/address/0x68b463bca7d561118636e9f028ff0f2e8398dd6a)
+- JobsManager (Target): [0xB620c762dd4bC350602936d7401BB8393Ee6687c](https://etherscan.io/address/0xb620c762dd4bc350602936d7401bb8393ee6687c)
 - RoundsManager (Proxy): [0x3984fc4ceeef1739135476f625d36d6c35c40dc3](https://etherscan.io/address/0x3984fc4ceeef1739135476f625d36d6c35c40dc3)
 - RoundsManager (Target): [0xa3aa52ce79e85a21d9ccda705c57e426b160112c](https://etherscan.io/address/0xa3aa52ce79e85a21d9ccda705c57e426b160112c)
 - ServiceRegistry (Proxy): [0x406a112f3218b988c66778fd72fc8467f2601366](https://etherscan.io/address/0x406a112f3218b988c66778fd72fc8467f2601366)
@@ -28,7 +28,7 @@
 - BondingManager (Proxy): [0xF6b0Ceb5e3f25b6FBecf8186F8A68B4E42A96a17](https://rinkeby.etherscan.io/address/0xF6b0Ceb5e3f25b6FBecf8186F8A68B4E42A96a17)
 - BondingManager (Target): [0x5fA6003b7c39f60e544Ae296a446c1e65177BaEe](https://rinkeby.etherscan.io/address/0x5fa6003b7c39f60e544ae296a446c1e65177baee)
 - JobsManager (Proxy): [0x0A209545bb10bC2F78713a2699795ECfEa76762D](https://rinkeby.etherscan.io/address/0x0a209545bb10bc2f78713a2699795ecfea76762d)
-- JobsManager (Target): [0x65276A141e914eA8100DE2660A17632546f20e9d](https://rinkeby.etherscan.io/address/0x65276a141e914ea8100de2660a17632546f20e9d)
+- JobsManager (Target): [0x3dCe8eee39082D7e64b2C306F96f23Cc6D0723DD](https://rinkeby.etherscan.io/address/0x3dce8eee39082d7e64b2c306f96f23cc6d0723dd)
 - RoundsManager (Proxy): [0xEB0EF46B5771D523402234FF0d7596d2C62411dE](https://rinkeby.etherscan.io/address/0xEB0EF46B5771D523402234FF0d7596d2C62411dE)
 - RoundsManager (Target): [0xE0F05Ad1eEB0aBf849E843632eCAeDBf56CA2901](https://rinkeby.etherscan.io/address/0xe0f05ad1eeb0abf849e843632ecaedbf56ca2901)
 - ServiceRegistry (Proxy): [0x21b1E9dcFf801f71C3e5c7385FD16d0742cb64D1](https://rinkeby.etherscan.io/address/0x21b1e9dcff801f71c3e5c7385fd16d0742cb64d1)
@@ -47,6 +47,8 @@
   - V2: [0x5A9512826EAAF1FE4190f89443314E95A515fE24](https://etherscan.io/address/0x5a9512826eaaf1fe4190f89443314e95a515fe24)
   - V3: [0x633101b3f15f93c5f415830d48e56b9b1f7ba584](https://etherscan.io/address/0x633101b3f15f93c5f415830d48e56b9b1f7ba584)
   - V4: [0x05C03EA0039f2e828A725A82939fc1e90de38B44](https://etherscan.io/address/0x05c03ea0039f2e828a725a82939fc1e90de38b44)
+- JobsManager (Target)
+  - V1: [0x68b463bca7d561118636e9f028ff0f2e8398dd6a](https://etherscan.io/address/0x68b463bca7d561118636e9f028ff0f2e8398dd6a)
 
 # Rinkeby (Deprecated)
 - LivepeerVerifier
@@ -56,3 +58,5 @@
   - V2: [0xC32FA1D1C044866bcbF0850dD4eFFE5fC236FA94](https://rinkeby.etherscan.io/address/0xc32fa1d1c044866bcbf0850dd4effe5fc236fa94)
   - V3: [0xD03667199c4De6337698CBb95d3a323721b41620](https://rinkeby.etherscan.io/address/0xd03667199c4de6337698cbb95d3a323721b41620)
   - V4: [0x90332E4E97E91454704183d9aD309F5291368Aba](https://rinkeby.etherscan.io/address/0x90332e4e97e91454704183d9ad309f5291368aba)
+- JobsManager (Target)
+  - V1: [0x65276A141e914eA8100DE2660A17632546f20e9d](https://rinkeby.etherscan.io/address/0x65276a141e914ea8100de2660a17632546f20e9d) 
