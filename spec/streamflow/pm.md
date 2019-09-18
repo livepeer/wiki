@@ -62,19 +62,17 @@ Given a ticket `T`, a broadcaster will sign the ticket hash to produce `senderSi
 
 ### Reserve
 
-A `Reserve` represents locked on-chain funds that are separate from a broadcaster's deposit. Unlike deposit funds which can be used to pay for an arbitrary amount of winning tickets sent to any orchestrator, reserve funds are split into equal allocations, each of which is committed to one of the registered orchestrators in the current round. A registered orchestrator is guaranteed the allocation value even if the broadcaster overspends such that its deposit is insufficient to pay for outstanding winning tickets. At this point, any winning ticket redemptions would claim from the broadcaster's reserve up to the value of the allocation. As rounds progress, a broadcaster's reserve is automatically committed to the registered orchestrators for the current round without any intervention by the broadcaster. 
+A `Reserve` represents locked on-chain funds that are separate from a broadcaster's deposit. Unlike deposit funds which can be used to pay for an arbitrary amount of winning tickets sent to any orchestrator, reserve funds are split into equal allocations, each of which is committed to one of the active orchestrators in the current round. An active orchestrator is guaranteed the allocation value even if the broadcaster overspends such that its deposit is insufficient to pay for outstanding winning tickets. At this point, any winning ticket redemptions would claim from the broadcaster's reserve up to the value of the allocation. As rounds progress, a broadcaster's reserve is automatically committed to the active orchestrators for the current round without any intervention by the broadcaster. 
 
-The allocation value is also the maximum amount that a registered orchestrator will be willing to "float" for a broadcaster. When an orchestrator receives a winning ticket it treats the ticket face value as float since the broadcaster may or may not have sufficient deposit funds to cover the ticket face value at the time of redemption. An orchestrator can safely receive winning tickets and add to its float for a broadcaster up to the allocation value committed to the orchestrator from the broadcaster's reserve. Whenever an orchestrator successfully redeems a winning ticket which draws from a broadcaster's deposit, it can subtract the ticket face value from its float for a broadcaster.
+The allocation value is also the maximum amount that an active orchestrator will be willing to "float" for a broadcaster. When an orchestrator receives a winning ticket it treats the ticket face value as float since the broadcaster may or may not have sufficient deposit funds to cover the ticket face value at the time of redemption. An orchestrator can safely receive winning tickets and add to its float for a broadcaster up to the allocation value committed to the orchestrator from the broadcaster's reserve. Whenever an orchestrator successfully redeems a winning ticket which draws from a broadcaster's deposit, it can subtract the ticket face value from its float for a broadcaster.
 
-| Field                       | Type                         | Description                                                                               |
-| --------------------------- | ---------------------------- | ----------------------------------------------------------------------------------------- |
-| **fundsAtCreation**         | uint256                      | Funds that the reserve was created with                                                   |
-| **fundsRemaining**          | uint256                      | Funds remaining in the reserve taking into account funds claimed if the reserve is frozen |
-| **freezeRound**             | uint256                      | The round that the reserve is frozen because the sender overspent from its deposit        |
-| **recipientsInFreezeRound** | uint256                      | Number of recipients (i.e. registered orchestrators) during `freezeRound`                 |
-| **claimed**                 | mapping (address => uint256) | Amount claimed by an ETH address (only eligible recipients during `freezeRound`)          |
+| Field                | Type                                             | Description                                                          |
+| -------------------- | ------------------------------------------------ | -------------------------------------------------------------------- |
+| **funds**            | uint256                                          | Funds remaining in the reserve.                                      |
+| **claimedForRound**  | mapping (uint256 => uint256)                     | Total amount claimed from reserve during a particular round.         |
+| **claimedByAddress** | mapping (uint256 => mapping (address => uint256)) | Amount claimed from reserve by an address during a particular round. |
 
-A broadcaster only has a single reserve at any given point in time.
+A broadcaster (identified by ETH address) only has a single reserve at any given point in time.
 
 A broadcaster's reserve can be thought of as a fixed amount of funds that is committed to the set of orchestrators which is updated each round. So, at the beginning of each round, the reserve is split into equal allocations based on the current orchestrator set. Thus, without adding additional funds to a reserve, it will be split into smaller allocations as the orchestrator set approaches its maximum size and it will be split into larger allocations as the orchestrator set shrinks in size. Since each allocation represents an orchestrator's max float for the broadcaster, as the allocation size increase, an orchestrator will be able to safely receive winning tickets with higher face values or more winning tickets with lower face values prior to having to redeem them.
 
@@ -87,12 +85,9 @@ An orchestrator can accept or reject work from a broadcaster based upon the broa
 | Field                      | Type    | Description                                                                                                |
 | -------------------------- | ------- | ---------------------------------------------------------------------------------------------------------- |
 | **UNLOCK_PERIOD**          | uint256 | The number of rounds that a sender must wait in order to unlock funds for withdrawal                       |
-| **FREEZE_PERIOD**          | uint256 | The number of rounds that a sender must wait after its reserve is frozen in order to add or withdraw funds |
 | **TICKET_VALIDITY_PERIOD** | uint256 | The number of rounds that a ticket is valid for starting from the ticket's `creationRound`                 |
 
 **UNLOCK_PERIOD** corresponds to the unlock period that a broadcaster must wait through in order to unlock funds for withdrawal. A broadcaster can cancel an unlock at any time either via an explicit cancellation or by adding more funds to its deposit and/or reserve.
-
-**FREEZE_PERIOD** corresponds to the freeze period that a broadcaster must wait through in order to either add or withdraw funds from its deposit and reserve after its reserve has been frozen as a result of overspending from its deposit. Unlike with the unlock period, a broadcaster cannot cancel the freeze period.
 
 **TICKET_VALIDITY_PERIOD** corresponds to the validity period for a ticket starting from its `creationRound`. In practice, this value should be >= 2 rounds because if it is 1 round then there is an edge case where a winning ticket is created close to the end of a round and then quickly expires before an orchestrator can redeem it.
 
