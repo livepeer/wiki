@@ -7,7 +7,7 @@ In the Streamflow release of the Livepeer protocol, broadcasters use a probabili
 The probabilistic micropayment protocol consists of:
 
 - A `TicketBroker` Ethereum smart contract that holds funds and processes winning tickets
-- An off-chain protocol between a broadcasters and orchestrators for creating and sending tickets
+- An off-chain protocol between broadcasters and orchestrators for creating and sending tickets
 
 This specification will describe both the `TicketBroker` contract and the off-chain protocol between broadcasters and orchestrators.
 
@@ -17,20 +17,24 @@ This specification will describe both the `TicketBroker` contract and the off-ch
 
 A `Ticket` represents a payment from a broadcaster to an orchestrator for transcoding work. Tickets are sent to orchestrators off-chain and winning tickets are redeemed on-chain with the `TicketBroker` contract.
 
-| Field                 | Type    | Description                                                                                                  |
-| --------------------- | ------- | ------------------------------------------------------------------------------------------------------------ |
-| **recipient**         | address | The ETH address of the orchestrator                                                                          |
-| **sender**            | address | The ETH address of the broadcaster                                                                           |
-| **faceValue**         | uint256 | The face value of the ticket which is paid to `recipient` if the ticket wins                                 |
-| **winProb**           | uint256 | The probability that a ticket will win represented as `winProb / (2^256 - 1)`                                |
-| **senderNonce**       | uint256 | A monotonically increasing counter that makes a ticket unique for a `recipientRandHash` value                |
-| **recipientRandHash** | bytes32 | The orchestrator's commitment to `recipientRand` represented as `keccak256(abi.encodePacked(recipientRand))` |
-| **creationRound**     | uint256 | The last initialized round during which the ticket was created                                                                |
-| **creationRoundHash** | bytes32 | The Ethereum block hash corresponding to `creationRound`                                                     |
+| Field                      | Type    | Description                                                                                                  |
+| -------------------------- | ------- | ------------------------------------------------------------------------------------------------------------ |
+| **recipient**              | address | The ETH address of the orchestrator                                                                          |
+| **sender**                 | address | The ETH address of the broadcaster                                                                           |
+| **faceValue**              | uint256 | The face value of the ticket which is paid to `recipient` if the ticket wins                                 |
+| **winProb**                | uint256 | The probability that a ticket will win represented as `winProb / (2^256 - 1)`                                |
+| **senderNonce**            | uint256 | A monotonically increasing counter that makes a ticket unique for a `recipientRandHash` value                |
+| **recipientRandHash**      | bytes32 | The orchestrator's commitment to `recipientRand` represented as `keccak256(abi.encodePacked(recipientRand))` |
+| **creationRound**          | uint256 | The last initialized round during which the ticket was created                                               |
+| **creationRoundBlockHash** | bytes32 | The Ethereum block hash corresponding to `creationRound`                                                     |
 
 The hash for a ticket `T` is computed as:
 
 ```
+// auxData format:
+// Bytes [0:31] = creationRound
+// Bytes [32:63] = creationRoundBlockHash
+bytes auxData = abi.encodePacked(T.creationRound, T.creationRoundBlockHash)
 bytes32 ticketHash = keccak256(abi.encodePacked(
     T.recipient,
     T.sender,
@@ -38,8 +42,7 @@ bytes32 ticketHash = keccak256(abi.encodePacked(
     T.winProb,
     T.senderNonce,
     T.recipientRandHash,
-    T.creationRound,
-    T.creationRoundHash
+    auxData
 ))
 ```
 
@@ -51,7 +54,9 @@ A broadcaster needs to produce an unpredictable value that can be combined with 
 
 The pay out from a winning ticket should compensate not only the receiving orchestrator, but also the orchestrator's delegators that staked toward the orchestrator when the ticket was sent to the orchestrator. The `TicketBroker` contract can send the face value of winning tickets to the orchestrator's fee pool for `creationRound` such that the orchestrator's delegators during `creationRound` can claim their share of the fees. `creationRound` is also used to determine the expiration round for a ticket. Since `TicketBroker` enforces a specific ticket validity period based off of a ticket's `creationRound`, broadcasters that create tickets with `creationRound` less than the current round will effectively reduce the ticket's validity period. Thus, while broadcasters can create tickets with `creationRound` set to a past round, orchestrators will likely reject such tickets due to their shorter effective validity period which means less time for the orchestrators to redeem winning tickets. 
 
-The ticket also includes `creationRoundHash` in order to prevent a broadcaster from creating tickets that specify a creation round in the future. This specification assumes that the broadcaster, orchestrator and `TicketBroker` have access to a `RoundsManager` contract that stores an Ethereum block hash for each new round. Since the Ethereum block hash for a round is only stored when the round is initialized, a broadcaster would be unable to set `creationRound` to a future round unless it is able to predict the Ethereum block hash that will be stored when the future round is initialized.
+The ticket also includes `creationRoundBlockHash` in order to prevent a broadcaster from creating tickets that specify a creation round in the future. This specification assumes that the broadcaster, orchestrator and `TicketBroker` have access to a `RoundsManager` contract that stores an Ethereum block hash for each new round. Since the Ethereum block hash for a round is only stored when the round is initialized, a broadcaster would be unable to set `creationRound` to a future round unless it is able to predict the Ethereum block hash that will be stored when the future round is initialized.
+
+When calculating the hash of a ticket, `creationRound` and `creationRoundBlockHash` are encoded in a byte array `auxData` following the behavior of the Solidity `abi.encodePacked()` built-in. These parameters are encoded into a byte array that is passed into `keccak256` hash function instead of passing the `creationRound` and `creationRoundBlockHash` individually because the `TicketBroker` contract defines the `Ticket` struct with a byte array `auxData` field. The motivation behind this byte array `auxData` field is to add/remove extra data in a ticket without changing the on-chain `Ticket` struct definition - the `TicketBroker` contract just needs to be upgraded to interpret updated extra data in submitted tickets. Another way that this could be accomplished without upgrading the `TicketBroker` contract itself is to encode a contract address in `auxData` and then call a validation function on the contract using the Soldity `STATICCALL` opcode with the other arguments encoded in `auxData`.
 
 Given a ticket `T`, a broadcaster will sign the ticket hash to produce `senderSig`. Then, a broadcaster will send both `T` and `senderSig` to an orchestrator.
 
