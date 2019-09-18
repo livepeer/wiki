@@ -126,6 +126,8 @@ function redeemWinningTicket(
 
 `redeemWinningTicket` will revert under the following conditions:
 
+- The `Controller` is paused
+- The current round is not initialized
 - The ticket's recipient is the null address
 - The ticket's sender is the null address
 - `_recipientRand` is not the pre-image for the ticket's `recipientRandHash`
@@ -133,16 +135,60 @@ function redeemWinningTicket(
 - The ticket has already been redeemed previously
 - `_senderSig` is not a valid signature over the ticket hash from the ticket's sender
 - The ticket did not win i.e. `uint256(keccak256(abi.encodePacked(_senderSig, _recipientRand))) >= _ticket.winProb`
-- The ticket's recipient is not a registered orchestrator in the current round, the broadcaster's deposit is zero and the ticket's face value is greater than zero
+- The sender is unlocked
+- The ticket's sender's deposit and reserve are both zero
+- The ticket's recipient is not a registered orchestrator
 
-If the ticket's recipient is not a registered orchestrator in the current round, the broadcaster's deposit is greater than zero and the broadcaster's deposit is less than the ticket's face value, then the orchestrator claims the entirety of the broadcaster's deposit, but does not receive the remainder of the ticket's face value not covered by the broadcaster's deposit.
+If the ticket's recipient is not an active orchestrator in the current round, the broadcaster's deposit is greater than zero and the broadcaster's deposit is less than the ticket's face value, then the orchestrator claims the entirety of the broadcaster's deposit, but does not receive the remainder of the ticket's face value not covered by the broadcaster's deposit.
+
+Funds for a successful winning ticket redemption are added to the ticket recipient's fee pool for the ticket's `creationRound` via the `BondingManager.updateTranscoderWithFees()` function. The state accounting to track funds ownership is then managed by the `BondingManager` and the actual ETH is held by the `Minter`.
+
+Reserve claiming is triggered when `T.faceValue > B.deposit` for a ticket `T` sent by a broadcaster `B` with `reserve` in round `N` with `numRecipients` active orchestrators. The reserve claiming calculations work as follows:
+
+1. `owed = T.faceValue - B.deposit`
+2. `reserveAlloc = (reserve.funds + reserve.claimedForRound[N]) / numRecipients`
+3. `claimable = reserveAlloc - reserve.claimedByAddress[O]`
+4. `claimAmount = owed`
+5. If `claimAmount > claimable`:
+   - `claimAmount = claimable`
+6. If `claimAmount == 0`:
+   - Return
+7. `reserve.claimedForRound[N] += claimAmount`
+8. `reserve.claimedByAddress[O] += claimAmount`
+9. `reserve.funds -= claimAmount`
+
+When calculating `reserveAlloc`, the `TicketBroker` takes the sum of `reserve.funds` and `reserve.claimedForRound[N]` because `B`'s reserve funds are committed to the active orchestrator set at the beginning of the current round. Active orchestrators in the current round are guaranteed *at least* the reserve funds available at the beginning of the round divided by the number of active orchestrators. If `B` adds more reserve funds during the round, then active orchestrators are guaranteed a greater amount. `reserve.funds + reserve.claimedForRound[N]` will equal the amount available at the beginning of the round plus any additional funds added to the reserve during the round. Each orchestrator starts off with a guaranteed allocation based on this amount. As `O` claims from the reserve, the `TicketBroker` keeps track of the amount claimed by `O` in the round thus far and subtracts the amount claimed from `O`'s maximum guaranteed allocation to determine the amount that is still claimable by `O` from `B`'s reserve.
+
+#### batchRedeemWinningTickets
+
+Orchestrators can call `batchRedeemWinningTickets` when they want to claim payments associated with multiple received winning tickets in a single atomic transaction.
+
+```
+/**
+ * @dev Redeems multiple winning tickets. The function will redeem all of the provided
+ * tickets and handle any failures gracefully without reverting the entire function
+ * @param _tickets Array of winning tickets to be redeemed in order to claim payment
+ * @param _sigs Array of sender signatures over the hash of tickets (`_sigs[i]` corresponds to `_tickets[i]`)
+ * @param _recipientRands Array of preimages for the recipientRandHash included in each ticket (`_recipientRands[i]` corresponds to `_tickets[i]`)
+ */
+ function batchRedeemWinningTickets(
+    Ticket[] memory _tickets,
+    bytes[] _sigs,
+    uint256[] _recipientRands
+ )
+    public;
+```
+
+`batchRedeemWinningTickets` will not revert if the redemption for an individual ticket in a batch fails and it will always try to redeem every ticket in a batch.
+
+`batchRedeemWinningTickets` will revert under the following conditions:
+
+- The `Controller` is paused
+- The current round is not initialized
 
 #### fundDeposit
 
-Broadcasters call `fundDeposit` to add ETH to their on-chain deposit that backs winning ticket redemptions. If a broadcaster previously 
-initiated the unlock period and then calls `fundDeposit`, the unlock period is cancelled. Broadcasters are unable to add ETH to their 
-deposit if their reserve is currently frozen (as a result of overspending from their deposit) and they will have to wait until the freeze period 
-is over to add ETH to their deposit. 
+Broadcasters call `fundDeposit` to add ETH to their on-chain deposit that backs winning ticket redemptions. The `TicketBroker` keeps track of the deposit amount, but the actual ETH is sent to the `Minter` contract. If a broadcaster previously initiated the unlock period and then calls `fundDeposit`, the unlock period is cancelled.
 
 ```
 /**
@@ -153,15 +199,12 @@ function fundDeposit() external payable;
 
 `fundDeposit` will revert under the following conditions:
 
-- The caller's reserve is currently frozen
+- The `Controller` is paused
 
 #### fundReserve
 
-Broadcasters call `fundReserve` to add ETH to their on-chain reserve that guarantees equal allocations of value to registered orchestrators 
-in the current round in the event that their deposit is insufficient to cover all outstanding winning tickets. If a broadcaster previously initiated 
-the unlock period and then calls `fundReserve`, the unlock period is cancelled. Broadcasters are unable to add ETH to their reserve if their reserve is currently frozen (as a result of overspending from their deposit) and they will have to wait until the freeze period is over to add ETH to their reserve.
-
-If the broadcaster's reserve was previously frozen and the freeze period is over, `fundReserve` will move any remaining funds in the old reserve into a new reserve in addition to any funds sent as a part of the `fundReserve` call.
+Broadcasters call `fundReserve` to add ETH to their on-chain reserve that guarantees equal allocations of value to active orchestrators 
+in the current round in the event that their deposit is insufficient to cover all outstanding winning tickets. The `TicketBroker` keeps track of the reserve amount, but the actual ETH is sent to the `Minter` contract. If a broadcaster previously initiated the unlock period and then calls `fundReserve`, the unlock period is cancelled. 
 
 ```
 /**
@@ -172,11 +215,11 @@ function fundReserve() external payable;
 
 `fundReserve` will revert under the following conditions:
 
-- The caller's reserve is currently frozen
+- The `Controller` is paused
 
 #### fundDepositAndReserve
 
-Broadcasters call `fundDepositAndReserve` in order to add ETH to both their deposit and reserve in a single atomic transaction.
+Broadcasters call `fundDepositAndReserve` in order to add ETH to both their deposit and reserve in a single atomic transaction. The `TicketBroker` keeps track of the deposit and reserve amounts, but the actual ETH is sent to the `Minter` contract.
 
 ```
 /**
@@ -189,14 +232,14 @@ function fundDepositAndReserve(uint256 _depositFunds, uint256 _reserveFunds) ext
 
 `fundDepositAndReserve` will revert under the following conditions:
 
+- The `Controller` is paused
 - `_depositFunds + _reserveFunds` is not equal to the amount of ETH sent with the `fundDepositAndReserve` call
 - The deposit funding (which should use the same internal logic as `fundDeposit`) process halts with a revert
 - The reserve funding (which should use the same internal logic as `fundReserve`) process halts with a revert
 
-
 #### unlock
 
-Broadcasters call `unlock` to start the unlock period. They are able to withdraw their funds after the unlock period is over. Broadcasters are unable to call `unlock` if their reserve is currently frozen.
+Broadcasters call `unlock` to start the unlock period. They are able to withdraw their funds after the unlock period is over. 
 
 ```
 /**
@@ -208,10 +251,10 @@ function unlock() public;
 
 `unlock` will revert under the following conditions:
 
+- The `Controller` is paused
 - The caller's deposit and reserve are both empty 
 - The caller already initiated the unlock period
 - The caller's funds are already unlocked
-- The caller's reserve is currently frozen
 
 #### cancelUnlock
 
@@ -227,12 +270,12 @@ function cancelUnlock() public;
 
 `cancelUnlock` will revert under the following conditions:
 
+- The `Controller` is paused
 - The caller is not in the unlock period
-- The caller's reserve is currently frozen
 
 #### withdraw
 
-Broadcasters call `withdraw` to withdraw funds after waiting through either the unlock or freeze period.
+Broadcasters call `withdraw` to withdraw funds after waiting through the unlock period. The `TicketBroker` will ask the `Minter` to transfer the requested funds to the caller.
 
 ```
 /**
@@ -244,6 +287,7 @@ function withdraw() public;
 
 `withdraw` will revert under the following conditions:
 
+- The `Controller` is paused
 - The caller's deposit and reserve are both empty
 - The caller's funds are not unlocked
 
