@@ -102,7 +102,7 @@ The `TicketBroker` contract serves as a transparent trusted third party that:
 
 #### redeemWinningTicket
 
-Orchestrators call `redeemWinningTicket` when they want to claim payments associated with received winning tickets.
+Orchestrators call `redeemWinningTicket` when they want to claim payments associated with received winning tickets. If a broadcaster's deposit is insufficient to cover the full face value of a winning ticket, the uncovered portion of the ticket face value will be claimed from the broadcaster's reserve up to the maximum allocation guaranteed to the orchestrator.
 
 ```
 /**
@@ -340,10 +340,10 @@ A broadcaster is able to create and send tickets off-chain to an orchestrator.
     - `T.senderNonce = lastUsedNonce`
     - Store `lastUsedNonce++` for `recipientRandHash`
     - `T.recipientRandHash = recipientRandHash`
-    - Let `currentRound` be the last initialized round
-    - Let `currentRoundHash` be the Ethereum block hash stored by the `RoundManager` contract for `currentRound`
+    - Let `creationRound` be the last initialized round
+    - Let `creationRoundBlockHash` be the Ethereum block hash stored by the `RoundManager` contract for `creationRound`
     - `T.creationRound = creationRound`
-    - `T.creationRoundHash = currentRoundHash`
+    - `T.creationRoundHash = creationRoundBlockHash`
 2. `B` signs the ticket hash for `T` to produce `senderSig`
 3. `B` sends `T`, `senderSig` and `seed` to `O`
 
@@ -370,7 +370,7 @@ An orchestrator can validate tickets and check for winning tickets locally.
     - If `T.creationRoundHash` is not a valid Ethereum block hash stored by the `RoundsManager` contract for `T.creationRound`, return
     - Check that `senderSig` is valid for `T`
         - Let `signer` be the signer address recovered from `senderSig` and the ticket hash
-        - If `T.sender != signer` AND `signer` is NOT an approved signer address for `T.sender`, return
+        - If `T.sender != signer`, return
     - Check that `T.senderNonce` is valid for `recipientRand`
         - Let `lastSenderNonce` be the highest `senderNonce` that `O` has seen for `recipientRand`
         - If `T.senderNonce <= lastSenderNonce`, return
@@ -399,62 +399,60 @@ An orchestrator can redeem winning tickets with `TicketBroker` in order to claim
 
 **Requirements**
 
-If a broadcaster overspends such that its deposit is insufficient to cover the face values of outstanding winning tickets that it has sent out, a registered orchestrator in the current round can still redeem winning tickets to claim from the broadcaster's reserve up to the allocation value committed to the orchestrator.
+If a broadcaster overspends such that its deposit is insufficient to cover the face values of outstanding winning tickets that it has sent out, an active orchestrator in the current round can still redeem winning tickets to claim from the broadcaster's reserve up to the allocation value committed to the orchestrator.
 
 **Initial State**
 
 - Broadcaster `B` with `reserve`
 - Orchestrator `O` with a winning ticket `T` such that `T.faceValue > B.deposit`
+- Current round `N` with `Y` orchestrators in the active set
 
 **Algorithm**
 
-1. `O` calls `TicketBroker.redeemWinningTicket()` with `T`
-2. If `reserve` is not already frozen, freeze `reserve`
-    - `reserve.freezeRound = RoundsManager.currentRound()`
-    - `reserve.recipientsAtFreezeRound = BondingManager.getNumOrchestrators()`
-3. If `O` is not a registered orchestrator during `reserve.freezeRound`, return 
-4. Process `T` and allow `O` to claim funds from `reserve`
-    - `owed = T.faceValue - B.deposit`
-    - `maxFloat = reserve.fundsAtCreation / reserve.recipientsAtFreezeRound`
-    - `claimable = maxFloat - reserve.claimed[O]`
-    - If `owed > claimable`:
-        - `reserve.claimed[O] = maxFloat`
-        - `reserve.fundsRemaining -= claimable`
-    - Else:
-        - `reserve.claimed[O] += owed` 
-        - `reserve.fundsRemaining -= owed`    
+Same as [Redeeming Winning Tickets](#redeeming-winning-tickets).
 
 **Notes**
 
-As mentioned in step 3 of the algorithm, if `O` is not registered during `reserve.freezeRound`, then `O` will not be able to claim from `B`'s reserve even if `O` has an outstanding winning ticket that it received from `B` right before `reserve.freezeRound`. This creates an edge case where `O` is registered in round `N`, receives a winning ticket from `B` close to the end of round `N`, is evicted from the orchestrator set by a new entrant orchestrator with more stake and then is unable to claim from `B`'s reserve in round `N + 1` after `B` depletes its deposit. The probability of this edge case is tied to the probability of an orchestrator receiving a winning ticket and then being evicted in the next round before redeeming the winning ticket. In this scenario, if `O` suspects that it will evicted in the following round, it can pay a premium for faster transaction confirmation times for any winning tickets received near the end of the current round if doing so would still be profitable.
+A note on reserve claiming edge cases:
+
+Consider the following scenario:
+
+1. `B` has a reserve `X` in round `N` when the active set size is `Y`
+2. `O` sets its desired ticket face value to `X / Y` which is `O`'s guaranteed allocation from `B`'s reserve
+3. `O` receives a winning ticket at the very end of round `N`
+4. `B` overspends thereby setting its deposit to 0
+5. Round `N + 1` begins before `O` redeems its winning ticket
+
+In this scenario, a few edge cases are possible:
+
+1. `O` is no longer in the active set in round `N + 1` and is unable to claim from `B`'s reserve using the winning ticket
+2. The size of the active set in round `N + 1` increases to `Y + 1` and `O` cannot claim the full ticket face value from `B`'s reserve because the ticket face value `X / Y` is greater than `X / (Y + 1)`
+3. Someone claims from `B`'s reserve at the end of round `N` which reduces the reserve to `X' < X`. At the beginning of round `N + 1`, `O`'s guaranteed allocation from `B`'s reserve is `X' / Y` which will not cover the full face value `X / Y` of `O`'s winning ticket
+
+Note that both 2 and 3 can occur in the same time period.
+
+The probability of one of these edge cases occuring depends on the probability of `O` receiving a winning ticket at the very end of a round and the probability of one of the following events occuring at the end of a round: `O` is evicted from the active set in the next round, the active set size increases in the next round or someone claims from `B`'s reserve before the next round begins. Since `O` sets the winning probability of tickets and generally wants to minimize on-chain transactions, generally tickets should be have low winning probabilities so the probability of `O` receiving a winning ticket at the very end of round should also be low. Furthermore, if `O` suspects one of these events could occur at the end of a round, it can pay a premium for faster transaction confirmation time for a winning ticket received at the end of the round if doing so would still be profitable in order to guarantee that it will be able to claim its owed amount from `B`'s reserve if needed.
 
 ### Withdrawals 
 
 **Requirements**
 
-A malicious broadcaster can try to front-run orchestrators by withdrawing its reserve right before an orchestrator's ticket redemption transaction confirms on-chain which would claim from the broadcaster's reserve after the broadcaster has overspent with its deposit. This front-run attack can be prevented with delayed withdrawals. In order for a broadcaster to withdraw its deposit and reserve, it must first request to unlock its funds with the `TicketBroker` contract and then wait `UNLOCK_PERIOD` rounds before being able to withdraw. If a broadcaster's reserve is frozen, the broadcaster must wait `FREEZE_PERIOD` rounds before being able to withdraw.
+A malicious broadcaster can try to front-run orchestrators by withdrawing its reserve right before an orchestrator's ticket redemption transaction confirms on-chain which would claim from the broadcaster's reserve after the broadcaster has overspent with its deposit. This front-run attack can be prevented with delayed withdrawals. In order for a broadcaster to withdraw its deposit and reserve, it must first request to unlock its funds with the `TicketBroker` contract and then wait `UNLOCK_PERIOD` rounds before being able to withdraw. 
 
 **Initial State**
 
 - Broadcaster `B` that has not already requested to unlock its funds
+- Current round `N`
 
 **Algorithm**
 
-If `B`'s reserve is NOT frozen:
-
 1. `B` calls `TicketBroker.unlock()`
 2. `B` enters the unlock period 
-    - `B.withdrawBlock = currentBlock + UNLOCK_PERIOD`
+    - `B.withdrawRound = N + UNLOCK_PERIOD`
 3. After `UNLOCK_PERIOD` rounds, `B` calls `TicketBroker.withdraw()`
     - `TicketBroker` sends `B.deposit` to `B` and sets `B.deposit = 0`
-    - `TicketBroker` sends `B.reserve.fundsRemaining` to `B` and clears `B.reserve`
-
-If `B`'s reserve is frozen:
-
-1. `B` waits through the freeze period
-2. After `FREEZE_PERIOD` rounds, `B` calls `TicketBroker.withdraw()`
-    - `TicketBroker` sends `B.reserve.fundsRemaining` to `B` and clears `B.reserve`
+    - `TicketBroker` sends `B.reserve.funds` to `B` and set `B.funds = 0`
 
 **Notes**
 
-While a delayed withdrawal mechanism can prevent a broadcaster from prematurely withdrawing its reserve, a malicious broadcaster can still create winning tickets that sends the broadcaster's entire deposit to a Sybil account (if the same party acts as both the broadcaster and orchestrator, it can create tickets that always win). However, as long as an orchestrator does not accept tickets from a broadcaster after hitting the maximum float based on a broadcaster's reserve with received winning tickes that have not been redeemed yet, then the orchestrator will still be paid fairly.
+While a delayed withdrawal mechanism can prevent a broadcaster from prematurely withdrawing its reserve, a malicious broadcaster can still create winning tickets that sends the broadcaster's entire deposit to a Sybil account (if the same party acts as both the broadcaster and orchestrator, it can create tickets that always win). However, as long as an orchestrator does not accept tickets from a broadcaster after hitting the maximum float based on a broadcaster's reserve with received winning tickets that have not been redeemed yet, then the orchestrator will still be paid fairly.
