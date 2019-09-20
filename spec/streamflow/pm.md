@@ -58,7 +58,7 @@ The ticket also includes `creationRoundBlockHash` in order to prevent a broadcas
 
 When calculating the hash of a ticket, `creationRound` and `creationRoundBlockHash` are encoded in a byte array `auxData` following the behavior of the Solidity `abi.encodePacked()` built-in. These parameters are encoded into a byte array that is passed into `keccak256` hash function instead of passing the `creationRound` and `creationRoundBlockHash` individually because the `TicketBroker` contract defines the `Ticket` struct with a byte array `auxData` field. The motivation behind this byte array `auxData` field is to add/remove extra data in a ticket without changing the on-chain `Ticket` struct definition - the `TicketBroker` contract just needs to be upgraded to interpret updated extra data in submitted tickets. Another way that this could be accomplished without upgrading the `TicketBroker` contract itself is to encode a contract address in `auxData` and then call a validation function on the contract using the Soldity `STATICCALL` opcode with the other arguments encoded in `auxData`.
 
-Given a ticket `T`, a broadcaster will sign the ticket hash to produce `senderSig`. Then, a broadcaster will send both `T` and `senderSig` to an orchestrator.
+Given a ticket `T`, a broadcaster will use the ECDSA algorithm to sign the ticket hash to produce `senderSig`, a Ethereum specific signature calculated following the [eth_sign JSON-RPC method](https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_sign) specification. Then, a broadcaster will send both `T` and `senderSig` to an orchestrator.
 
 ### Reserve
 
