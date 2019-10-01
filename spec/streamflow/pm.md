@@ -60,6 +60,21 @@ When calculating the hash of a ticket, `creationRound` and `creationRoundBlockHa
 
 Given a ticket `T`, a broadcaster will use the ECDSA algorithm to sign the ticket hash to produce `senderSig`, a Ethereum specific signature calculated following the [eth_sign JSON-RPC method](https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_sign) specification. Then, a broadcaster will send both `T` and `senderSig` to an orchestrator.
 
+### Sender
+
+A `Sender` represents a ticket sender, identified by ETH address, with on-chain funds deposited that can be used to pay for winning tickets. A ticket sender may also have [Reserve](#reserve) associated with it.
+
+| Field             | Type    | Description                                                 |
+| ----------------- | ------- | ----------------------------------------------------------- |
+| **deposit**       | uint256 | Amount of funds deposited.                                  |
+| **withdrawRound** | uint256 | Round that the sender can withdraw its deposit and reserve. |
+
+Funds can only move from a sender's deposit and/or reserve (see the [Reserve](#reserve) section for additional rules for claiming funds from
+the reserve) if:
+
+- The sender initiates an unlock, waits through the unlock period and withdraws
+- A valid winning ticket is redeemed via [TicketBroker.redeemWinningTicket()](#redeemWinningTicket) that specifies the sender's ETH address in the ticket
+
 ### Reserve
 
 A `Reserve` represents locked on-chain funds that are separate from a broadcaster's deposit. Unlike deposit funds which can be used to pay for an arbitrary amount of winning tickets sent to any orchestrator, reserve funds are split into equal allocations, each of which is committed to one of the active orchestrators in the current round. An active orchestrator is guaranteed the allocation value even if the broadcaster overspends such that its deposit is insufficient to pay for outstanding winning tickets. At this point, any winning ticket redemptions would claim from the broadcaster's reserve up to the value of the allocation. As rounds progress, a broadcaster's reserve is automatically committed to the active orchestrators for the current round without any intervention by the broadcaster. 
