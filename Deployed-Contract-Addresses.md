@@ -1,4 +1,8 @@
-# Mainnet
+# Alpha
+
+Addresses of deployed contracts for the alpha version of the Livepeer protocol on various networks.
+
+## Mainnet
 - Controller: [0xf96d54e490317c557a967abfa5d6e33006be69b3](https://etherscan.io/address/0xf96d54e490317c557a967abfa5d6e33006be69b3)
 - LivepeerToken: [0x58b6a8a3302369daec383334672404ee733ab239](https://etherscan.io/address/0x58b6a8a3302369daec383334672404ee733ab239)
 - LivepeerVerifier: [0xe4be2a35dec0063f9dfccb9b740b1acb7eefefec](https://etherscan.io/address/0xe4be2a35dec0063f9dfccb9b740b1acb7eefefec)
@@ -19,8 +23,7 @@
 - ECRecovery: [0xd8e8328501e9645d16cf49539efc04f734606ee4](https://etherscan.io/address/0xd8e8328501e9645d16cf49539efc04f734606ee4)
 - JobLib: [0x4969dccf5186e1c49411638fc8a2a020fdab752e](https://etherscan.io/address/0x4969dccf5186e1c49411638fc8a2a020fdab752e)
 
-
-# Rinkeby
+## Rinkeby
 - Controller: [0x37dC71366Ec655093b9930bc816E16e6b587F968](https://rinkeby.etherscan.io/address/0x37dC71366Ec655093b9930bc816E16e6b587F968)
 - LivepeerToken: [0x24f56eF2fED379421BEE64Ecafc2bC744f72522b](https://rinkeby.etherscan.io/address/0x24f56eF2fED379421BEE64Ecafc2bC744f72522b)
 - LivepeerVerifier: [0x17c492D2b555d54bD3EE826fB49d6c1ECD378d27](https://rinkeby.etherscan.io/address/0x17c492d2b555d54bd3ee826fb49d6c1ecd378d27)
@@ -39,7 +42,7 @@
 - ECRecovery: [0x95845C221c39Fa6515Badfc7463C97E8Df3ab87F](https://rinkeby.etherscan.io/address/0x95845c221c39fa6515badfc7463c97e8df3ab87f)
 - JobLib: [0x8a1C49721934EFBBF1B330376c786b7a503Fa4a8](https://rinkeby.etherscan.io/address/0x8a1c49721934efbbf1b330376c786b7a503fa4a8)
 
-# Mainnet (Deprecated)
+## Mainnet (Deprecated)
 - LivepeerVerifier
   - V1: [0xf623811b08b45792d0223d77d9c922dae29712ec](https://etherscan.io/address/0xf623811b08b45792d0223d77d9c922dae29712ec)
 - BondingManager (Target)
@@ -50,7 +53,7 @@
 - JobsManager (Target)
   - V1: [0x68b463bca7d561118636e9f028ff0f2e8398dd6a](https://etherscan.io/address/0x68b463bca7d561118636e9f028ff0f2e8398dd6a)
 
-# Rinkeby (Deprecated)
+## Rinkeby (Deprecated)
 - LivepeerVerifier
   - V1: [0x162B462d81456fDb486b8f3b0316d13878829045](https://rinkeby.etherscan.io/address/0x162b462d81456fdb486b8f3b0316d13878829045)
 - BondingManager (Target)
@@ -60,3 +63,22 @@
   - V4: [0x90332E4E97E91454704183d9aD309F5291368Aba](https://rinkeby.etherscan.io/address/0x90332e4e97e91454704183d9ad309f5291368aba)
 - JobsManager (Target)
   - V1: [0x65276A141e914eA8100DE2660A17632546f20e9d](https://rinkeby.etherscan.io/address/0x65276a141e914ea8100de2660a17632546f20e9d) 
+
+# Streamflow
+
+Addresses of deployed contracts for the Streamflow version of the Livepeer protocol on various networks.
+
+## Rinkeby
+- Controller: [0xA268AEa9D048F8d3A592dD7f1821297972D4C8Ea](https://rinkeby.etherscan.io/address/0xa268aea9d048f8d3a592dd7f1821297972d4c8ea)
+- LivepeerToken: [0x23b814a57D53b1a7A860194F53401D0D639abED7](https://rinkeby.etherscan.io/address/0x23b814a57d53b1a7a860194f53401d0d639abed7)
+- Minter: [0xe5056d1fE48F562dd8AcB1BBFFa147223d448C1B](https://rinkeby.etherscan.io/address/0xe5056d1fe48f562dd8acb1bbffa147223d448c1b)
+- BondingManager (Proxy): [0xe75a5DccfFe8939F7f16CC7f63EB252bB542FE95](https://rinkeby.etherscan.io/address/0xe75a5dccffe8939f7f16cc7f63eb252bb542fe95)
+- BondingManager (Target): [0xfa64868d18099272332Aa9B2Df2B1fD56F176797](https://rinkeby.etherscan.io/address/0xfa64868d18099272332aa9b2df2b1fd56f176797)
+- TicketBroker (Proxy): [0x40897Ff6e44Ca2e145A691701897844669Bf7cee](https://rinkeby.etherscan.io/address/0x40897ff6e44ca2e145a691701897844669bf7cee)
+- TicketBroker (Target): [0x423E0AE8065870239Ef62997fCbA85B79A19508F](https://rinkeby.etherscan.io/address/0x423e0ae8065870239ef62997fcba85b79a19508f)
+- RoundsManager (Proxy): [0x572d1591bD41f50130FD0212058eAe34F1B17290](https://rinkeby.etherscan.io/address/0x572d1591bd41f50130fd0212058eae34f1b17290)
+- RoundsManager (Target): [0x8B9Ae24E86eB263c6a3f247CD42c1368290Dc93A](https://rinkeby.etherscan.io/address/0x8b9ae24e86eb263c6a3f247cd42c1368290dc93a)
+- ServiceRegistry (Proxy): [0xa7AFBB45eb8C27a26379F9C550B3b9be7f09c3eA](https://rinkeby.etherscan.io/address/0xa7afbb45eb8c27a26379f9c550b3b9be7f09c3ea)
+- ServiceRegistry (Target): [0x65594869bB21858428c16629838940c273fe25ce](https://rinkeby.etherscan.io/address/0x65594869bb21858428c16629838940c273fe25ce)
+- LivepeerTokenFaucet: [0x6b752dA302C80795ACc9347AF8f472D3473b19f2](https://rinkeby.etherscan.io/address/0x6b752dA302C80795ACc9347AF8f472D3473b19f2)
+- SortedDoublyLL: [0xdB7f48a3e6fC6caCD646CE43C1aF48CcDFa78C60](https://rinkeby.etherscan.io/address/0xdB7f48a3e6fC6caCD646CE43C1aF48CcDFa78C60)
