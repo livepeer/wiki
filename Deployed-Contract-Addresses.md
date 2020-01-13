@@ -1,46 +1,49 @@
-# Alpha
+Addresses of deployed contracts of the Livepeer protocol on various networks. All contracts implement the Streamflow version of the Livepeer protocol.
 
-Addresses of deployed contracts for the alpha version of the Livepeer protocol on various networks.
+Rinkeby (LPSFT-0) is a fresh deployment of the Streamflow protocol contracts.
+
+Rinkeby (LPT) is the set of contracts that originally implemented the alpha protocol and was upgraded to implement the Streamflow protocol.
 
 ## Mainnet
 - Controller: [0xf96d54e490317c557a967abfa5d6e33006be69b3](https://etherscan.io/address/0xf96d54e490317c557a967abfa5d6e33006be69b3)
 - LivepeerToken: [0x58b6a8a3302369daec383334672404ee733ab239](https://etherscan.io/address/0x58b6a8a3302369daec383334672404ee733ab239)
-- LivepeerVerifier: [0xe4be2a35dec0063f9dfccb9b740b1acb7eefefec](https://etherscan.io/address/0xe4be2a35dec0063f9dfccb9b740b1acb7eefefec)
 - Minter: [0x8573f2f5a3bd960eee3d998473e50c75cdbe6828](https://etherscan.io/address/0x8573f2f5a3bd960eee3d998473e50c75cdbe6828)
 - BondingManager (Proxy): [0x511bc4556d823ae99630ae8de28b9b80df90ea2e](https://etherscan.io/address/0x511bc4556d823ae99630ae8de28b9b80df90ea2e)
-- BondingManager (Target): [0xCBAa6eA4886b535FC7ABACe3F3985Ed03b3b80a0](https://etherscan.io/address/0xcbaa6ea4886b535fc7abace3f3985ed03b3b80a0)
-- JobsManager (Proxy): [0xbf07ff45f14c9ff0571b9fbdc7e2b62d29931224](https://etherscan.io/address/0xbf07ff45f14c9ff0571b9fbdc7e2b62d29931224)
-- JobsManager (Target): [0xB620c762dd4bC350602936d7401BB8393Ee6687c](https://etherscan.io/address/0xb620c762dd4bc350602936d7401bb8393ee6687c)
+- BondingManager (Target): [0xDC6eE74A18994caD3876a078B6fa4920FD9C507d](https://etherscan.io/address/0xDC6eE74A18994caD3876a078B6fa4920FD9C507d)
+- TicketBroker (Proxy): [0x5b1ce829384eebfa30286f12d1e7a695ca45f5d2](https://etherscan.io/address/0x5b1ce829384eebfa30286f12d1e7a695ca45f5d2)
+- TicketBroker (Target): [0x6F582E2bB19ac31D4B1e6eDD0c2eFEabD700f808](https://etherscan.io/address/0x6F582E2bB19ac31D4B1e6eDD0c2eFEabD700f808)
 - RoundsManager (Proxy): [0x3984fc4ceeef1739135476f625d36d6c35c40dc3](https://etherscan.io/address/0x3984fc4ceeef1739135476f625d36d6c35c40dc3)
-- RoundsManager (Target): [0xa3aa52ce79e85a21d9ccda705c57e426b160112c](https://etherscan.io/address/0xa3aa52ce79e85a21d9ccda705c57e426b160112c)
+- RoundsManager (Target): [0x857d4bf18a80f03d3d11f438825cd3d0aa0d9d68](https://etherscan.io/address/0x857d4bf18a80f03d3d11f438825cd3d0aa0d9d68)
 - ServiceRegistry (Proxy): [0x406a112f3218b988c66778fd72fc8467f2601366](https://etherscan.io/address/0x406a112f3218b988c66778fd72fc8467f2601366)
 - ServiceRegistry (Target): [0x72d9dfa25f75a5f2c27b7336e643a559ae6aeb8e](https://etherscan.io/address/0x72d9dfa25f75a5f2c27b7336e643a559ae6aeb8e)
 - GenesisManager: [0x3a9543d4767b2c914ea22fd0b07e17b0901aaebf](https://etherscan.io/address/0x3a9543d4767b2c914ea22fd0b07e17b0901aaebf)
 - MerkleMine: [0x8e306b005773bee6ba6a6e8972bc79d766cc15c8](https://etherscan.io/address/0x8e306b005773bee6ba6a6e8972bc79d766cc15c8)
 - MultiMerkleMine: [0x182ebf4c80b28efc45ad992ecbb9f730e31e8c7f](https://etherscan.io/address/0x182ebf4c80b28efc45ad992ecbb9f730e31e8c7f)
 - SortedDoublyLL: [0x1a0b2ca69ca2c7f96e2529faa6d63f881655d81a](https://etherscan.io/address/0x1a0b2ca69ca2c7f96e2529faa6d63f881655d81a)
-- MerkleProof: [0x289ba1701c2f088cf0faf8b3705246331cb8a839](https://etherscan.io/address/0x289ba1701c2f088cf0faf8b3705246331cb8a839)
-- ECRecovery: [0xd8e8328501e9645d16cf49539efc04f734606ee4](https://etherscan.io/address/0xd8e8328501e9645d16cf49539efc04f734606ee4)
-- JobLib: [0x4969dccf5186e1c49411638fc8a2a020fdab752e](https://etherscan.io/address/0x4969dccf5186e1c49411638fc8a2a020fdab752e)
+- Refunder: [0x780c98cbb0cc21d6617c05332bd5cf6f847c71c2](https://etherscan.io/address/0x780c98cbb0cc21d6617c05332bd5cf6f847c71c2)
 
 ## Mainnet (Deprecated)
 - LivepeerVerifier
   - V1: [0xf623811b08b45792d0223d77d9c922dae29712ec](https://etherscan.io/address/0xf623811b08b45792d0223d77d9c922dae29712ec)
+  - V2: [0xe4be2a35dec0063f9dfccb9b740b1acb7eefefec](https://etherscan.io/address/0xe4be2a35dec0063f9dfccb9b740b1acb7eefefec)
 - BondingManager (Target)
   - V1: [0x81eb0b10ff8703905904e4d91cf6aa575d59736f](https://etherscan.io/address/0x81eb0b10ff8703905904e4d91cf6aa575d59736f)
   - V2: [0x5A9512826EAAF1FE4190f89443314E95A515fE24](https://etherscan.io/address/0x5a9512826eaaf1fe4190f89443314e95a515fe24)
   - V3: [0x633101b3f15f93c5f415830d48e56b9b1f7ba584](https://etherscan.io/address/0x633101b3f15f93c5f415830d48e56b9b1f7ba584)
   - V4: [0x05C03EA0039f2e828A725A82939fc1e90de38B44](https://etherscan.io/address/0x05c03ea0039f2e828a725a82939fc1e90de38b44)
+  - V5: [0xCBAa6eA4886b535FC7ABACe3F3985Ed03b3b80a0](https://etherscan.io/address/0xcbaa6ea4886b535fc7abace3f3985ed03b3b80a0)
 - JobsManager (Target)
   - V1: [0x68b463bca7d561118636e9f028ff0f2e8398dd6a](https://etherscan.io/address/0x68b463bca7d561118636e9f028ff0f2e8398dd6a)
-
-# Streamflow
-
-Addresses of deployed contracts for the Streamflow version of the Livepeer protocol on various networks.
-
-Rinkeby (LPSFT-0) is a fresh deployment of the Streamflow contracts.
-
-Rinkeby (LPT) is the set of contracts that originally implemented the alpha protocol and was upgraded to implement the Streamflow protocol.
+  - V2: [0xB620c762dd4bC350602936d7401BB8393Ee6687c](https://etherscan.io/address/0xb620c762dd4bc350602936d7401bb8393ee6687c)
+  - V3: [0x8eade5eec609572bf53deadb88d36f862ddec517](https://etherscan.io/address/0x8eade5eec609572bf53deadb88d36f862ddec517)
+- RoundsManager (Target)
+  - V1: [0xa3aa52ce79e85a21d9ccda705c57e426b160112c](https://etherscan.io/address/0xa3aa52ce79e85a21d9ccda705c57e426b160112c)
+- MerkleProof
+  - V1: [0x289ba1701c2f088cf0faf8b3705246331cb8a839](https://etherscan.io/address/0x289ba1701c2f088cf0faf8b3705246331cb8a839)
+- ECRecovery
+  - V1: [0xd8e8328501e9645d16cf49539efc04f734606ee4](https://etherscan.io/address/0xd8e8328501e9645d16cf49539efc04f734606ee4)
+- JobLib
+  - V1: [0x4969dccf5186e1c49411638fc8a2a020fdab752e](https://etherscan.io/address/0x4969dccf5186e1c49411638fc8a2a020fdab752e)
 
 ## Rinkeby (LPSFT-0)
 - Controller: [0xA268AEa9D048F8d3A592dD7f1821297972D4C8Ea](https://rinkeby.etherscan.io/address/0xa268aea9d048f8d3a592dd7f1821297972d4c8ea)
