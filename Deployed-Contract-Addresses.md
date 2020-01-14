@@ -32,6 +32,8 @@ Rinkeby (LPT) is the set of contracts that originally implemented the alpha prot
   - V3: [0x633101b3f15f93c5f415830d48e56b9b1f7ba584](https://etherscan.io/address/0x633101b3f15f93c5f415830d48e56b9b1f7ba584)
   - V4: [0x05C03EA0039f2e828A725A82939fc1e90de38B44](https://etherscan.io/address/0x05c03ea0039f2e828a725a82939fc1e90de38b44)
   - V5: [0xCBAa6eA4886b535FC7ABACe3F3985Ed03b3b80a0](https://etherscan.io/address/0xcbaa6ea4886b535fc7abace3f3985ed03b3b80a0)
+- JobsManager (Proxy)
+  - V1: [0xbf07ff45f14c9ff0571b9fbdc7e2b62d29931224](https://etherscan.io/address/0xbf07ff45f14c9ff0571b9fbdc7e2b62d29931224)
 - JobsManager (Target)
   - V1: [0x68b463bca7d561118636e9f028ff0f2e8398dd6a](https://etherscan.io/address/0x68b463bca7d561118636e9f028ff0f2e8398dd6a)
   - V2: [0xB620c762dd4bC350602936d7401BB8393Ee6687c](https://etherscan.io/address/0xb620c762dd4bc350602936d7401bb8393ee6687c)
