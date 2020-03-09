@@ -1,6 +1,6 @@
 ## Livepeer Governance Founders Statement
 
-*By Doug Petkanics* .   
+*By Doug Petkanics*    
 *March 9, 2020*
 
 The Livepeer Project’s mission is to build the world’s open video infrastructure. Through the power of open source software, combined with the harnessing of underutilized resources like compute and bandwidth, combined with the use of cryptoeconomic incentives for bootstrapping and participation, there is an opportunity to deliver an infrastructure that can power video streaming applications at a highly efficient price, and infinite scale. Along with the proliferation of high quality cameras and ubiquitous bandwidth, the belief is that this will enable video applications to be created that were never before possible under traditional, centralized cost structures, which unlock communications, economic opportunity, and entertainment for society going forward.
@@ -19,29 +19,29 @@ Although Livepeer started off as the idea of a small group of founders and early
 
 The transition process will not be trivial, but it will be worth the effort. The answers for the perfect governance system are not known in advance, but a few key founding principles are known, that can guide the creation of the proper governance system and decentralization. The remainder of this document is an attempt to list out and elaborate on these principals, so that they can serve as guide posts for those participating in Livepeer and its governance going forward.
 
-**Prioritize practicality and utility** .   
+**Prioritize practicality and utility**    
 It is easy to get lost in the theory of the elegant design of perfect systems. But the likelihood of designing something perfect on the first go that will be thrown up against the messiness of human psychology, economics, irrational markets, complex technology, existing industry, and regulation is near impossible. Instead of attempting perfect design and outcomes, focus on practical utility. **Livepeer should work. It should be usable. It should make an impact.** It should begin to deliver on its value propositions. Make decisions that enable it to do these things, and iterate towards perfection after it is clear that you have something worth decentralizing and governing.
 
-**Governance should be extensible** .   
+**Governance should be extensible**    
 Governance systems can get very complex. Related to the above points on practicality, it could be an exercise in futility to attempt to design the perfect mechanisms in absence of real world impact and the effects that come from the influx of stakeholders that leverage this. Recognizing that not just the protocol will need to be upgraded in the future, but the governance processes themselves will need to be as well, start out with a governance process that is clear, extensible, and amendable itself.
 
 
-**Remember the Mission** .   
+**Remember the Mission**    
 "Build The World’s Open Video Infrastructure”. 
 
-**Make technical first decisions in service of the mission** .   
+**Make technical first decisions in service of the mission**    
 For Livepeer to fulfill its mission, there are many different types of stakeholders who will have a part to play - some technical, and some not. However, as Livepeer is base layer infrastructure and protocol, the stakeholders who contribute directly to enabling its functionality are largely technical - open source developers, network infrastructure operators, and the users who will integrate the infrastructure with their own applications. It’s critical that the technical voice be a guiding hand in the governance process. This can be accomplished through education and information dissemination shepherded by the technical participant set, such that the majority of non-technical users can make informed decisions that support technical progress, and reduce the chances of technical harm.
 
-**Processes should be transparent, documented, and well understood** .   
+**Processes should be transparent, documented, and well understood**    
 Every community stakeholder should have a very clear view of how governance decisions get proposed, reviewed, and executed. This doesn’t mean that every participant is committing to every communication being made in the open, but it does mean that the technical means for which governance actions are executed adhere to a well communicated and documented process, in which the mechanisms for participation are clear and understood to everybody.
 
-**Community should have a clear path to come to consensus on governance decisions** .   
+**Community should have a clear path to come to consensus on governance decisions**    
 If the above requirements around transparency, documentation, and process hold, then it should be clear to everyone in the community what the steps are to reach a consensus based action on the network.
 
-**Stakeholders should have the opportunity to opt-out of the network** .   
+**Stakeholders should have the opportunity to opt-out of the network**    
 If someone disagrees with a governance decision, then they need to be able to exercise their right to exit the network. Possible mechanisms include forking the protocol code, forking the underlying network itself, liquidating their LPT position, or transitioning to another video infrastructure solution. 
 
-**Incentives should encourage participation** .   
+**Incentives should encourage participation**    
 Remember that as a global network and video infrastructure backbone, Livepeer can only succeed through the active participation of the key stakeholders mentioned above. The incentives within the protocol were initially designed to incent this participation and route ownership towards those who were doing active work. Governance should adhere to this principal, at the expense of other short term motivations.
 
 
