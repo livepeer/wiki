@@ -7,7 +7,7 @@ Rinkeby (LPT) is the set of contracts that originally implemented the alpha prot
 ## Mainnet
 - Controller: [0xf96d54e490317c557a967abfa5d6e33006be69b3](https://etherscan.io/address/0xf96d54e490317c557a967abfa5d6e33006be69b3)
 - LivepeerToken: [0x58b6a8a3302369daec383334672404ee733ab239](https://etherscan.io/address/0x58b6a8a3302369daec383334672404ee733ab239)
-- Minter: [0x8573f2f5a3bd960eee3d998473e50c75cdbe6828](https://etherscan.io/address/0x8573f2f5a3bd960eee3d998473e50c75cdbe6828)
+- Minter: [0x505F8c2ee81f1C6fa0D88e918eF0491222E05818](https://etherscan.io/address/0x505f8c2ee81f1c6fa0d88e918ef0491222e05818)
 - BondingManager (Proxy): [0x511bc4556d823ae99630ae8de28b9b80df90ea2e](https://etherscan.io/address/0x511bc4556d823ae99630ae8de28b9b80df90ea2e)
 - BondingManager (Target): [0xDC6eE74A18994caD3876a078B6fa4920FD9C507d](https://etherscan.io/address/0xDC6eE74A18994caD3876a078B6fa4920FD9C507d)
 - TicketBroker (Proxy): [0x5b1ce829384eebfa30286f12d1e7a695ca45f5d2](https://etherscan.io/address/0x5b1ce829384eebfa30286f12d1e7a695ca45f5d2)
@@ -27,6 +27,8 @@ Rinkeby (LPT) is the set of contracts that originally implemented the alpha prot
 - LivepeerVerifier
   - V1: [0xf623811b08b45792d0223d77d9c922dae29712ec](https://etherscan.io/address/0xf623811b08b45792d0223d77d9c922dae29712ec)
   - V2: [0xe4be2a35dec0063f9dfccb9b740b1acb7eefefec](https://etherscan.io/address/0xe4be2a35dec0063f9dfccb9b740b1acb7eefefec)
+- Minter
+  - V1: [0x8573f2f5a3bd960eee3d998473e50c75cdbe6828](https://etherscan.io/address/0x8573f2f5a3bd960eee3d998473e50c75cdbe6828)
 - BondingManager (Target)
   - V1: [0x81eb0b10ff8703905904e4d91cf6aa575d59736f](https://etherscan.io/address/0x81eb0b10ff8703905904e4d91cf6aa575d59736f)
   - V2: [0x5A9512826EAAF1FE4190f89443314E95A515fE24](https://etherscan.io/address/0x5a9512826eaaf1fe4190f89443314e95a515fe24)
