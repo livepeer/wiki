@@ -9,6 +9,7 @@ Eric Tang <eric@livepeer.org>
 
 The Livepeer project aims to deliver a live video streaming network protocol that is fully decentralized, highly scalable, crypto token incentivized, and results in a solution which can serve as the live media layer in the decentralized development (web3) stack. In addition, Livepeer is meant to provide an economically efficient alternative to centralized broadcasting solutions for any existing broadcaster. In this document we describe the Livepeer Protocol - a delegated stake based protocol for incentivizing participants in a live video broadcast network in a game-theoretically secure way. We present solutions for the scalable verification of decentralized work, as well as the prevention of useless work in an attempt to game the token allocations in an inflationary system.
 
+
 ## Table of Contents ###########################################
 
 * [Introduction and Background](#introduction-and-background)
@@ -48,7 +49,7 @@ The Livepeer project aims to deliver a live video streaming network protocol tha
     * [Livepeer Protocol Transaction Types](#livepeer-protocol-transaction-types)
 * [References](#references)
 
-*Note: This document will continue to be updated along the path to the 1.0 deployment of Livepeer. Check back for changes.*
+*Note: This paper was originally published in April, 2017. A scaling proposal called "Streamflow" has been proposed in December, 2018 which outlines some iterations and enhancements on some of the ideas presented below. Read the [Streamflow Proposal here](https://github.com/livepeer/wiki/blob/master/STREAMFLOW.md).* 
 
 ## Introduction and Background ###########################################
 
@@ -175,7 +176,9 @@ A node indicates their willingness to be a transcoder by submitting a `Transcode
 - `BlockRewardCut`: The % of the block reward that bonded nodes will pay them for the service of transcoding. (Example 2%. If a bonded node were to receive 100 LPT in block reward, then 2 LPT to the transcoder).
 - `FeeShare`: The % of the fees from broadcasting jobs that the transcoder is willing to share with the bonded nodes who delegate towards it. (Example 25%. If a transcoder were to receive 100 ETH in fees, they would pay 25 ETH to the bonded nodes).
 
-The Transcoder can update their availability and information up until `RateLockDeadline` time before the next transcoding round (Example 2 hours. They can change this information until 2 hours before the next transcoding round which lasts for `RoundLength` 1 day). This gives bonded nodes the chance to review the fee splits and token reward splits relative to other transcoders, as well as anticipated fees based upon the rate they're charging and network demand, and move their delegated stake if they wish. At the start of a transcoding round (triggered by a call to the `InitializeRound()` transaction), the active transcoders for that round are determined based upon the total stake delegated towards each transcoder, and stakes and rates are locked in for the duration of that round.
+The Transcoder can update their availability and information up until `RoundLockAmount` time before the next transcoding round. This is offered as a % of the round. (Example 10% == 2.4 hours. They can change this information until 2.4 hours before the next transcoding round which lasts for `RoundLength` 1 day). This gives bonded nodes the chance to review the fee splits and token reward splits relative to other transcoders, as well as anticipated fees based upon the rate they're charging and network demand, and move their delegated stake if they wish. At the start of a transcoding round (triggered by a call to the `InitializeRound()` transaction), the active transcoders for that round are determined based upon the total stake delegated towards each transcoder, and stakes and rates are locked in for the duration of that round.
+
+There is one change that is allowed during the `RoundLockPeriod`: The lowest offered price/segment for any of the candidate transcoders is locked in and can't be moved, but other transcoder candidates can adjust their price/segment downwards. This allows them to match the lowest offered price on the network if they wish in order to guarantee their stake-weighted share of work on the network. They are not allowed to move their offered price upwards during this period.
 
 Here is an example state of Transcoder options that a delegator can review when deciding whom to delegate towards.
 
@@ -434,7 +437,7 @@ The end result is a scalable, pay-as-you-go network for decentralized live video
 | `RoundLength` | Length of time between election of a new round of transcoders | 1 day |
 | `InflationRate` | The current target inflation rate per round of LPT. (Moves algorithmically). | .04% (equivalent to 15%/year) |
 | `ParticipationRate` | The target percent of token bonded vs liquid. | 50% |
-| `RateLockDeadline` | Transcoders rates lock in this amount of time prior to the next round start time so that delegators can review and delegate accordingly. | 6 hours |
+| `RoundLockAmount` | Transcoders rates lock in for this percentage of a round at the end of a round so that delegators can review and delegate accordingly without worrying about last minute rate changes. | 10% == 2.4 hours |
 | `UnbondingPeriod` | Time between entering unbonding state, and ability to withdraw the funds. | 1 month |
 | `VerificationPeriod` | The deadline for verifying a job claim after submission of the job claim. This also serves as the minimum period that a receipt of data persistence must be provided in the decentralized storage solution. | 6 hours |
 | `VerificationRate` | The % of segments that will be verified. | 1/500 |
