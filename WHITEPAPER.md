@@ -9,6 +9,7 @@ Eric Tang <eric@livepeer.org>
 
 The Livepeer project aims to deliver a live video streaming network protocol that is fully decentralized, highly scalable, crypto token incentivized, and results in a solution which can serve as the live media layer in the decentralized development (web3) stack. In addition, Livepeer is meant to provide an economically efficient alternative to centralized broadcasting solutions for any existing broadcaster. In this document we describe the Livepeer Protocol - a delegated stake based protocol for incentivizing participants in a live video broadcast network in a game-theoretically secure way. We present solutions for the scalable verification of decentralized work, as well as the prevention of useless work in an attempt to game the token allocations in an inflationary system.
 
+
 ## Table of Contents ###########################################
 
 * [Introduction and Background](#introduction-and-background)
@@ -48,7 +49,7 @@ The Livepeer project aims to deliver a live video streaming network protocol tha
     * [Livepeer Protocol Transaction Types](#livepeer-protocol-transaction-types)
 * [References](#references)
 
-*Note: This document will continue to be updated along the path to the 1.0 deployment of Livepeer. Check back for changes.*
+*Note: This paper was originally published in April, 2017. A scaling proposal called "Streamflow" has been proposed in December, 2018 which outlines some iterations and enhancements on some of the ideas presented below. Read the [Streamflow Proposal here](https://github.com/livepeer/wiki/blob/master/STREAMFLOW.md).* 
 
 ## Introduction and Background ###########################################
 
