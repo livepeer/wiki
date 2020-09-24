@@ -55,7 +55,7 @@ Rinkeby (LPT) is the set of contracts that originally implemented the alpha prot
 - LivepeerToken: [0x23b814a57D53b1a7A860194F53401D0D639abED7](https://rinkeby.etherscan.io/address/0x23b814a57d53b1a7a860194f53401d0d639abed7)
 - Minter: [0x63B12E71F9c620BeAdf53b0e95189a16A2Af8Ed2](https://rinkeby.etherscan.io/address/0x63B12E71F9c620BeAdf53b0e95189a16A2Af8Ed2)
 - BondingManager (Proxy): [0xe75a5DccfFe8939F7f16CC7f63EB252bB542FE95](https://rinkeby.etherscan.io/address/0xe75a5dccffe8939f7f16cc7f63eb252bb542fe95)
-- BondingManager (Target): [0xD3a2fD997582fc63be018b13883b46EA19DC1C73](https://rinkeby.etherscan.io/address/0xd3a2fd997582fc63be018b13883b46ea19dc1c73)
+- BondingManager (Target): [0xCF7b675CB267f703BB96b9508eC32599B6acAc18](https://rinkeby.etherscan.io/address/0xCF7b675CB267f703BB96b9508eC32599B6acAc18)
 - TicketBroker (Proxy): [0x40897Ff6e44Ca2e145A691701897844669Bf7cee](https://rinkeby.etherscan.io/address/0x40897ff6e44ca2e145a691701897844669bf7cee)
 - TicketBroker (Target): [0x7fA9aA28Fa15E308aAeA4BD1ad8Dc97B6Ab2f251](https://rinkeby.etherscan.io/address/0x7fa9aa28fa15e308aaea4bd1ad8dc97b6ab2f251)
 - RoundsManager (Proxy): [0x572d1591bD41f50130FD0212058eAe34F1B17290](https://rinkeby.etherscan.io/address/0x572d1591bd41f50130fd0212058eae34f1b17290)
@@ -85,6 +85,7 @@ Rinkeby (LPT) is the set of contracts that originally implemented the alpha prot
 ## Rinkeby (LPSFT-0) (Deprecated)
 - BondingManager (Target)
     - V1: [0xfa64868d18099272332Aa9B2Df2B1fD56F176797](https://rinkeby.etherscan.io/address/0xfa64868d18099272332aa9b2df2b1fd56f176797)
+    - V2: [0xD3a2fD997582fc63be018b13883b46EA19DC1C73](https://rinkeby.etherscan.io/address/0xd3a2fd997582fc63be018b13883b46ea19dc1c73)
 - Minter
     - V1: [0xe5056d1fE48F562dd8AcB1BBFFa147223d448C1B](https://rinkeby.etherscan.io/address/0xe5056d1fe48f562dd8acb1bbffa147223d448c1b)
 - TicketBroker (Target)
