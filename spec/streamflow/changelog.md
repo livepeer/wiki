@@ -1,0 +1,53 @@
+# V1 -> Streamflow Changelog
+
+This document contains a list of changes in the Streamflow protocol contracts relative to the V1 protocol contracts.
+
+- Removed the `JobsManager` contract because transcoding work assignment has been moved off-chain and transcoding payments are now processed by the `TicketBroker` contract
+- Removed the `LivepeerVerifier` contract because on-chain transcoding verification will not be used in the initial Streamflow release
+- Updated the `BondingManager` contract
+    - Compiled using solc 0.5.11
+    - Removed the ability to set `pricePerSegment` on-chain since prices are now advertised off-chain
+    - Updated how a transcoder's `rewardCut` and `feeShare` are locked in for a round
+        - In V1, a transcoder sets the `pendingRewardCut` and `pendingFeeShare` commission parameters in `currentRound` and when `currentRound + 1` is initialized, the transcoder's `rewardCut` and `feeShare` are set to the current pending values
+        - In Streamflow, a transcoder sets the `rewardCut` and `feeShare` parameters in `currentRound` and in `currentRound + 1`, when the transcoder either calls `reward()` or `redeemWinningTicket()` (which will internally call `updateTranscoderWithFees()`) the contract will set the commission rate for transcoder's earnings pool for `currentRound + 1` using the transcoder's current `rewardCut` and `feeShare`. If a transcoder is active in `currentRound + 1`, then it is not allowed to update its commission parameters for the round until it has set the commission parameters for its earnings pool for the round (via one of the previously mentioned function calls). As a result, once a new round begins, an active transcoder's commission rates are essentially locked in for the round because it cannot update them until *after* it has already locked the current rates in with its earnings pool for the round
+    - Updated the definition of a registered transcoder on-chain
+        - In V1, an account was considered a registered transcoder if it was in the on-chain pool
+        - In Streamflow, an account is considered a registered transcoder if it has > 0 LPT delegated to itself
+    - Updates the definition of an active transcoder
+        - In V1, the contract would maintain an array of active transcoder addresses for each round in storage. Contract storage would be written to during round initialization with each of the active transcoder addresses
+        - In Streamflow, a transcoder has an `activationRound` and a `deactivationRound`. A transcoder is considered active if `activationRound <= currentRound < deactivationRound`. Whenever a transcoder is added to the pending active set, its `activationRound = currentRound + 1`. Whenever a transcoder is removed from the pending active set, its `deactivationRound = currentRound + 1`. This means that exiting the active set is always delayed - this helps avoid excessive active set churn during a round due to stake delegation movement and edge cases where a transcoder is deactivated before it can call `reward()`
+    - Updated how the contract represents the state of the active set
+        - In V1, there was a transcoder pool of size N that represented registered transcoders. The active set would be of size M ≤ N and would be calculated during round initialization. The contract defined a max # of registered transcoders and a max # of active transcoders
+        - In Streamflow, the state of the transcoder pool in `currentRound` represents the pending active set. Whichever transcoders remain in the transcoder pool when `currentRound + 1` is initialized constitute the active set for `currentRound + 1`. The contract only defines a max # of active transcoders (`numActiveTranscoders`) - there is no limit on the # of registered transcoders. As transcoders join/exit the pool, `TranscoderActivated` and `TranscoderDeactivated` events will be emitted that include a transcoder's `activationRound` and `deactivationRound` respectively. Clients can use these events to construct an up-to-date view of the active set for each round
+    - Updates how the contract keeps track of the total active stake during a round
+        - In V1, round initialization would compute the total active stake for the round by iterating through the members of the active set and summing their stakes together
+        - In Streamflow, in `currentRound` as the transcoder pool is updated, the `nextRoundTotalActiveStake` global variable is updated. During round initialization, we set `currentRoundTotalActiveStake = nextRoundTotalActiveStake` and `currentRoundTotalActiveStake` is the locked in value for the round
+    - Update `bond()`, `rebond()` and `rebondFromUnbonded()` to try to add a delegate to the transcoder pool if the delegate is a registered transcoder
+        - In V1, if a delegate's stake is increased such that it can join the active set, it must call `transcoder()` in order to do so
+        - In Streamflow, if a delegate's stake is increased such that it can join the transcoder pool, then entry happens automatically because it is executed during the delegation action. Transcoders can still manually join the pool by calling `transcoder()`
+    - Changes the allowed caller of `slashTranscoder()` to the registered `Verifier` contract which will be null for the initial release
+        - In V1, the allowed caller was the `JobsManager`
+        - In Streamflow, since there will not be on-chain transcoding verification initially, the `Verifier` registered with the `Controller` will be null
+    - Emit an `EarningsClaimed` event in `BondingManager` when an account claims earnings
+        - In V1, we did not emit an event
+    - Deprecated the `transcoderPool` state variable and added the `transcoderPoolV2` state variable
+        - The Streamflow `BondingManager` implementation relies on the fact that when a transcoder joins the pool, its `activationRound` and `deactivationRound` fields are updated correctly and these fields are used to determine if a transcoder is active. So, if we use the same `transcdoerPool` state variable, post-upgrade, there will be transcoders in the pool that still have zero values for `activationRound` and `deactivationRound`. Resetting the transcoder pool by using a fresh state variable solves this issue.
+        - See this [GH issue](https://github.com/livepeer/protocol/issues/355) for a more in-depth explanation 
+    - Allow users to provide optional list insertion hints when using calling a function that could update the transcoder pool
+        - Added the following functions:
+          - `bondWithHint()` -> counterpart to `bond()`
+          - `unbondWithHint()` -> counterpart to `unbond()`
+          - `rebondWithHint()` -> counterpart to `rebond()`
+          - `rebondFromUnbondedWithHint()` -> counterpart to `rebondFromUnbonded()`
+          - `transcoderWithHint()` -> counterpart to `transcoder()`
+          - `rewardWithHint()` -> counterpart to `reward()`
+        - In the case where a delegate is already in or joining the transcoder pool, a client can caclulate the list insertion hint off-chain and provide it when calling a function. The hint can reduce the gas cost of the transaction by reducing the number of iterations in a linear search to find the correct insertion position in the pool (in the best case, the hint is the correct insertion position and no search is needed)
+- Updated the `RoundsManager` contract
+    - Compiled using solc 0.5.11
+    - Update round initialization so the hash of the block before the block that the initialization transaction is mined is written to contract storage and mapped to the round number
+        - Round numbers and their corresponding block hashes are used in PM ticket creation
+        - The `NewRound()` event also includes the block hash now
+    - Round initialization will not set the current active set for the round and instead it will just set the the total active stake for the round with the `BondingManager`
+- Added the `TicketBroker` contract
+    - Compiled using solc 0.5.11
+    - For design details refer to the [PM specification](pm.md)
