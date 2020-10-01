@@ -22,6 +22,7 @@ Rinkeby (LPT) is the set of contracts that originally implemented the alpha prot
 - SortedDoublyLL: [0x1a0b2ca69ca2c7f96e2529faa6d63f881655d81a](https://etherscan.io/address/0x1a0b2ca69ca2c7f96e2529faa6d63f881655d81a)
 - Refunder: [0x780c98cbb0cc21d6617c05332bd5cf6f847c71c2](https://etherscan.io/address/0x780c98cbb0cc21d6617c05332bd5cf6f847c71c2)
 - PollCreator: [0xBf824EDb6b94D9B52d972d5B25bCc19b4e6E3F3C](https://etherscan.io/address/0xbf824edb6b94d9b52d972d5b25bcc19b4e6e3f3c)
+- MerkleSnapshot: [0x24ebEd82c681f435E944BEEbFAEEAaE443D08438](https://etherscan.io/address/0x24ebed82c681f435e944beebfaeeaae443d08438)
 
 ## Mainnet (Deprecated)
 - LivepeerVerifier
