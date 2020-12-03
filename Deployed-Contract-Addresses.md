@@ -5,6 +5,7 @@ Rinkeby (LPSFT-0) is a fresh deployment of the Streamflow protocol contracts.
 Rinkeby (LPT) is the set of contracts that originally implemented the alpha protocol and was upgraded to implement the Streamflow protocol.
 
 ## Mainnet
+- Governor: [0xFC3CBed6A3476F7616CC70f078397700136eEBFd](https://etherscan.io/address/0xfc3cbed6a3476f7616cc70f078397700136eebfd)
 - Controller: [0xf96d54e490317c557a967abfa5d6e33006be69b3](https://etherscan.io/address/0xf96d54e490317c557a967abfa5d6e33006be69b3)
 - LivepeerToken: [0x58b6a8a3302369daec383334672404ee733ab239](https://etherscan.io/address/0x58b6a8a3302369daec383334672404ee733ab239)
 - Minter: [0x505F8c2ee81f1C6fa0D88e918eF0491222E05818](https://etherscan.io/address/0x505f8c2ee81f1c6fa0d88e918ef0491222e05818)
