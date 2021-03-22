@@ -17,5 +17,7 @@ Livepeer enables node operators to transcode video on GPUs while concurrently mi
 | NVIDIA Tesla T4               | :white_check_mark: |                                 |                                                                                                        |
 | NVIDIA GeForce GTX 1660 Ti    | :white_check_mark: |                                 |                                                                                                        |
 | NVIDIA GeForce GTX 1660 SUPER | :white_check_mark: |                                 |                                                                                                        |
-| NVIDIA GeForce RTX 3080       | :white_check_mark: | :white_check_mark:              | [Benchmarks](https://forum.livepeer.org/t/dual-ethash-mining-transcoding-w-rtx-3080-10g-cuda-mps/1161) |
+| NVIDIA GeForce GTX 2080 Ti       | :white_check_mark: | :white_check_mark:              |
+| NVIDIA GeForce RTX 3080       | :white_check_mark: | :white_check_mark:              | [Benchmarks](https://forum.livepeer.org/t/dual-ethash-mining-transcoding-w-rtx-3080-10g-cuda-mps/1161) |                                                                                                        |
+| NVIDIA GeForce GTX 3090       | :white_check_mark: | :white_check_mark:              |     
 | NVIDIA Titan V                | :white_check_mark: | :white_check_mark:              | [Patch](https://github.com/keylase/nvidia-patch)                                                       |
