@@ -9,6 +9,7 @@ Livepeer enables node operators to transcode video on GPUs while concurrently mi
 
 | GPU Model                     | Tested Transcoding | Tested Concurrent Ethash Mining | Notes                                                                                                  |
 | ----------------------------- | ------------------ | ------------------------------- | ------------------------------------------------------------------------------------------------------ |
+| NVIDIA GeForce GTX 950        | :white_check_mark: |                                 | [Benchmarks](https://forum.livepeer.org/t/gtx-950-quadro-p400-benchmarks/1497)                        |                                                                                                         |
 | NVIDIA GeForce GTX 1060       | :white_check_mark: | :white_check_mark:              |                                                                                                        |
 | NVIDIA GeForce GTX 1070       | :white_check_mark: |                                 |                                                                                                        |
 | NVIDIA GeForce GTX 1070 Ti    | :white_check_mark: | :white_check_mark:              |                                                                                                        |
@@ -21,3 +22,4 @@ Livepeer enables node operators to transcode video on GPUs while concurrently mi
 | NVIDIA GeForce RTX 3080       | :white_check_mark: | :white_check_mark:              | [Benchmarks](https://forum.livepeer.org/t/dual-ethash-mining-transcoding-w-rtx-3080-10g-cuda-mps/1161) |                                                                                                        |
 | NVIDIA GeForce GTX 3090       | :white_check_mark: | :white_check_mark:              |     
 | NVIDIA Titan V                | :white_check_mark: | :white_check_mark:              | [Patch](https://github.com/keylase/nvidia-patch)                                                       |
+| NVIDIA Quadro P400            | :white_check_mark: |                                 | [Benchmarks](https://forum.livepeer.org/t/gtx-950-quadro-p400-benchmarks/1497)                        |                                                                                                         |
