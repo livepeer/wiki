@@ -152,9 +152,9 @@ function redeemWinningTicket(
 - The ticket did not win i.e. `uint256(keccak256(abi.encodePacked(_senderSig, _recipientRand))) >= _ticket.winProb`
 - The sender is unlocked
 - The ticket's sender's deposit and reserve are both zero
-- The ticket's recipient is not a registered orchestrator
+- The ticket's recipient is not an active orchestrator in the current round and the redemption would transfer a non-zero amount
 
-If the ticket's recipient is not an active orchestrator in the current round, the broadcaster's deposit is greater than zero and the broadcaster's deposit is less than the ticket's face value, then the orchestrator claims the entirety of the broadcaster's deposit, but does not receive the remainder of the ticket's face value not covered by the broadcaster's deposit.
+If the ticket's recipient is not an active orchestrator in the current round, the ticket face value cannot be redeemed: it will be consumed without any payments if the broadcaster's deposit is 0. Otherwise, the redemption will revert.
 
 Funds for a successful winning ticket redemption are added to the ticket recipient's fee pool for the ticket's `creationRound` via the `BondingManager.updateTranscoderWithFees()` function. The state accounting to track funds ownership is then managed by the `BondingManager` and the actual ETH is held by the `Minter`.
 
