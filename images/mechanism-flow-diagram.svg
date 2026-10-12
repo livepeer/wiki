@@ -47,8 +47,8 @@
   <!-- Emissions schedule box feeding the mint -->
   <rect x="40" y="435" width="360" height="80" rx="10" fill="#10202e" stroke="#4aa3ff" stroke-width="2"/>
   <text x="220" y="458" fill="#ffffff" font-size="14" text-anchor="middle" font-weight="bold">Emissions Schedule</text>
-  <text x="220" y="476" fill="#bcd8f0" font-size="11" text-anchor="middle">% of fees, halving every 2 years (32x → ...)</text>
-  <text x="220" y="493" fill="#bcd8f0" font-size="11" text-anchor="middle">hard-capped at $50M / year</text>
+  <text x="220" y="476" fill="#bcd8f0" font-size="11" text-anchor="middle">Fixed in LPT, halving every 2 years</text>
+  <text x="220" y="493" fill="#bcd8f0" font-size="11" text-anchor="middle">No USD cap, bounded in tokens</text>
 
   <line x1="220" y1="515" x2="330" y2="515" stroke="#4aa3ff" stroke-width="2" marker-end="url(#arrow)"/>
 

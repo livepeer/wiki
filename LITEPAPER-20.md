@@ -26,7 +26,7 @@ Every major media company is racing to build its own proprietary version of this
 - **The Livepeer Network** — open infrastructure exposing every known media AI capability. In addition to GPU-hosted open models, this also means supporting API passthrough to third-party services and other media compute such as transcoding, muxing, captioning, and more.
 - **The Livepeer Agent** — a video/media planning harness accessible via MCP through any popular agent (Claude, ChatGPT, Codex, and others), routing all of the resulting compute demand, and fees, through the Livepeer Network.
 
-The Livepeer Agent is already working today, producing real output for media creators, and network usage can grow through the existing protocol while the tokeneconomics described below roll out. The rest of this document focuses on these economic and protocol incentive updates, and how they can work together to both enable and supercharge the network as the backing infrastructure needed to capture this opportunity.
+The Livepeer Agent is already working today, producing real output for media creators, and network usage can grow through the existing protocol while the token economics described below roll out. The rest of this document focuses on these economic and protocol incentive updates, and how they can work together to both enable and supercharge the network as the backing infrastructure needed to capture this opportunity.
 
 ## Design Principles
 
@@ -46,7 +46,7 @@ Livepeer 2.0 needs two distinct work functions:
 
 This second function is new, as today's protocol has no honest-work judging mechanism at all. It pays rewards purely in proportion to stake, which worked reasonably well when transcoding was homogenous and quality-of-service verifiable. But it breaks down across hundreds of diverse, non-deterministic AI media job types where a node can self-deal work to itself and stake alone can't tell that apart from real usage. 
 
-Livepeer 2.0 proposes addressing this via a new Validator set who's job is to score node honesty to determine rewards eligibility. However, while 2.0 introduces this new function, it is suggested that the top N nodes by stake who register for the validator role, inherit this role. **Node operators and validators are the same set of participants**, as they are uniquely suited to hold one another accountable to honest work, and already carry the weight of stake delegation to determine who has the most skin-in-the-game to ensure a continued, high performing network. (More on the scoring mechanisms and validator election mechanics below).
+Livepeer 2.0 proposes addressing this via a new Validator set whose job is to score node honesty to determine rewards eligibility. However, while 2.0 introduces this new function, it is suggested that the top N nodes by stake who register for the validator role inherit this role. **Node operators and validators are the same set of participants**, as they are uniquely suited to hold one another accountable to honest work, and already carry the weight of stake delegation to determine who has the most skin-in-the-game to ensure a continued, high performing network. (More on the scoring mechanisms and validator election mechanics below).
 
 ### Node operators: permissionless entry, rewards capped by stake. (MFS)
 
@@ -60,13 +60,13 @@ reward % = min(fee % of network total, stake % of network total)
 
 A node that earns 10% of network fees in a round, but holds only 2% of total stake, earns rewards capped at 2%. A node earning 5% of fees with 5% of stake earns its full 5%. Fees themselves are never capped. A node can always earn more by doing more real work, but the *inflationary LPT reward* attached to that work is capped by how much stake (self-staked or delegated) is actually behind the node.
 
-The MFS formula enables anyone to enter the network to compete for fees, but it mitigates the impacts of self-dealing fees to oneself for low stake nodes, as the rewards that they are entitled to are capped by their lack of stake. High stake nodes who are underperforming in terms of fee generation, would see their rewards capped, and stake would likely be better served moving towards nodes that are earning higher fees. The role of delegation becomes far more active, and far more rewarding for those who are providing security, through stake, to the network.
+The MFS formula enables anyone to enter the network to compete for fees, but it mitigates the impacts of self-dealing fees to oneself for low stake nodes, as the rewards that they are entitled to are capped by their lack of stake. High stake nodes who are underperforming in terms of fee generation would see their rewards capped, and stake would likely be better served moving towards nodes that are earning higher fees. The role of delegation becomes far more active, and far more rewarding for those who are providing security, through stake, to the network.
 
 ### Delegation secures nodes and elects who validates
 
-Delegators stake directly toward node operators, using the same bonding, unbonding, and reward/fee-cut mechanics that delegation already uses today. However, active delegators have a far larger opportunity to route security and rewards towards the nodes that need to be have high economic bonds against the large amount of work they're performing. Therefore, active delegators can earn an outsized portion of rewards versus the passive delegators. 
+Delegators stake directly toward node operators, using the same bonding, unbonding, and reward/fee-cut mechanics that delegation already uses today. However, active delegators have a far larger opportunity to route security and rewards towards the nodes that need to have high economic bonds against the large amount of work they're performing. Therefore, active delegators can earn an outsized portion of rewards versus the passive delegators. 
 
-The stake placed on a node determines its reward ceiling. Sticking with the example of a node that does 10% of the work on the network, but only has 2% of the stake: it's rewards remain capped at 2% of a round's rewards, unless it can attract more stake. There is a tremendous opportunity for delegators to move stake towards this node, to 5x its daily rewards. This should be reflected in the reward cut and fee share, leading to far greater return for the delegator than sitting on a node that is capped by its lack of fee earning potential (which is far harder to make up because it requires real hardware and operational investment and performance). 
+The stake placed on a node determines its reward ceiling. Sticking with the example of a node that does 10% of the work on the network, but only has 2% of the stake: its rewards remain capped at 2% of a round's rewards, unless it can attract more stake. There is a tremendous opportunity for delegators to move stake towards this node, to 5x its daily rewards. This should be reflected in the reward cut and fee share, leading to far greater return for the delegator than sitting on a node that is capped by its lack of fee earning potential (which is far harder to make up because it requires real hardware and operational investment and performance). 
 
 This is a significant improvement over the passive yield aggregation of the staking role, which was not adding as much value relative to the amount of inflationary LPT issuance being paid out. Now active delegators who are placing stake at risk on the high performing nodes are rewarded far more than those sitting idle in a set-it-and-forget-it manner on non-contributing ghost nodes. 
 
@@ -98,7 +98,7 @@ The unbonding period for all stake behind a node operator, whether it is self st
 
 21 rounds provides a real capital lockup, such that malicious nodes can't just quickly unbond and register new malicious nodes under different identities, but it stops short of imposing multi-month illiquidity on all staked capital.
 
-Delegators now have a real incentive to evaluate who they're backing, rather than treating delegation as risk-free yield. If their node misbehaves and has their rewards cut to zero, the delegators capital is also unable to be accessed or earn any rewards for the 21 day period.
+Delegators now have a real incentive to evaluate who they're backing, rather than treating delegation as risk-free yield. If their node misbehaves and has their rewards cut to zero, the delegators' capital is also unable to be accessed or earn any rewards for the 21 day period.
 
 One side effect of this is that `transferBond` needs to be eliminated, or subjected to a 21 day transfer period before being applied to the new node. Otherwise anyone could attack the network, and immediately `transferBond` to a new node address, knowing that the attacking node getting their rewards reduced would not affect their transferred stake.
 
@@ -120,11 +120,11 @@ Livepeer 2.0 proposes that instead of 100% of fees being earned directly by the 
 
 Of the USDC fees a node earns, the starting value for the `BMENodeCut` is proposed as 50%, and the starting value for the `BMENetworkFee` is proposed as 50%. This means that half the fees go direct to the node to incentivize more work even when lacking stake, and 50% go into the BME to purchase LPT from the market and burn, in service of supply reduction.
 
-It is suggested that the LPT purchased in this mechanism is **burned in full** with a `BMEBurnPercentage` of `100%`. Inflationary LPT rewards to node operators are funded by a separate, independently governed mint, and not by recycling bought-back LPT. The two supply levers - the burn driven by real usage, and the mint driven by the emissions schedule below - can be clean and separately reasoned about. The objective is that on a predictable schedule, the burn contribution reaches equilibrium with the supply inflation via emissions. While this can occur **faster** if fee growth accelerates rapidly, there is a long term timeline in which it is forced by the dynamics of the emissions schedule. This means that supply will be capped and predictable over time for the market's understanding of the token economics and value capture. 
+It is suggested that the LPT purchased in this mechanism is **burned in full** with a `BMEBurnPercentage` of `100%`. Inflationary LPT rewards to node operators are funded by a separate, independently governed mint, and not by recycling bought-back LPT. The two supply levers - the burn driven by real usage, and the mint driven by the emissions schedule below - can be cleanly and separately reasoned about. The objective is that on a predictable schedule, the burn contribution reaches equilibrium with the supply inflation via emissions. While this can occur **faster** if fee growth accelerates rapidly, there is a long term timeline in which it is forced by the dynamics of the emissions schedule. This means that supply will be capped and predictable over time for the market's understanding of the token economics and value capture. 
 
 ![BME Value Flow](https://raw.githubusercontent.com/livepeer/wiki/refs/heads/master/images/mechanism-flow-diagram.svg)
 
-As for execution on the LPT buy backs, further research work is necessary to apply the best-in class DeFi designs for executing low-slippage and non-manipulatable onchain purchases from DEX liquidity pools that are controlled via governance. Example parameters for executing TWAP based purchases at specified intervals are provided below, but the design of this mechanism is left outside of this paper.
+As for execution on the LPT buy backs, further research work is necessary to apply the best-in-class DeFi designs for executing low-slippage and non-manipulatable onchain purchases from DEX liquidity pools that are controlled via governance. Example parameters for executing TWAP based purchases at specified intervals are provided below, but the design of this mechanism is left outside of this paper.
 
 
 ### Emissions schedule
@@ -147,9 +147,9 @@ As such, LPT emissions in Livepeer 2.0 follow a **fixed schedule denominated in 
 **Supply is bounded and known on day one.** Total future issuance is about 2.9x today's annual issuance, with 50% of it minted in the next 2 years, 75% in 4 years, 97% in 10 years. After that the schedule tapers towards zero and fees make up the majority of the incentives on the network for all actors. 
 
 **Reaching BME**
-The BME burns the `BMENetworkFee` share of fees at 50% of fees initially. Equilibrium is the point where the LPT burned each year matches the LPT minted. Because Mint is fixed in tokens and burn grows with fees, the crossover depends on two things the protocol does not control: fee growth and token price. 
+The BME burns the `BMENetworkFee` share of fees at 50% of fees initially. Equilibrium is the point where the LPT burned each year matches the LPT minted. Because mint is fixed in tokens and burn grows with fees, the crossover depends on two things the protocol does not control: fee growth and token price. 
 
-If fees grow 35% per year and the token's price grows with them, assuming a constant fee-to-market-cap multiple), the schedule reaches equilibrium at year 12. However that implies an incredibly high market cap relative to yearly fees. For more modest market cap growth as fees mature, equilibrium is hit in the year 5-8 range depending upon these floating values.
+If fees grow 35% per year and the token's price grows with them (assuming a constant fee-to-market-cap multiple), the schedule reaches equilibrium at year 12. However that implies an incredibly high market cap relative to yearly fees. For more modest market cap growth as fees mature, equilibrium is hit in the year 5-8 range depending upon these floating values.
 
 In short: equilibrium is achieved quickly if fee growth rises rapidly relative to market cap, and takes longer if the speculative value of the network is at a far higher multiple relative to the yearly network revenue. Of course, the governance parameters over the BME can be taken into account to tune any market perceived effects of this mismatch.
 
@@ -158,7 +158,7 @@ One important tradeoff to keep in mind in this model in the out years is that th
 
 In response to this, it's important that the network governance participants realize that the intention in the long term is for fee-funded rewards to take over from emissions-funded rewards as the network matures. `BMEBurnPercentage` is a governance lever which starts out at 100%. However over time, it can be reduced, allocating a portion of the BME generated fees to the node operators and their delegators. This is similar to the same problem that Bitcoin faces as block rewards halve, and the security budget needs to derive from fees over time. 
 
-The same fee side pool also funds the validator and treasury incentives `BMEValidatorCut and `BMETreasuryCut`. As emissions shrink, the shares for those roles shrink with them, but the increasing share of network fees replaces them. It works as a `network tax on top of the fees nodes earn` and it helps secure the networks while also funding public goods. 
+The same fee side pool also funds the validator and treasury incentives `BMEValidatorCut and `BMETreasuryCut`. As emissions shrink, the shares for those roles shrink with them, but the increasing share of network fees replaces them. It works as a `network tax on top of the fees nodes earn, and it helps secure the network while also funding public goods. 
 
 **Advantages over a fee-linked reward schedule**
 Previous proposals in the 2.0 design considered that the amount of LPT minted should be dependent upon the fees generated by the network. That idea has merit, however this design brings the following advantages:
@@ -176,12 +176,12 @@ Previous proposals in the 2.0 design considered that the amount of LPT minted sh
 There were a couple of concepts in the original design or that were debated heavily amongst the community that are not included in this version:
 
 1. **No minimum self-stake requirement for node operators.** Having skin in the game for node operators may remain an important preference amongst gateway nodes that route work, however that can be left outside of the protocol. A stake requirement raises the barrier for new node operators joining the network, and requiring self stake on hot wallets running on nodes presents security risk. 
-2. **No separate migration/election event.** With delegated staking towards nodes still on the table, and the top N nodes inheriting the validator slots, not separate migration period or election is necessary. This is good news as there's no need to disrupt network continuity to roll out these updates.
+2. **No separate migration/election event.** With delegated staking towards nodes still on the table, and the top N nodes inheriting the validator slots, no separate migration period or election is necessary. This is good news as there's no need to disrupt network continuity to roll out these updates.
 3. **No reward-eligibility ramp up period for node operators.** It was discussed as to whether new nodes would need to earn fees consistently over time to be rewards eligible, though this idea was discarded in favor of the 7 round reward delay to prevent bad actors from jumping in and stealing rewards through inflated fees without notice.
 
 ## In Summary
 
-Livepeer 2.0 introduces some key improvements to the Livepeer protocol so that it can succeed at accruing value to LPT as network usage rises. Any address can register as a node to do work and earn, a combination of real fees plus stake determine what they earn, BME ties LPT's value directly to rising network usage through USDC-denominated fees, a predictable emissions schedule replaces an open-ended inflation curve, and attack vectors are closed via a 7-day reward delay and validation function determined by delegated stake. 
+Livepeer 2.0 introduces some key improvements to the Livepeer protocol so that it can succeed at accruing value to LPT as network usage rises. Any address can register as a node to do work and earn, a combination of real fees plus stake determines what they earn, BME ties LPT's value directly to rising network usage through USDC-denominated fees, a predictable emissions schedule replaces an open-ended inflation curve, and attack vectors are closed via a 7-day reward delay and validation function determined by delegated stake. 
 
 This document presents a cohesive recommendation, but none of this is final until some of the open questions below are worked through in simulation, testing, and continued feedback from our active community. In the meantime, this is a start that we can build and simulate against.
 
@@ -235,7 +235,7 @@ All values below are considered as initial launch values.
 
 ### DEX Execution Parameters
 
-*More research to be done on the DEX execution for buybacks.**
+*More research to be done on the DEX execution for buybacks.*
 
 | Parameter | Definition | Starting Value |
 |---|---|---|
