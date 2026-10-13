@@ -1,0 +1,97 @@
+<svg viewBox="0 0 1280 900" xmlns="http://www.w3.org/2000/svg" font-family="Helvetica, Arial, sans-serif">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#3ddc84"/>
+    </marker>
+  </defs>
+
+  <rect x="0" y="0" width="1280" height="900" fill="#0b1410"/>
+
+  <text x="40" y="45" fill="#ffffff" font-size="24" font-weight="bold">Livepeer 2.0 — Unified Reward &amp; Validation Flow</text>
+  <text x="40" y="70" fill="#8fae9e" font-size="14">Fees in USDC → BME split → MFS reward cap → stake-ranked validation → retroactive payout</text>
+
+  <!-- Row 1: Fee source -->
+  <rect x="480" y="100" width="320" height="60" rx="10" fill="#123321" stroke="#3ddc84" stroke-width="2"/>
+  <text x="640" y="125" fill="#ffffff" font-size="15" text-anchor="middle" font-weight="bold">Agents pay fees in USDC</text>
+  <text x="640" y="145" fill="#c7ded1" font-size="12" text-anchor="middle">for node operator services</text>
+
+  <!-- split arrows -->
+  <line x1="640" y1="160" x2="330" y2="210" stroke="#3ddc84" stroke-width="2" marker-end="url(#arrow)"/>
+  <line x1="640" y1="160" x2="950" y2="210" stroke="#3ddc84" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- Left: node cut -->
+  <rect x="160" y="215" width="340" height="80" rx="10" fill="#123321" stroke="#3ddc84" stroke-width="2"/>
+  <text x="330" y="240" fill="#ffffff" font-size="15" text-anchor="middle" font-weight="bold">BMENodeCut — 50%</text>
+  <text x="330" y="260" fill="#c7ded1" font-size="12" text-anchor="middle">Paid directly to node operator</text>
+  <text x="330" y="278" fill="#c7ded1" font-size="12" text-anchor="middle">(uncapped, work-proportional USDC)</text>
+
+  <!-- Right: network fee to BME -->
+  <rect x="780" y="215" width="340" height="80" rx="10" fill="#123321" stroke="#3ddc84" stroke-width="2"/>
+  <text x="950" y="240" fill="#ffffff" font-size="15" text-anchor="middle" font-weight="bold">BMENetworkFee — 50%</text>
+  <text x="950" y="260" fill="#c7ded1" font-size="12" text-anchor="middle">Buys LPT on the open market</text>
+  <text x="950" y="278" fill="#c7ded1" font-size="12" text-anchor="middle">100% burned (BMEBurnPercentage)</text>
+
+  <line x1="950" y1="295" x2="950" y2="335" stroke="#3ddc84" stroke-width="2" marker-end="url(#arrow)"/>
+  <rect x="820" y="340" width="260" height="55" rx="10" fill="#2a0f0f" stroke="#e05555" stroke-width="2"/>
+  <text x="950" y="365" fill="#ffffff" font-size="14" text-anchor="middle" font-weight="bold">LPT Burned 🔥</text>
+  <text x="950" y="382" fill="#e8b8b8" font-size="11" text-anchor="middle">Supply reduction, tied to real usage</text>
+
+  <!-- Separate mint -->
+  <rect x="160" y="340" width="340" height="55" rx="10" fill="#10202e" stroke="#4aa3ff" stroke-width="2"/>
+  <text x="330" y="365" fill="#ffffff" font-size="14" text-anchor="middle" font-weight="bold">Separate LPT Mint (inflation)</text>
+  <text x="330" y="382" fill="#bcd8f0" font-size="11" text-anchor="middle">Not the same tokens bought back above</text>
+
+  <line x1="330" y1="395" x2="330" y2="435" stroke="#4aa3ff" stroke-width="2" marker-end="url(#arrow)"/>
+  <line x1="950" y1="0" x2="950" y2="0" stroke="none"/>
+
+  <!-- Emissions schedule box feeding the mint -->
+  <rect x="40" y="435" width="360" height="80" rx="10" fill="#10202e" stroke="#4aa3ff" stroke-width="2"/>
+  <text x="220" y="458" fill="#ffffff" font-size="14" text-anchor="middle" font-weight="bold">Emissions Schedule</text>
+  <text x="220" y="476" fill="#bcd8f0" font-size="11" text-anchor="middle">Fixed in LPT, halving every 2 years</text>
+  <text x="220" y="493" fill="#bcd8f0" font-size="11" text-anchor="middle">No USD cap, bounded in tokens</text>
+
+  <line x1="220" y1="515" x2="330" y2="515" stroke="#4aa3ff" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- MFS box -->
+  <rect x="330" y="520" width="360" height="90" rx="10" fill="#10202e" stroke="#4aa3ff" stroke-width="2"/>
+  <text x="510" y="545" fill="#ffffff" font-size="15" text-anchor="middle" font-weight="bold">MFS Reward Cap</text>
+  <text x="510" y="565" fill="#bcd8f0" font-size="13" text-anchor="middle" font-family="monospace">reward% = min(fee%, stake%)</text>
+  <text x="510" y="583" fill="#bcd8f0" font-size="11" text-anchor="middle">Applied per node operator, each round</text>
+  <text x="510" y="599" fill="#bcd8f0" font-size="11" text-anchor="middle">Distributed to node + delegators via reward cut</text>
+
+  <line x1="510" y1="610" x2="510" y2="650" stroke="#4aa3ff" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <rect x="330" y="655" width="360" height="55" rx="10" fill="#123321" stroke="#3ddc84" stroke-width="2"/>
+  <text x="510" y="680" fill="#ffffff" font-size="14" text-anchor="middle" font-weight="bold">Node Operator &amp; Delegator Payout</text>
+  <text x="510" y="697" fill="#c7ded1" font-size="11" text-anchor="middle">(pending 7-round retroactive delay below)</text>
+
+  <!-- Stake pool / validator determination -->
+  <rect x="780" y="435" width="340" height="80" rx="10" fill="#2e1c40" stroke="#b389f0" stroke-width="2"/>
+  <text x="950" y="458" fill="#ffffff" font-size="14" text-anchor="middle" font-weight="bold">Total Stake per Node</text>
+  <text x="950" y="476" fill="#ddc9f5" font-size="11" text-anchor="middle">Self-staked + delegated</text>
+  <text x="950" y="493" fill="#ddc9f5" font-size="11" text-anchor="middle">21-round unbonding on all of it, incl. transferBond</text>
+
+  <line x1="950" y1="515" x2="950" y2="555" stroke="#b389f0" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <rect x="780" y="560" width="340" height="70" rx="10" fill="#2e1c40" stroke="#b389f0" stroke-width="2"/>
+  <text x="950" y="583" fill="#ffffff" font-size="15" text-anchor="middle" font-weight="bold">Top N by Stake Who Opt In = Validators</text>
+  <text x="950" y="603" fill="#ddc9f5" font-size="11" text-anchor="middle">No separate election. Voluntary registration</text>
+  <text x="950" y="618" fill="#ddc9f5" font-size="11" text-anchor="middle">ValidatorRewardShare = 1% of post-BME mint</text>
+
+  <line x1="950" y1="630" x2="950" y2="665" stroke="#b389f0" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <rect x="780" y="670" width="340" height="70" rx="10" fill="#2e1c40" stroke="#b389f0" stroke-width="2"/>
+  <text x="950" y="693" fill="#ffffff" font-size="14" text-anchor="middle" font-weight="bold">Score each node 0.0 – 1.0</text>
+  <text x="950" y="712" fill="#ddc9f5" font-size="11" text-anchor="middle">Median across validators sets reward multiplier</text>
+  <text x="950" y="728" fill="#ddc9f5" font-size="11" text-anchor="middle">Validation contract address is a governance parameter</text>
+
+  <!-- Retroactive delay convergence -->
+  <line x1="950" y1="740" x2="950" y2="775" stroke="#e0b04a" stroke-width="2" marker-end="url(#arrow)"/>
+  <line x1="510" y1="710" x2="510" y2="775" stroke="#e0b04a" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <rect x="380" y="780" width="720" height="80" rx="10" fill="#332a10" stroke="#e0b04a" stroke-width="2"/>
+  <text x="740" y="805" fill="#ffffff" font-size="16" text-anchor="middle" font-weight="bold">7-Round Rewards Delay (retroactive scoring)</text>
+  <text x="740" y="826" fill="#f0ddb0" font-size="12" text-anchor="middle">Reward for round n becomes claimable at round n+7,</text>
+  <text x="740" y="844" fill="#f0ddb0" font-size="12" text-anchor="middle">using the median score current at time of claim — closes the "spike and cash out" attack window</text>
+
+</svg>
